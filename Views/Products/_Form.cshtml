@@ -36,8 +36,14 @@
     </div>
 
     <div class="col-12 mt-2">
-        <label asp-for="ShortDescription" class="form-label text-muted small">Krótki opis (na listê)</label>
-        <textarea asp-for="ShortDescription" class="form-control form-control-dark" rows="2"></textarea>
+        <label asp-for="ShortDescription" class="form-label text-muted small">Technologia (Wymagane dla konfiguratora)</label>
+        <select asp-for="ShortDescription" class="form-select form-select-dark">
+            <option value="IP">Technologia IP (PoE)</option>
+            <option value="WIFI">Technologia Wi-Fi</option>
+            <option value="ANALOG">Technologia Analogowa (CVI/TVI/AHD)</option>
+            <option value="UNIWERSALNY">Uniwersalny (np. Dysk, Monitor)</option>
+        </select>
+        <span class="text-muted small">To pole okreœla typ urz¹dzenia w konfiguratorze.</span>
     </div>
 
     <div class="col-12">
