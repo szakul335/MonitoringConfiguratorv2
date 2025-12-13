@@ -17,10 +17,10 @@
 
         <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active px-5 fw-bold" id="pills-form-tab" data-bs-toggle="pill" data-bs-target="#pills-form" type="button" role="tab">1. Parametry</button>
+                <button class="nav-link active px-4 px-md-5 fw-bold" id="pills-form-tab" data-bs-toggle="pill" data-bs-target="#pills-form" type="button" role="tab">1. Parametry</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link px-5 fw-bold" id="pills-visual-tab" data-bs-toggle="pill" data-bs-target="#pills-visual" type="button" role="tab">2. Rozmieszczenie (Opcjonalne)</button>
+                <button class="nav-link px-4 px-md-5 fw-bold" id="pills-visual-tab" data-bs-toggle="pill" data-bs-target="#pills-visual" type="button" role="tab">2. Mapa / Rzut</button>
             </li>
         </ul>
 
@@ -64,16 +64,19 @@
                                     <label asp-for="Tech" class="form-label text-muted small fw-bold text-uppercase">Technologia</label>
                                     <select asp-for="Tech" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<CameraTechnology>()"></select>
                                 </div>
+
                                 <div class="row g-2 mb-3">
                                     <div class="col-6">
                                         <label asp-for="OutdoorCamCount" class="form-label text-white small">Zewn. (szt)</label>
-                                        <input asp-for="OutdoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                                        <input asp-for="OutdoorCamCount" id="OutdoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" readonly style="background-color: #2c2c30; cursor: not-allowed;" />
                                     </div>
                                     <div class="col-6">
                                         <label asp-for="IndoorCamCount" class="form-label text-white small">Wewn. (szt)</label>
-                                        <input asp-for="IndoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                                        <input asp-for="IndoorCamCount" id="IndoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" readonly style="background-color: #2c2c30; cursor: not-allowed;" />
                                     </div>
+                                    <div class="col-12"><small class="text-muted fst-italic">* Ilość kamer jest pobierana z zakładki "Mapa"</small></div>
                                 </div>
+
                                 <div class="mb-3">
                                     <label asp-for="ResolutionMp" class="form-label text-muted small fw-bold">JAKOŚĆ (MPIX)</label>
                                     <select asp-for="ResolutionMp" class="form-select form-select-dark">
@@ -131,47 +134,59 @@
             <div class="tab-pane fade" id="pills-visual" role="tabpanel">
                 <div class="card bg-dark border-secondary shadow-lg">
                     <div class="card-body p-0">
-                        <div class="p-3 border-bottom border-secondary d-flex flex-wrap gap-2 align-items-center bg-black bg-opacity-25">
+                        <div class="p-2 p-md-3 border-bottom border-secondary d-flex flex-wrap gap-2 align-items-center bg-black bg-opacity-25 justify-content-center justify-content-md-start">
                             <label class="btn btn-outline-light btn-sm">
-                                <i class="bi bi-upload me-1"></i> Wgraj rzut
+                                <i class="bi bi-upload me-1"></i> Wgraj
                                 <input type="file" id="planUpload" accept="image/*" hidden>
                             </label>
 
-                            <div class="vr bg-secondary mx-2"></div>
+                            <div class="vr bg-secondary mx-1 d-none d-md-block"></div>
 
-                            <button type="button" class="btn btn-sm btn-outline-warning tool-btn" data-tool="scale">
-                                <i class="bi bi-ruler"></i> 1. Ustaw skalę
+                            <button type="button" class="btn btn-sm btn-outline-warning tool-btn" data-tool="scale" title="Kliknij dwa punkty i podaj odległość">
+                                <i class="bi bi-ruler"></i> <span class="d-none d-sm-inline">Skala</span>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary tool-btn" data-tool="nvr">
-                                <i class="bi bi-hdd-fill"></i> 2. Rejestrator (NVR)
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger tool-btn" data-tool="camera">
-                                <i class="bi bi-camera-video-fill"></i> 3. Kamera
+                            <button type="button" class="btn btn-sm btn-outline-primary tool-btn" data-tool="nvr" title="Ustaw Rejestrator">
+                                <i class="bi bi-hdd-fill"></i> <span class="d-none d-sm-inline">NVR</span>
                             </button>
 
-                            <div class="ms-auto d-flex align-items-center gap-3">
-                                <div class="text-white small">
-                                    Suma kabla: <span id="cableSum" class="fw-bold text-success fs-5">0</span> m
+                            <div class="d-inline-flex align-items-center border border-secondary rounded px-2 py-1 bg-dark">
+                                <button type="button" class="btn btn-sm btn-danger tool-btn me-2" data-tool="camera" title="Dodaj kamerę">
+                                    <i class="bi bi-camera-video-fill"></i> <span class="d-none d-sm-inline">Kamera</span>
+                                </button>
+                                <select id="camTypeSelect" class="form-select form-select-sm bg-dark text-light border-0 py-0 shadow-none" style="width:auto; font-size: 0.85rem;">
+                                    <option value="outdoor">Zewn.</option>
+                                    <option value="indoor">Wewn.</option>
+                                </select>
+                            </div>
+
+                            <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
+                                <div class="text-white small text-nowrap">
+                                    Kabel: <span id="cableSum" class="fw-bold text-success fs-5">0</span> m
                                 </div>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="clearCanvas()">Reset</button>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="clearCanvas()">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
                             </div>
                         </div>
 
-                        <div class="position-relative bg-secondary bg-opacity-10 overflow-hidden" style="min-height: 500px; cursor: crosshair;">
-                            <canvas id="planCanvas" style="display:block; width:100%; height:100%;"></canvas>
+                        <div id="canvasContainer" class="position-relative bg-secondary bg-opacity-10 overflow-hidden" style="width: 100%; cursor: crosshair;">
+                            <canvas id="planCanvas" style="display:block;"></canvas>
 
-                            <div id="canvasOverlay" class="position-absolute top-50 start-50 translate-middle text-center text-muted">
+                            <div id="canvasOverlay" class="position-absolute top-50 start-50 translate-middle text-center text-muted w-100 px-3">
                                 <i class="bi bi-image fs-1 d-block mb-2"></i>
-                                <p>Wgraj rzut budynku, aby rozpocząć projektowanie.</p>
+                                <p class="mb-0">Wgraj rzut budynku, aby rozpocząć.</p>
+                                <small>Obsługuje formaty JPG, PNG.</small>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer bg-dark border-top border-secondary text-secondary small">
-                        <strong>Instrukcja:</strong>
-                        1. Wgraj obraz.
-                        2. Wybierz "Ustaw skalę" i kliknij dwa punkty na rzucie (np. wzdłuż ściany), podaj jej długość.
-                        3. Ustaw Rejestrator (kliknij w miejscu szafy RACK/TV).
-                        4. Klikaj, aby dodawać kamery – system automatycznie narysuje trasy i policzy metry.
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-info-circle-fill mt-1"></i>
+                            <div>
+                                <strong>Kroki:</strong> 1. Wgraj rzut &rarr; 2. Ustaw skalę (kliknij dwa końce ściany) &rarr; 3. Ustaw NVR &rarr; 4. Dodaj kamery.<br />
+                                <em>System automatycznie przelicza metry kabla przy każdej zmianie rozmiaru okna.</em>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,40 +203,145 @@
 
 @section Scripts {
     <script>
+        // --- DEFINICJE IKON (SVG Data URI) ---
+
+        // NVR (Niebieski Serwer)
+        const iconNvr = new Image();
+        iconNvr.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='16' width='56' height='12' rx='2' fill='%233b82f6'/%3E%3Crect x='4' y='36' width='56' height='12' rx='2' fill='%232563eb'/%3E%3Ccircle cx='12' cy='22' r='2' fill='%23a5f3fc'/%3E%3Ccircle cx='18' cy='22' r='2' fill='%23a5f3fc'/%3E%3Ccircle cx='12' cy='42' r='2' fill='%23bfdbfe'/%3E%3C/svg%3E";
+
+        // Kamera Zewnętrzna (Czerwona Tuba)
+        const iconCamOut = new Image();
+        iconCamOut.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M44 24H12c-2.2 0-4 1.8-4 4v12c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V28c0-2.2-1.8-4-4-4z' fill='%23ef4444'/%3E%3Cpath d='M48 28l12-6v20l-12-6V28z' fill='%23b91c1c'/%3E%3Crect x='14' y='20' width='24' height='4' fill='%23fca5a5'/%3E%3C/svg%3E";
+
+        // Kamera Wewnętrzna (Błękitna Kopułka)
+        const iconCamIn = new Image();
+        iconCamIn.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 12C20.95 12 12 20.95 12 32h40c0-11.05-8.95-20-20-20z' fill='%2306b6d4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23ecfeff'/%3E%3Crect x='8' y='32' width='48' height='6' fill='%230e7490'/%3E%3C/svg%3E";
+
+        let iconsLoaded = 0;
+        function onIconLoad() {
+            iconsLoaded++;
+            if(iconsLoaded === 3) draw();
+        }
+        iconNvr.onload = onIconLoad;
+        iconCamOut.onload = onIconLoad;
+        iconCamIn.onload = onIconLoad;
+
         const canvas = document.getElementById('planCanvas');
         const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
         const overlay = document.getElementById('canvasOverlay');
         const upload = document.getElementById('planUpload');
 
+        const inputOutdoor = document.getElementById('OutdoorCamCount');
+        const inputIndoor = document.getElementById('IndoorCamCount');
+        const inputCable = document.getElementById('hiddenCableMeters');
+        const displayCable = document.getElementById('cableSum');
+
         let img = new Image();
-        let scalePixels = 0; // ile pikseli to 1 metr
-        let nvrPos = null;
-        let cameras = [];
+        let scaleRatio = 1;
+        let originalImgWidth = 0;
+        let originalImgHeight = 0;
+
+        let logic = {
+            scalePixels: 0,
+            nvr: null,
+            cameras: [],
+            scalePoints: []
+        };
+
         let activeTool = null;
-        let scalePoints = []; // punkty do definicji skali
 
-        // Inicjalizacja canvas
-        function resizeCanvas() {
-            if(canvas.parentElement) {
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = 500; // Stała wysokość lub dynamiczna wg obrazka
-                draw();
+        function draw() {
+            canvas.width = container.clientWidth;
+            if (img.src && originalImgWidth > 0) {
+                canvas.height = canvas.width * (originalImgHeight / originalImgWidth);
+                scaleRatio = canvas.width / originalImgWidth;
+            } else {
+                canvas.height = 400;
+                scaleRatio = 1;
             }
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        // Obsługa uploadu
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (img.src) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+
+            const toScreen = (pos) => ({ x: pos.x * scaleRatio, y: pos.y * scaleRatio });
+
+            // Rysuj Kable
+            if (logic.nvr) {
+                const screenNvr = toScreen(logic.nvr);
+                logic.cameras.forEach(cam => {
+                    const screenCam = toScreen(cam);
+                    ctx.beginPath();
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = cam.type === 'outdoor' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(6, 182, 212, 0.5)';
+                    ctx.moveTo(screenNvr.x, screenNvr.y);
+                    ctx.lineTo(screenCam.x, screenCam.y);
+                    ctx.stroke();
+                });
+            }
+
+            // Rysuj Skalę
+            if (logic.scalePoints.length > 0) {
+                ctx.fillStyle = '#f59e0b';
+                logic.scalePoints.forEach(p => {
+                    const sp = toScreen(p);
+                    ctx.beginPath(); ctx.arc(sp.x, sp.y, 5, 0, Math.PI*2); ctx.fill();
+                });
+                if(logic.scalePoints.length === 2) {
+                    const p1 = toScreen(logic.scalePoints[0]);
+                    const p2 = toScreen(logic.scalePoints[1]);
+                    ctx.beginPath(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+                    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); ctx.setLineDash([]);
+                }
+            }
+
+            // Rysuj NVR (IKONA)
+            if (logic.nvr) {
+                const sn = toScreen(logic.nvr);
+                const size = 48;
+                ctx.drawImage(iconNvr, sn.x - size/2, sn.y - size/2, size, size);
+
+                ctx.fillStyle = '#3b82f6';
+                ctx.font = 'bold 12px Arial';
+                ctx.shadowColor="black"; ctx.shadowBlur=3;
+                ctx.fillText("NVR", sn.x - 12, sn.y + size/2 + 10);
+                ctx.shadowBlur=0;
+            }
+
+            // Rysuj Kamery (IKONY)
+            logic.cameras.forEach((cam, i) => {
+                const sc = toScreen(cam);
+                const icon = cam.type === 'outdoor' ? iconCamOut : iconCamIn;
+                const size = 36;
+                ctx.drawImage(icon, sc.x - size/2, sc.y - size/2, size, size);
+
+                ctx.fillStyle = cam.type === 'outdoor' ? '#ef4444' : '#06b6d4';
+                ctx.font = 'bold 12px Arial';
+                ctx.shadowColor="black"; ctx.shadowBlur=3;
+                const lbl = (cam.type === 'outdoor' ? 'Z' : 'W') + (i+1);
+                ctx.fillText(lbl, sc.x - 8, sc.y + size/2 + 10);
+                ctx.shadowBlur=0;
+            });
+        }
+
+        window.addEventListener('resize', draw);
+
         upload.addEventListener('change', function(e) {
             if(this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
+                    img = new Image();
                     img.src = evt.target.result;
                     img.onload = () => {
                         overlay.style.display = 'none';
-                        // Dopasuj canvas do proporcji obrazka (zachowując szerokość kontenera)
-                        const aspect = img.height / img.width;
-                        canvas.height = canvas.width * aspect;
+                        originalImgWidth = img.width;
+                        originalImgHeight = img.height;
+
+                        logic = { scalePixels: 0, nvr: null, cameras: [], scalePoints: [] };
+                        updateForm();
                         draw();
                     }
                 }
@@ -229,55 +349,60 @@
             }
         });
 
-        // Wybór narzędzia
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Resetuj wybór
-                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active', 'bg-opacity-50'));
-
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active', 'bg-white', 'text-dark'));
                 if (activeTool === this.dataset.tool) {
-                    activeTool = null; // odznacz
+                    activeTool = null;
                 } else {
                     activeTool = this.dataset.tool;
                     this.classList.add('active', 'bg-white', 'text-dark');
                 }
-
-                // Reset punktów skali jeśli zmieniono narzędzie
-                if(activeTool !== 'scale') scalePoints = [];
+                if(activeTool !== 'scale') logic.scalePoints = [];
                 draw();
             });
         });
 
-        // Kliknięcia na płótnie
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const xCanvas = evt.clientX - rect.left;
+            const yCanvas = evt.clientY - rect.top;
+
+            return { x: xCanvas / scaleRatio, y: yCanvas / scaleRatio };
+        }
+
         canvas.addEventListener('mousedown', function(e) {
             if (!img.src) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const pos = getMousePos(e);
 
             if (activeTool === 'nvr') {
-                nvrPos = {x, y};
+                logic.nvr = pos;
                 recalcCables();
             }
             else if (activeTool === 'camera') {
-                if (!nvrPos) { alert("Najpierw ustaw Rejestrator (NVR)!"); return; }
-                if (scalePixels === 0) { alert("Najpierw ustaw skalę (wymiar ściany)!"); return; }
-                cameras.push({x, y});
-                // Zwiększ licznik w formularzu (opcjonalne, ale pomocne)
-                // document.getElementById('OutdoorCamCount').value = parseInt(document.getElementById('OutdoorCamCount').value || 0) + 1;
+                if (!logic.nvr) { alert("Najpierw ustaw Rejestrator (NVR)!"); return; }
+                if (logic.scalePixels === 0) { alert("Najpierw ustaw skalę!"); return; }
+
+                const type = document.getElementById('camTypeSelect').value;
+                logic.cameras.push({ x: pos.x, y: pos.y, type: type });
+
+                updateForm();
                 recalcCables();
             }
             else if (activeTool === 'scale') {
-                scalePoints.push({x, y});
-                if (scalePoints.length === 2) {
-                    const distPix = Math.hypot(scalePoints[1].x - scalePoints[0].x, scalePoints[1].y - scalePoints[0].y);
-                    const meters = prompt("Jaka jest rzeczywista długość tego odcinka (w metrach)?", "10");
-                    if (meters && !isNaN(meters)) {
-                        scalePixels = distPix / parseFloat(meters);
-                        alert(`Skala ustawiona: 1m = ${Math.round(scalePixels)}px`);
+                logic.scalePoints.push(pos);
+                if (logic.scalePoints.length === 2) {
+                    const dist = Math.hypot(logic.scalePoints[1].x - logic.scalePoints[0].x, logic.scalePoints[1].y - logic.scalePoints[0].y);
+                    const meters = prompt("Podaj rzeczywistą długość odcinka (m):", "10");
+
+                    if (meters && !isNaN(meters) && parseFloat(meters) > 0) {
+                        logic.scalePixels = dist / parseFloat(meters);
+                        alert("Skala zapisana!");
+                    } else {
+                        logic.scalePoints = [];
                     }
-                    scalePoints = []; // reset po ustawieniu
-                    // Odznacz narzędzie
+
+                    logic.scalePoints = [];
                     document.querySelector('[data-tool="scale"]').click();
                 }
             }
@@ -285,82 +410,34 @@
         });
 
         function recalcCables() {
-            if (!nvrPos || scalePixels === 0) return;
-            let totalMeters = 0;
-            cameras.forEach(cam => {
-                const distPix = Math.hypot(cam.x - nvrPos.x, cam.y - nvrPos.y);
-                // Dodajemy 20% zapasu na zakręty + 3m na zejścia ze ściany
-                const m = (distPix / scalePixels) * 1.2 + 3;
-                totalMeters += m;
+            if (!logic.nvr || logic.scalePixels === 0) return;
+
+            let total = 0;
+            logic.cameras.forEach(cam => {
+                const distPix = Math.hypot(cam.x - logic.nvr.x, cam.y - logic.nvr.y);
+                const m = (distPix / logic.scalePixels) * 1.2 + 3;
+                total += m;
             });
 
-            const final = Math.ceil(totalMeters);
-            document.getElementById('cableSum').innerText = final;
-            document.getElementById('hiddenCableMeters').value = final;
+            const final = Math.ceil(total);
+            displayCable.innerText = final;
+            inputCable.value = final;
         }
 
-        function draw() {
-            // Czyść
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function updateForm() {
+            const out = logic.cameras.filter(c => c.type === 'outdoor').length;
+            const ind = logic.cameras.filter(c => c.type === 'indoor').length;
 
-            // Rysuj tło
-            if (img.src) {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            }
-
-            // Rysuj połączenia (pod spodem)
-            if (nvrPos) {
-                ctx.beginPath();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-                cameras.forEach(cam => {
-                    ctx.moveTo(nvrPos.x, nvrPos.y);
-                    ctx.lineTo(cam.x, cam.y);
-                });
-                ctx.stroke();
-            }
-
-            // Rysuj Skalę (jeśli w trakcie rysowania)
-            if (scalePoints.length > 0) {
-                ctx.fillStyle = 'yellow';
-                scalePoints.forEach(p => {
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
-                });
-                if(scalePoints.length === 2) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = 'yellow';
-                    ctx.moveTo(scalePoints[0].x, scalePoints[0].y);
-                    ctx.lineTo(scalePoints[1].x, scalePoints[1].y);
-                    ctx.stroke();
-                }
-            }
-
-            // Rysuj NVR
-            if (nvrPos) {
-                ctx.fillStyle = '#0d6efd'; // Primary blue
-                ctx.beginPath(); ctx.arc(nvrPos.x, nvrPos.y, 8, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = 'white';
-                ctx.font = '12px Arial';
-                ctx.fillText("NVR", nvrPos.x + 12, nvrPos.y + 4);
-            }
-
-            // Rysuj Kamery
-            cameras.forEach((cam, i) => {
-                ctx.fillStyle = '#dc3545'; // Danger red
-                ctx.beginPath(); ctx.arc(cam.x, cam.y, 6, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = 'white';
-                ctx.fillText(`K${i+1}`, cam.x + 10, cam.y + 4);
-            });
+            inputOutdoor.value = out;
+            inputIndoor.value = ind;
         }
 
         function clearCanvas() {
-            if(confirm("Wyczyścić wszystko?")) {
-                nvrPos = null;
-                cameras = [];
-                scalePixels = 0;
-                scalePoints = [];
-                document.getElementById('cableSum').innerText = "0";
-                document.getElementById('hiddenCableMeters').value = "";
+            if(confirm("Usunąć wszystkie elementy z mapy?")) {
+                logic = { scalePixels: 0, nvr: null, cameras: [], scalePoints: [] };
+                displayCable.innerText = "0";
+                inputCable.value = "";
+                updateForm();
                 draw();
             }
         }
