@@ -1,72 +1,66 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using MonitoringConfigurator.Data;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace MonitoringConfigurator.Controllers
 {
     [Authorize]
     public class DocumentsController : Controller
     {
+        private readonly AppDbContext _ctx;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IWebHostEnvironment _env;
-        public DocumentsController(IWebHostEnvironment env) => _env = env;
 
-        private string GetUserFolder()
+        public DocumentsController(AppDbContext ctx, UserManager<IdentityUser> userManager, IWebHostEnvironment env)
         {
-            var basePath = Path.Combine(_env.WebRootPath, "documents");
-            var name = User?.Identity?.Name ?? "anonymous";
-            var safe = Regex.Replace(name, @"[^a-zA-Z0-9_.@-]", "_");
-            var userPath = Path.Combine(basePath, safe);
-            Directory.CreateDirectory(userPath);
-            return userPath;
+            _ctx = ctx;
+            _userManager = userManager;
+            _env = env;
         }
 
-        public IActionResult Index(string? msg = null, string? err = null)
+        // Wyświetlanie listy dokumentów z bazy danych
+        public async Task<IActionResult> Index()
         {
-            var folder = GetUserFolder();
-            var files = Directory.GetFiles(folder)
-                .Select(p => new DocItem
-                {
-                    Name = Path.GetFileName(p),
-                    SizeBytes = new FileInfo(p).Length,
-                    Url = Url.Content($"~/documents/{Path.GetFileName(folder)}/{Path.GetFileName(p)}")
-                })
-                .OrderByDescending(f => f.SizeBytes)
-                .ToList();
+            var userId = _userManager.GetUserId(User);
 
-            ViewBag.Message = msg;
-            ViewBag.Error = err;
-            return View(files);
+            var docs = await _ctx.UserDocuments
+                .Where(d => d.UserId == userId)
+                .OrderByDescending(d => d.CreatedUtc)
+                .ToListAsync();
+
+            return View(docs);
         }
 
+        // Pobieranie pliku (PDF)
+        public async Task<IActionResult> Download(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var doc = await _ctx.UserDocuments.FirstOrDefaultAsync(d => d.Id == id && d.UserId == userId);
+
+            if (doc == null) return NotFound();
+
+            return File(doc.Content, "application/pdf", doc.Title + ".pdf");
+        }
+
+        // Usuwanie dokumentu
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload(IFormFile file)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (file == null || file.Length == 0)
-                return RedirectToAction(nameof(Index), new { err = "Nie wybrano pliku." });
+            var userId = _userManager.GetUserId(User);
+            var doc = await _ctx.UserDocuments.FirstOrDefaultAsync(d => d.Id == id && d.UserId == userId);
 
-            if (file.Length > 25 * 1024 * 1024)
-                return RedirectToAction(nameof(Index), new { err = "Plik jest zbyt duży (limit 25 MB)." });
+            if (doc == null) return NotFound();
 
-            var folder = GetUserFolder();
-            var safeName = Regex.Replace(Path.GetFileName(file.FileName), @"[^a-zA-Z0-9_.-]", "_");
-            var dest = Path.Combine(folder, safeName);
-            using (var stream = System.IO.File.Create(dest))
-                await file.CopyToAsync(stream);
+            _ctx.UserDocuments.Remove(doc);
+            await _ctx.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new { msg = $"Przesłano: {safeName}" });
+            TempData["Message"] = "Dokument został usunięty.";
+            return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(string name)
-        {
-            var safeName = Regex.Replace(Path.GetFileName(name ?? ""), @"[^a-zA-Z0-9_.-]", "_");
-            var path = Path.Combine(GetUserFolder(), safeName);
-            if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
-            return RedirectToAction(nameof(Index), new { msg = $"Usunięto: {safeName}" });
-        }
-
-        public class DocItem { public string Name { get; set; } = ""; public long SizeBytes { get; set; } public string Url { get; set; } = ""; }
     }
 }
