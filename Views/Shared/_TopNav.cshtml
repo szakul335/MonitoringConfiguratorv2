@@ -1,0 +1,84 @@
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var isAuth = User?.Identity?.IsAuthenticated ?? false;
+    var userName = User?.Identity?.Name ?? "";
+    var isAdmin = User.IsInRole("Admin") || string.Equals(userName, "admin@demo.pl", StringComparison.OrdinalIgnoreCase);
+    var isOperator = User.IsInRole("Operator") || string.Equals(userName, "operator@demo.pl", StringComparison.OrdinalIgnoreCase);
+
+    // Pobranie awatara z ciasteczka (Claim) lub ustawienie domyślnego
+    var avatarUrl = User?.FindFirst("profile:avatar")?.Value;
+    var hasAvatar = !string.IsNullOrEmpty(avatarUrl);
+}
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background:#111; border-bottom:1px solid #1f1f1f;">
+    <div class="container">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">System Monitoring</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Produkty</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="About">O nas</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Contact">Kontakt</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Faq">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Guides">Instrukcje</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Opinions">Opinie</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Support">Wsparcie</a></li>
+
+                @if (isAdmin)
+                {
+                    <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Użytkownicy</a></li>
+                }
+                @if (isAdmin || isOperator)
+                {
+                    <li class="nav-item"><a class="nav-link" asp-controller="Messages" asp-action="Index">Wiadomości</a></li>
+                }
+                @if (isAuth)
+                {
+                    <li class="nav-item"><a class="nav-link" asp-controller="Documents" asp-action="Index">Moje dokumenty</a></li>
+                }
+            </ul>
+
+            <ul class="navbar-nav ms-auto align-items-center">
+                @if (isAuth)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="kontoDropdown" role="button" data-bs-toggle="dropdown">
+                            @if (hasAvatar)
+                            {
+                                <img src="@avatarUrl" alt="Avatar" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid #333;" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    @userName.Substring(0, 1).ToUpper()
+                                </div>
+                            }
+                            <span>@userName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="kontoDropdown">
+                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Moje konto</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form class="px-3" asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">Wyloguj</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item me-2"><a class="btn btn-sm btn-outline-light" asp-area="Identity" asp-page="/Account/Login">Zaloguj się</a></li>
+                    <li class="nav-item"><a class="btn btn-sm btn-primary" asp-area="Identity" asp-page="/Account/Register">Zarejestruj się</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,173 @@
+@model MonitoringConfigurator.Models.OpinionViewModel
+@{
+    ViewData["Title"] = "Opinie użytkowników";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-white mb-2">Opinie klientów</h1>
+        <p class="text-muted lead mx-auto" style="max-width: 600px;">
+            Zobacz, co inni sądzą o naszym konfiguratorze. Cenimy każdy głos, który pomaga nam być lepsi.
+        </p>
+    </div>
+
+    @if (TempData["Msg"] is string msg)
+    {
+        <div class="alert alert-success border-0 bg-success bg-opacity-25 text-white text-center mb-5 shadow-sm rounded-pill d-inline-block px-5 mx-auto d-block">
+            <i class="bi bi-check-circle-fill me-2"></i> @msg
+        </div>
+    }
+
+    <div class="row g-5">
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-lg sticky-top" style="top: 20px; background: #151518; border-radius: 16px;">
+                <div class="card-body p-4">
+                    <h4 class="text-white fw-bold mb-4 text-center">Dodaj recenzję</h4>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <form asp-action="Opinions" method="post">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 text-center"></div>
+
+                            <div class="mb-4 text-center">
+                                <div class="rating-group">
+                                    <input type="radio" id="star5" name="Rating" value="5" checked />
+                                    <label for="star5" title="Rewelacja (5)"><i class="bi bi-star-fill"></i></label>
+
+                                    <input type="radio" id="star4" name="Rating" value="4" />
+                                    <label for="star4" title="Dobrze (4)"><i class="bi bi-star-fill"></i></label>
+
+                                    <input type="radio" id="star3" name="Rating" value="3" />
+                                    <label for="star3" title="Przeciętnie (3)"><i class="bi bi-star-fill"></i></label>
+
+                                    <input type="radio" id="star2" name="Rating" value="2" />
+                                    <label for="star2" title="Słabo (2)"><i class="bi bi-star-fill"></i></label>
+
+                                    <input type="radio" id="star1" name="Rating" value="1" />
+                                    <label for="star1" title="Tragedia (1)"><i class="bi bi-star-fill"></i></label>
+                                </div>
+                                <span asp-validation-for="Rating" class="text-danger small d-block mt-2"></span>
+                                <div class="text-muted small mt-1">Kliknij, aby ocenić</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Message" class="form-label text-secondary small text-uppercase fw-bold ls-1">Treść opinii</label>
+                                <textarea asp-for="Message" class="form-control bg-dark border-secondary text-light" rows="4" placeholder="Co Ci się podobało, a co możemy poprawić?" style="resize: none;"></textarea>
+                                <span asp-validation-for="Message" class="text-danger small"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-warning w-100 py-3 fw-bold text-dark rounded-3 shadow-sm hover-scale">
+                                <i class="bi bi-send-fill me-2"></i> Opublikuj
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25">
+                            <i class="bi bi-shield-lock-fill display-4 text-warning mb-3 d-block"></i>
+                            <h6 class="text-white">Zaloguj się</h6>
+                            <p class="text-muted small mb-3 px-3">Tylko zweryfikowani użytkownicy mogą dodawać opinie.</p>
+                            <div class="d-grid gap-2 px-4">
+                                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm">Logowanie</a>
+                                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-link text-muted btn-sm text-decoration-none">Załóż konto</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary border-opacity-25">
+                <h5 class="text-white mb-0">Ostatnie recenzje <span class="badge bg-secondary ms-2 rounded-pill">@(Model.ExistingOpinions?.Count() ?? 0)</span></h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Najnowsze
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item active" href="#">Najnowsze</a></li>
+                        <li><a class="dropdown-item" href="#">Najwyższa ocena</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (Model.ExistingOpinions != null && Model.ExistingOpinions.Any())
+            {
+                <div class="d-flex flex-column gap-4">
+                    @foreach (var op in Model.ExistingOpinions)
+                    {
+                        // Logika gwiazdek
+                        int stars = 5;
+                        if (op.Subject != null && op.Subject.StartsWith("Ocena:"))
+                        {
+                            int.TryParse(op.Subject.Replace("Ocena:", "").Trim(), out stars);
+                        }
+
+                        // Generowanie inicjału (dla estetyki)
+                        string initial = "U";
+                        if (!string.IsNullOrEmpty(op.UserId)) { initial = "K"; } // "K" jak Klient
+
+                        <div class="opinion-tile">
+                            <div class="opinion-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="opinion-avatar shadow-sm">
+                                        @initial
+                                    </div>
+                                    <div>
+                                        <span class="user-name">
+                                            @(string.IsNullOrEmpty(op.UserId) ? "Gość" : "Użytkownik")
+                                            @if (!string.IsNullOrEmpty(op.UserId))
+                                            {
+                                                <span class="user-role" title="Zweryfikowany zakup"><i class="bi bi-patch-check-fill text-info"></i> Zweryfikowany</span>
+                                            }
+                                        </span>
+                                        <div class="stars-display mt-1">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= stars ? "bi-star-fill" : "bi-star")"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="opinion-date">@op.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                            </div>
+
+                            <div class="opinion-content">
+                                <i class="bi bi-quote quote-icon"></i> @op.Message
+                            </div>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="text-end mt-3 pt-2 border-top border-secondary border-opacity-25">
+                                    <form asp-controller="Info" asp-action="DeleteOpinion" asp-route-id="@op.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-link text-danger btn-sm p-0 text-decoration-none opacity-75 hover-opacity-100" onclick="return confirm('Usunąć tę opinię trwale?');">
+                                            <i class="bi bi-trash"></i> Usuń wpis
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-chat-heart display-1 text-muted opacity-25"></i>
+                    </div>
+                    <h3 class="text-muted">Brak opinii</h3>
+                    <p class="text-muted small">Bądź pierwszą osobą, która podzieli się wrażeniami!</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,127 @@
+﻿@model MonitoringConfigurator.Models.ConfiguratorInputModel
+@using MonitoringConfigurator.Models
+@{
+    ViewData["Title"] = "Konfigurator CCTV Pro";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-white">Zaawansowany Konfigurator</h1>
+        <p class="text-muted lead">Zaprojektuj kompletny system monitoringu krok po kroku.</p>
+    </div>
+
+    <form asp-action="Calculate" method="post">
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card card-dark h-100 shadow-sm border-secondary">
+                    <div class="card-header bg-transparent border-secondary py-3">
+                        <h5 class="mb-0 text-white"><i class="bi bi-geo-alt-fill text-danger me-2"></i> 1. Obiekt</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Building" class="form-label text-muted small fw-bold">TYP BUDYNKU</label>
+                            <select asp-for="Building" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<BuildingType>()"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="AreaM2" class="form-label text-muted small fw-bold">POWIERZCHNIA (m²)</label>
+                            <input asp-for="AreaM2" class="form-control form-control-dark" type="number" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="InstallType" class="form-label text-muted small fw-bold">MONTAŻ KABLI</label>
+                            <select asp-for="InstallType" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<InstallationType>()"></select>
+                        </div>
+                        <div class="form-check form-switch mt-4">
+                            <input asp-for="NeedAssembly" class="form-check-input" type="checkbox">
+                            <label class="form-check-label text-white fw-bold" asp-for="NeedAssembly">Wyceń usługę montażu</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-dark h-100 shadow-sm border-secondary">
+                    <div class="card-header bg-transparent border-secondary py-3">
+                        <h5 class="mb-0 text-white"><i class="bi bi-camera-reels text-danger me-2"></i> 2. Kamery</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Tech" class="form-label text-muted small fw-bold text-uppercase">Technologia</label>
+                            <select asp-for="Tech" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<CameraTechnology>()"></select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label asp-for="OutdoorCamCount" class="form-label text-white small">Zewn. (szt)</label>
+                                <input asp-for="OutdoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="IndoorCamCount" class="form-label text-white small">Wewn. (szt)</label>
+                                <input asp-for="IndoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="ResolutionMp" class="form-label text-muted small fw-bold">JAKOŚĆ (MPIX)</label>
+                            <select asp-for="ResolutionMp" class="form-select form-select-dark">
+                                <option value="2">2 Mpix (Full HD)</option>
+                                <option value="4">4 Mpix (2K)</option>
+                                <option value="8">8 Mpix (4K)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NightVisionM" class="form-label text-muted small fw-bold">WIDOCZNOŚĆ W NOCY (M)</label>
+                            <select asp-for="NightVisionM" class="form-select form-select-dark">
+                                <option value="20">do 20 m</option>
+                                <option value="30">do 30 m (Standard)</option>
+                                <option value="50">do 50 m</option>
+                                <option value="80">powyżej 80 m</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Detection" class="form-label text-muted small fw-bold">FUNKCJE INTELIGENTNE</label>
+                            <select asp-for="Detection" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DetectionType>()"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-dark h-100 shadow-sm border-secondary">
+                    <div class="card-header bg-transparent border-secondary py-3">
+                        <h5 class="mb-0 text-white"><i class="bi bi-hdd-network text-danger me-2"></i> 3. Wyposażenie</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="DisplayMethod" class="form-label text-muted small fw-bold">PODGLĄD NA:</label>
+                            <select asp-for="DisplayMethod" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DisplayType>()"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RecordingDays" class="form-label text-muted small fw-bold">ARCHIWIZACJA (DNI)</label>
+                            <input asp-for="RecordingDays" type="number" class="form-control form-control-dark" min="1" max="90">
+                        </div>
+
+                        <hr class="border-secondary" />
+
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="NeedUps" class="form-check-input" type="checkbox" id="upsToggle">
+                            <label class="form-check-label text-white" asp-for="NeedUps">Zasilanie awaryjne (UPS)</label>
+                        </div>
+
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="NeedCabling" class="form-check-input" type="checkbox" checked>
+                            <label class="form-check-label text-white" asp-for="NeedCabling">Okablowanie i akcesoria</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4 text-center">
+                <button type="submit" class="btn btn-danger btn-lg px-5 py-3 fw-bold text-uppercase shadow-lg hover-scale rounded-pill">
+                    <i class="bi bi-calculator me-2"></i> Oblicz i Dobierz Sprzęt
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

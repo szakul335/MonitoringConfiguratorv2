@@ -1,0 +1,44 @@
+@model IEnumerable<MonitoringConfigurator.Models.Contact>
+@{
+    ViewData["Title"] = "Wiadomości";
+}
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <a class="nav-link active" asp-action="Index">Odebrane</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" asp-action="Mine">Moje wiadomości</a>
+  </li>
+</ul>
+
+@if (TempData["Msg"] != null) {
+  <div class="alert alert-success">@TempData["Msg"]</div>
+}
+
+<h2>Odebrane wiadomości</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Temat</th>
+      <th>Treść</th>
+      <th style="width:160px">Akcje</th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var msg in Model)
+  {
+    <tr>
+      <td>@msg.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+      <td>@msg.Subject</td>
+      <td>@msg.Message</td>
+      <td>
+        <a asp-action="Details" asp-route-id="@msg.Id" class="btn btn-sm btn-outline-info me-1">Podgląd</a>
+        <form asp-action="Delete" asp-route-id="@msg.Id" method="post" class="d-inline" onsubmit="return confirm('Usunąć tę wiadomość?');">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+        </form>
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>

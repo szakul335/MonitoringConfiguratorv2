@@ -1,0 +1,19 @@
+@model MonitoringConfigurator.Models.Contact
+@{
+    ViewData["Title"] = "Usuń wiadomość";
+}
+<h2>Usuń wiadomość</h2>
+<p>Czy na pewno chcesz usunąć tę wiadomość?</p>
+<dl class="row">
+  <dt class="col-sm-2">Data</dt>
+  <dd class="col-sm-10">@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</dd>
+  <dt class="col-sm-2">Temat</dt>
+  <dd class="col-sm-10">@Model.Subject</dd>
+  <dt class="col-sm-2">Treść</dt>
+  <dd class="col-sm-10">@Model.Message</dd>
+</dl>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

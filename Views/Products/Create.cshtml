@@ -1,0 +1,22 @@
+@model MonitoringConfigurator.Models.Product
+@{
+    ViewData["Title"] = "Dodaj produkt";
+}
+
+<h1 class="h3 mb-3">Dodaj produkt</h1>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <partial name="_Form" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <a asp-action="Manage" class="btn btn-outline-secondary">Anuluj</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

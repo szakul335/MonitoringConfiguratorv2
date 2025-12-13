@@ -1,0 +1,145 @@
+@model MonitoringConfigurator.Models.ProductManagementViewModel
+@using MonitoringConfigurator.Models
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@{
+    ViewData["Title"] = "Panel produktów";
+    var formViewData = new ViewDataDictionary(ViewData);
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h2 class="h3 mb-1 text-white">Panel produktów</h2>
+        <p class="text-muted mb-0">Zarządzaj katalogiem urządzeń CCTV.</p>
+    </div>
+    <a class="btn btn-danger" href="#productFormContainer">
+        <i class="bi bi-plus-lg"></i> Dodaj produkt
+    </a>
+</div>
+
+<div class="card card-dark mb-4 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Manage" method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label asp-for="Category" class="form-label text-secondary small text-uppercase fw-bold">Kategoria</label>
+                <select asp-for="Category" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<ProductCategory>()">
+                    <option value="">Wszystkie kategorie</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Query" class="form-label text-secondary small text-uppercase fw-bold">Szukaj</label>
+                <input asp-for="Query" class="form-control form-control-dark" placeholder="Nazwa, marka lub model..." />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-search"></i> Filtruj
+                </button>
+                <a asp-action="Manage" class="btn btn-outline-secondary btn-icon" style="width: 100%; max-width: 45px;" title="Wyczyść">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card card-dark shadow-sm h-100">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th class="ps-3 py-3">Produkt</th>
+                                <th class="py-3">Kategoria</th>
+                                <th class="py-3">Cena</th>
+                                <th class="text-end pe-3 py-3" style="min-width: 120px;">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Products.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        Brak produktów spełniających kryteria.
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var item in Model.Products)
+                            {
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="fw-bold text-white">@item.Name</div>
+                                        <div class="small text-muted">@item.Brand @item.Model</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-black border border-secondary text-secondary fw-normal">
+                                            @item.Category
+                                        </span>
+                                    </td>
+                                    <td class="text-nowrap text-white">
+                                        @item.Price.ToString("N2") zł
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary btn-icon" title="Podgląd">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Manage" asp-route-id="@item.Id" asp-route-category="@Model.Category" asp-route-query="@Model.Query"
+                                               class="btn btn-sm btn-outline-info btn-icon" title="Edytuj">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="Delete" method="post" asp-route-id="@item.Id" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć produkt: @item.Name?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-icon ms-1" title="Usuń">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-dark shadow-sm sticky-top" style="top: 20px; z-index: 10;" id="productFormContainer">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-white">
+                    <i class="bi @(Model.IsEdit ? "bi-pencil-square text-info" : "bi-plus-circle text-danger") me-2"></i>
+                    @(Model.IsEdit ? "Edycja produktu" : "Nowy produkt")
+                </h5>
+                @if (Model.IsEdit)
+                {
+                    <span class="badge bg-info text-dark">ID: @Model.EditableProduct.Id</span>
+                }
+            </div>
+            <div class="card-body">
+                <form asp-action="Manage" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Category" />
+                    <input type="hidden" asp-for="Query" />
+
+                    <partial name="_Form" for="EditableProduct" view-data="formViewData" />
+
+                    <div class="mt-4 pt-3 border-top border-secondary d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Manage" asp-route-category="@Model.Category" asp-route-query="@Model.Query" class="btn btn-outline-light btn-sm">
+                            Anuluj
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-save me-1"></i> Zapisz
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

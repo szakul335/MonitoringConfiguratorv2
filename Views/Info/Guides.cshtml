@@ -1,0 +1,185 @@
+@{
+    ViewData["Title"] = "Instrukcje";
+}
+
+<style>
+  /* NEW minimal look for the Guides page */
+  body { background:#0e0f11; color:#e8eaed; }
+  .headline { letter-spacing:.3px }
+  .subtle { color:#a6a9ad }
+  .pill { border:1px solid #2b2f36; background:#13151a; color:#e8eaed; padding:.45rem .9rem; border-radius:999px; cursor:pointer; }
+  .pill.active { background:#ff3b30; border-color:#ff3b30; color:#fff; }
+  .pill:hover { border-color:#3a3f48 }
+  .guide-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+  .guide-item { border:1px solid #2b2f36; background:linear-gradient(180deg,#15171c 0%, #121419 100%); border-radius:14px; padding:16px; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  .guide-item:hover { transform:translateY(-2px); border-color:#3a3f48; box-shadow:0 6px 24px rgba(0,0,0,.25); }
+  .guide-item h6 { margin:0 0 .35rem 0; font-weight:600; }
+  .guide-item .meta { font-size:.9rem; color:#a6a9ad }
+  .guide-item .actions a { text-decoration:none; font-size:.92rem; margin-right:10px; }
+  .tag { font-size:.75rem; padding:.15rem .5rem; border:1px solid #2b2f36; border-radius:999px; color:#cfd2d5 }
+  .stepper { display:flex; gap:14px; overflow:auto; padding-bottom:6px }
+  .step { flex:1 1 200px; border:1px dashed #32363e; border-radius:12px; padding:12px; background:#121419 }
+  .step b { display:block; margin-bottom:6px }
+  .callout { border:1px solid #2b2f36; background:#121419; border-radius:14px; padding:16px }
+  .search { background:#121419; border:1px solid #2b2f36; color:#e8eaed }
+  a.link { color:#ff5c52 }
+</style>
+
+<div class="container py-4">
+  <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="headline mb-1">Instrukcje</h1>
+      <div class="subtle">Zebrane w jednym miejscu krótkie, praktyczne poradniki.</div>
+    </div>
+    <div class="ms-auto" style="min-width:280px;">
+      <div class="input-group">
+        <span class="input-group-text search">🔎</span>
+        <input id="q" class="form-control search" placeholder="Szukaj…">
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="d-flex flex-wrap gap-2 mb-3" id="pills">
+    <button class="pill active" data-cat="all">Wszystko</button>
+    <button class="pill" data-cat="start">Start</button>
+    <button class="pill" data-cat="sieć">Sieć</button>
+    <button class="pill" data-cat="nagrywanie">Nagrywanie</button>
+    <button class="pill" data-cat="sprzęt">Sprzęt</button>
+    <button class="pill" data-cat="bezpieczeństwo">Bezpieczeństwo</button>
+  </div>
+
+  <!-- Quick stepper -->
+  <div class="stepper mb-3">
+    <div class="step"><b>1. Uruchom</b> Podłącz dysk, PoE i monitor. Przejdź kreator, ustaw hasło i e‑mail odzyskiwania.</div>
+    <div class="step"><b>2. Sieć</b> DHCP albo IP statyczne. Sprawdź łączność i ustaw NTP/strefę.</div>
+    <div class="step"><b>3. Dodaj kamery</b> ONVIF/auto‑wyszukiwanie. Zmień hasła domyślne.</div>
+    <div class="step"><b>4. Nagrywanie</b> Harmonogram + zdarzenia. Włącz H.265 i ustal retencję.</div>
+    <div class="step"><b>5. Dostęp zdalny</b> P2P lub DDNS. Aktywuj 2FA.</div>
+  </div>
+
+  <!-- Grid of guides -->
+  <div class="guide-grid" id="grid">
+    <!-- Start -->
+    <div class="guide-item" data-cat="start">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Konfiguracja „szybki start”</h6><span class="tag">Start</span>
+      </div>
+      <div class="meta mb-2">Pierwsze uruchomienie rejestratora krok po kroku.</div>
+      <div class="actions">
+        <a href="#" class="link">PDF</a>
+        <a href="#" class="link">Wideo</a>
+      </div>
+    </div>
+
+    <!-- Sieć -->
+    <div class="guide-item" data-cat="sieć">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>PoE i segmentacja VLAN</h6><span class="tag">Sieć</span>
+      </div>
+      <div class="meta mb-2">Jak podłączyć kamery PoE i odseparować ruch CCTV.</div>
+      <div class="actions">
+        <a href="#" class="link">PDF</a>
+        <a href="https://www.youtube.com/embed/dQw4w9WgXcQ" class="link" target="_blank">Wideo</a>
+      </div>
+    </div>
+
+    <div class="guide-item" data-cat="sieć">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Zdalny dostęp P2P / DDNS</h6><span class="tag">Sieć</span>
+      </div>
+      <div class="meta mb-2">Podgląd w aplikacji i przez przeglądarkę – bezpieczna konfiguracja.</div>
+      <div class="actions">
+        <a href="#" class="link">PDF</a>
+      </div>
+    </div>
+
+    <!-- Nagrywanie -->
+    <div class="guide-item" data-cat="nagrywanie">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Harmonogram i zdarzenia</h6><span class="tag">Nagrywanie</span>
+      </div>
+      <div class="meta mb-2">Konfiguracja nagrywania ciągłego + detekcji / VCA.</div>
+      <div class="actions">
+        <a href="#" class="link">PDF</a>
+      </div>
+    </div>
+
+    <div class="guide-item" data-cat="nagrywanie">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Kalkulacja pojemności dysków</h6><span class="tag">Nagrywanie</span>
+      </div>
+      <div class="meta mb-2">Jak policzyć retencję – FPS, kodek, bitrate. </div>
+      <div class="actions">
+        <a asp-controller="Configurator" asp-action="Index" class="link">Otwórz Konfigurator</a>
+      </div>
+    </div>
+
+    <!-- Sprzęt -->
+    <div class="guide-item" data-cat="sprzęt">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Dobór obiektywu</h6><span class="tag">Sprzęt</span>
+      </div>
+      <div class="meta mb-2">Ogniskowa vs. kąt widzenia – kiedy 2.8 mm, a kiedy 12 mm.</div>
+      <div class="actions">
+        <a href="#" class="link">Tabela ogniskowych (PDF)</a>
+      </div>
+    </div>
+
+    <div class="guide-item" data-cat="sprzęt">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Okablowanie i zasilanie</h6><span class="tag">Sprzęt</span>
+      </div>
+      <div class="meta mb-2">Kable CU kat.5e/6, limity 90 m, budżet PoE +20%.</div>
+      <div class="actions">
+        <a href="#" class="link">Poradnik (PDF)</a>
+      </div>
+    </div>
+
+    <!-- Bezpieczeństwo -->
+    <div class="guide-item" data-cat="bezpieczeństwo">
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <h6>Bezpieczeństwo systemu</h6><span class="tag">Bezpieczeństwo</span>
+      </div>
+      <div class="meta mb-2">Silne hasła, 2FA, aktualizacje, segmentacja sieci.</div>
+      <div class="actions">
+        <a href="#" class="link">Checklist (PDF)</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout mt-3">
+    Nie znalazłeś instrukcji? Sprawdź <a asp-controller="Info" asp-action="Faq" class="link">FAQ</a> lub przejdź do <a asp-controller="Info" asp-action="Support" class="link"><b>Wsparcia</b></a>.
+  </div>
+</div>
+
+@section Scripts{
+<script>
+(function(){
+  const q = document.getElementById('q');
+  const pills = document.querySelectorAll('#pills .pill');
+  const items = document.querySelectorAll('.guide-item');
+
+  function applyFilter(){
+    const text = (q.value||'').trim().toLowerCase();
+    const active = document.querySelector('#pills .pill.active')?.dataset.cat || 'all';
+    items.forEach(it=>{
+      const hay = it.innerText.toLowerCase();
+      const cat = it.getAttribute('data-cat');
+      const matchText = hay.includes(text);
+      const matchCat = (active==='all') || (cat===active);
+      it.style.display = (matchText && matchCat) ? '' : 'none';
+    });
+  }
+
+  q.addEventListener('input', applyFilter);
+  pills.forEach(p=>{
+    p.addEventListener('click', ()=>{
+      pills.forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      applyFilter();
+    });
+  });
+})();
+</script>
+}

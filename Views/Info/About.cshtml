@@ -1,0 +1,150 @@
+@{
+    ViewData["Title"] = "O nas";
+}
+
+<div class="container py-4">
+
+    <div class="about-hero text-center">
+        <h1 class="display-4 fw-bold text-white mb-3">Tworzymy Twoje Bezpieczeństwo</h1>
+        <p class="lead text-light opacity-75 mx-auto" style="max-width: 800px;">
+            Jesteśmy zespołem inżynierów i pasjonatów, który od 2012 roku dostarcza niezawodne systemy monitoringu.
+            Łączymy nowoczesną technologię z prostotą obsługi, działając na terenie całej Polski.
+        </p>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <a asp-controller="Products" asp-action="Index" class="btn btn-danger btn-lg px-4 rounded-pill">
+                <i class="bi bi-camera-video me-2"></i> Zobacz ofertę
+            </a>
+            <a asp-controller="Info" asp-action="Contact" class="btn btn-outline-light btn-lg px-4 rounded-pill">
+                Kontakt
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5 pb-3 justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">12+</div>
+                <div class="stat-label">Lat na rynku</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">700+</div>
+                <div class="stat-label">Projektów</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">4h</div>
+                <div class="stat-label">Czas reakcji SLA</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">99%</div>
+                <div class="stat-label">Zadowolonych klientów</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <h3 class="mb-4 text-white"><i class="bi bi-clock-history text-danger me-2"></i> Nasza historia</h3>
+            <div class="timeline ms-2">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2012</div>
+                    <p class="text-muted mb-0">Start firmy. Pierwsze instalacje dla domów jednorodzinnych i małych sklepów.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2016</div>
+                    <p class="text-muted mb-0">Współpraca z sieciami handlowymi. Pierwsze duże projekty w halach logistycznych.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2019</div>
+                    <p class="text-muted mb-0">Uruchomienie autorskiego <strong>Konfiguratora CCTV</strong> i działu R&D.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year">2022</div>
+                    <p class="text-muted mb-0">Wdrożenia AI, ANPR (rozpoznawanie tablic) oraz integracja z systemami alarmowymi.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-year text-danger">Dziś</div>
+                    <p class="text-muted mb-0">Kompleksowe projekty „pod klucz” i całodobowe wsparcie serwisowe SLA.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <h3 class="mb-4 text-white"><i class="bi bi-briefcase text-danger me-2"></i> Co robimy</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon"><i class="bi bi-pencil-ruler"></i></div>
+                        <h5 class="text-white">Projektowanie</h5>
+                        <p class="text-muted small mb-0">Audyt bezpieczeństwa, koncepcja rozmieszczenia kamer i profesjonalny dobór sprzętu.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon"><i class="bi bi-tools"></i></div>
+                        <h5 class="text-white">Montaż</h5>
+                        <p class="text-muted small mb-0">Estetyczne instalacje wewnątrz i na zewnątrz. Konfiguracja zdalnego dostępu.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon"><i class="bi bi-life-preserver"></i></div>
+                        <h5 class="text-white">Serwis & SLA</h5>
+                        <p class="text-muted small mb-0">Okresowe przeglądy, szybka reakcja na awarie i wsparcie techniczne 24/7.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-box">
+                        <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+                        <h5 class="text-white">Integracje AI</h5>
+                        <p class="text-muted small mb-0">Łączenie CCTV z kontrolą dostępu, SSWiN oraz analityką obrazu (AI).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-dark mt-5 border-secondary">
+        <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h3 class="mb-3 text-white">Dlaczego my?</h3>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2 d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-3"></i> Dobór urządzeń pod cel, a nie pod markę.
+                        </li>
+                        <li class="mb-2 d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-3"></i> Oszczędność czasu dzięki Konfiguratorowi CCTV.
+                        </li>
+                        <li class="mb-2 d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-3"></i> Transparentne oferty bez ukrytych kosztów.
+                        </li>
+                        <li class="d-flex align-items-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success me-3"></i> Certyfikowany zespół instalatorów.
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-center text-lg-end">
+                    <div class="p-4 rounded-3 border border-secondary bg-black bg-opacity-25">
+                        <h5 class="text-white mb-2">Potrzebujesz wyceny?</h5>
+                        <p class="text-muted small mb-3">Napisz do nas, przygotujemy ofertę w 24h.</p>
+                        <a class="btn btn-danger w-100" asp-controller="Info" asp-action="Support">
+                            <i class="bi bi-chat-dots me-2"></i> Przejdź do wsparcia
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

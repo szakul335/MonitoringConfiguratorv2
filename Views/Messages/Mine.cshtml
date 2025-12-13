@@ -1,0 +1,24 @@
+@model IEnumerable<MonitoringConfigurator.Models.Contact>
+@{
+    ViewData["Title"] = "Moje wiadomości";
+}
+<h2>Moje wiadomości</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Temat</th>
+      <th>Treść</th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var msg in Model)
+  {
+    <tr>
+      <td>@msg.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+      <td>@msg.Subject</td>
+      <td>@msg.Message</td>
+    </tr>
+  }
+  </tbody>
+</table>

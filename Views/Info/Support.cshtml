@@ -1,0 +1,100 @@
+@model MonitoringConfigurator.Models.SupportViewModel
+@{
+    ViewData["Title"] = "Wsparcie";
+}
+
+<div class="container py-4">
+  <h1 class="mb-3">Wsparcie</h1>
+
+  @if (ViewBag.Success != null)
+  {
+    <div class="alert alert-success">@ViewBag.Success</div>
+  }
+  @if (!ViewData.ModelState.IsValid)
+  {
+    <div class="alert alert-danger">Uzupełnij wymagane pola.</div>
+  }
+
+  <div class="card mb-4">
+    <div class="card-header"><strong>Napisz wiadomość</strong></div>
+    <div class="card-body">
+      <form asp-action="Support" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Adresat</label>
+            <select asp-for="Recipient" class="form-select">
+              <option value="Admin">Admin</option>
+              <option value="Operator">Operator</option>
+            </select>
+            <span asp-validation-for="Recipient" class="text-danger"></span>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Temat</label>
+            <input asp-for="Subject" class="form-control" maxlength="200" />
+            <span asp-validation-for="Subject" class="text-danger"></span>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Treść</label>
+            <textarea asp-for="Message" class="form-control" rows="6" maxlength="4000"></textarea>
+            <span asp-validation-for="Message" class="text-danger"></span>
+          </div>
+          <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Wyślij</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="mb-0">Wysłane wiadomości</h5>
+    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sentCollapse" aria-expanded="false" aria-controls="sentCollapse">
+      Pokaż wysłane wiadomości
+    </button>
+  </div>
+
+  <div class="collapse" id="sentCollapse">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 160px;">Data</th>
+                <th style="width: 110px;">Do</th>
+                <th>Temat</th>
+                <th>Treść</th>
+              </tr>
+            </thead>
+            <tbody>
+            @if (Model?.Sent != null && Model.Sent.Any())
+            {
+              foreach (var c in Model.Sent)
+              {
+                var recipient = c.Subject?.StartsWith("[Operator]") == true ? "Operator" :
+                                c.Subject?.StartsWith("[Admin]") == true ? "Admin" : "-";
+                var plainSubject = c.Subject?.Replace("[Admin] ", "").Replace("[Operator] ", "");
+                <tr>
+                  <td>@c.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                  <td>@recipient</td>
+                  <td>@plainSubject</td>
+                  <td><div style="max-width:600px; white-space:pre-wrap;">@c.Message</div></td>
+                </tr>
+              }
+            }
+            else
+            {
+              <tr><td colspan="4" class="text-center text-muted py-4">Brak wysłanych wiadomości</td></tr>
+            }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

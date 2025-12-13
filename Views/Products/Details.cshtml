@@ -1,0 +1,134 @@
+@model MonitoringConfigurator.Models.Product
+@{
+    ViewData["Title"] = $"Podgląd produktu - {Model.Name}";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+        <h1 class="h3 mb-1">@Model.Name</h1>
+        <p class="text-muted mb-0">@Model.Brand @Model.Model</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Powrót do katalogu</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name" style="object-fit:cover; height:260px;" />
+            }
+            <div class="card-body">
+                <span class="badge bg-secondary mb-2">@Model.Category</span>
+
+                <p class="h5 fw-semibold mb-2">@Model.Price.ToString("C")</p>
+
+
+                <p class="h5 fw-semibold mb-2">@Model.Price.ToString("C")</p>
+
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+                {
+                    <p class="mb-0 text-secondary">@Model.ShortDescription</p>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="mb-0 text-secondary">@Model.Description</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">Szczegóły techniczne</h5>
+                <dl class="row mb-0 small">
+                    @if (Model.ResolutionMp.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Rozdzielczość</dt>
+                        <dd class="col-sm-7">@Model.ResolutionMp Mpix</dd>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Lens))
+                    {
+                        <dt class="col-sm-5 text-muted">Obiektyw</dt>
+                        <dd class="col-sm-7">@Model.Lens</dd>
+                    }
+                    @if (Model.IrRangeM.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Zasięg IR</dt>
+                        <dd class="col-sm-7">@Model.IrRangeM m</dd>
+                    }
+                    @if (Model.Channels.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Kanały</dt>
+                        <dd class="col-sm-7">@Model.Channels</dd>
+                    }
+                    @if (Model.MaxBandwidthMbps.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Maks. bitrate</dt>
+                        <dd class="col-sm-7">@Model.MaxBandwidthMbps Mbps</dd>
+                    }
+                    @if (Model.Ports.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Porty</dt>
+                        <dd class="col-sm-7">@Model.Ports</dd>
+                    }
+                    @if (Model.PoeBudgetW.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Budżet PoE</dt>
+                        <dd class="col-sm-7">@Model.PoeBudgetW W</dd>
+                    }
+                    @if (Model.DiskBays.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Zatoki dysków</dt>
+                        <dd class="col-sm-7">@Model.DiskBays</dd>
+                    }
+                    @if (Model.MaxHddTB.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Maks. HDD</dt>
+                        <dd class="col-sm-7">@Model.MaxHddTB TB</dd>
+                    }
+                    @if (Model.StorageTB.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Pojemność</dt>
+                        <dd class="col-sm-7">@Model.StorageTB TB</dd>
+                    }
+                    @if (Model.RollLengthM.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Długość rolki</dt>
+                        <dd class="col-sm-7">@Model.RollLengthM m</dd>
+                    }
+                    @if (Model.UpsVA.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Moc UPS</dt>
+                        <dd class="col-sm-7">@Model.UpsVA VA</dd>
+                    }
+                    @if (Model.SupportsRaid.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Obsługa RAID</dt>
+                        <dd class="col-sm-7">@(Model.SupportsRaid.Value ? "Tak" : "Nie")</dd>
+                    }
+                    @if (Model.Outdoor.HasValue)
+                    {
+                        <dt class="col-sm-5 text-muted">Do zastosowań zewnętrznych</dt>
+                        <dd class="col-sm-7">@(Model.Outdoor.Value ? "Tak" : "Nie")</dd>
+                    }
+                </dl>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description) || !string.IsNullOrWhiteSpace(Model.LongDescription))
+                {
+                    <hr />
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p class="mb-2">@Model.Description</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.LongDescription))
+                    {
+                        <p class="mb-0 text-secondary">@Model.LongDescription</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

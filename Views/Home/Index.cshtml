@@ -1,0 +1,309 @@
+
+@{
+    ViewData["Title"] = "Strona główna";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="hero mb-5 shadow-sm">
+  <div class="content container">
+    <h1 class="display-5 fw-bold">Konfigurator systemów monitoringu</h1>
+    <p class="col-md-9 fs-5">Automatycznie dobierz kamery, rejestrator i switch PoE — w czterech prostych krokach. Szybko, dokładnie i przejrzyście.</p>
+    <a class="btn btn-primary btn-lg" asp-controller="Configurator" asp-action="Index">Rozpocznij konfigurację</a>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <h2 class="section-title">Jak to działa?</h2>
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <span class="badge-cat">Krok 1</span>
+          <h5 class="card-title mt-2 text-danger">Parametry</h5>
+          <p class="card-text">Podajesz liczbę kamer, rozdzielczość i moc PoE.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <span class="badge-cat">Krok 2</span>
+          <h5 class="card-title mt-2 text-danger">Analiza</h5>
+          <p class="card-text">Wyliczamy przepustowość i kompatybilność sprzętu.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <span class="badge-cat">Krok 3</span>
+          <h5 class="card-title mt-2 text-danger">Dobór</h5>
+          <p class="card-text">Dobieramy kamerę, rejestrator NVR i switch PoE.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <span class="badge-cat">Krok 4</span>
+          <h5 class="card-title mt-2 text-danger">Wycena</h5>
+          <p class="card-text">Otrzymujesz przejrzystą propozycję i koszt orientacyjny.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <h2 class="section-title">Dlaczego warto?</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title text-danger">Szybkość</h5>
+          <p class="card-text">Konfiguracja zestawu w minutę. Pełna zgodność parametrów bez żmudnych tabel.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title text-danger">Dokładność</h5>
+          <p class="card-text">Bierzemy pod uwagę rozdzielczość, przepustowość i budżet PoE.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title text-danger">Przejrzystość kosztów</h5>
+          <p class="card-text">Zawsze widzisz orientacyjną cenę całego zestawu i elementów.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <div class="p-4 rounded-3 shadow-sm" style="background:#151515; border:1px solid #222;">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div>
+        <h4 class="mb-1">Masz gotową listę produktów?</h4>
+        <p class="mb-0 text-muted">Przejrzyj katalog, porównaj i dodaj brakujące elementy.</p>
+      </div>
+      <a class="btn btn-primary btn-lg" asp-controller="Products" asp-action="Index">Przeglądaj produkty</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ====== Sekcja: Funkcje premium ====== -->
+<div class="container mb-5" id="funkcje">
+  <h2 class="section-title mb-4">Co jeszcze potrafi nasz konfigurator?</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card h-100 p-4 shadow-sm">
+        <div class="feature-icon">🔌</div>
+        <h5>Automatyczny budżet PoE</h5>
+        <p>System liczy moc kamer i dopasowuje odpowiedni switch PoE – zero kalkulatorów i arkuszy.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100 p-4 shadow-sm">
+        <div class="feature-icon">🧠</div>
+        <h5>Analiza przepustowości</h5>
+        <p>Uwzględniamy kodeki, FPS oraz rozdzielczości, aby dobrać odpowiedni rejestrator NVR.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100 p-4 shadow-sm">
+        <div class="feature-icon">🧩</div>
+        <h5>Zgodność podzespołów</h5>
+        <p>Sprawdzamy kompatybilność urządzeń w oparciu o specyfikacje producentów.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: Przykładowe zestawy ====== -->
+<div class="container mb-5" id="zestawy">
+  <h2 class="section-title mb-4">Przykładowe zestawy</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="plan-card h-100 p-4 shadow-sm">
+        <h6 class="text-muted">Mały obiekt</h6>
+        <h3 class="mb-3">4 kamery</h3>
+        <ul class="list-unstyled small">
+          <li>• 4× kamera 4MP</li>
+          <li>• NVR 8-kanałowy</li>
+          <li>• Switch PoE 8-port</li>
+          <li>• Dysk 2TB</li>
+        </ul>
+        <a class="btn btn-outline-secondary w-100" asp-controller="Configurator" asp-action="Index">Skonfiguruj podobny</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="plan-card h-100 p-4 shadow-sm featured">
+        <div class="badge-top">Najczęściej wybierany</div>
+        <h6 class="text-muted">Dom / biuro</h6>
+        <h3 class="mb-3">8 kamer</h3>
+        <ul class="list-unstyled small">
+          <li>• 8× kamera 5MP</li>
+          <li>• NVR 16-kanałowy</li>
+          <li>• Switch PoE 16-port</li>
+          <li>• Dysk 4TB</li>
+        </ul>
+        <a class="btn btn-primary w-100" asp-controller="Configurator" asp-action="Index">Skonfiguruj podobny</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="plan-card h-100 p-4 shadow-sm">
+        <h6 class="text-muted">Magazyn / hala</h6>
+        <h3 class="mb-3">16 kamer</h3>
+        <ul class="list-unstyled small">
+          <li>• 16× kamera 8MP</li>
+          <li>• NVR 32-kanałowy</li>
+          <li>• 2× Switch PoE</li>
+          <li>• Dysk 8TB</li>
+        </ul>
+        <a class="btn btn-outline-secondary w-100" asp-controller="Configurator" asp-action="Index">Skonfiguruj podobny</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: Referencje ====== -->
+<div class="container mb-5" id="referencje">
+  <h2 class="section-title mb-4">Co mówią użytkownicy</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="quote-card h-100 p-4 shadow-sm">
+        <p class="mb-3">„Konfiguracja zajęła dosłownie minutę, a wynik był perfekcyjny.”</p>
+        <div class="small text-muted">Anna, właścicielka sklepu</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="quote-card h-100 p-4 shadow-sm">
+        <p class="mb-3">„Świetna analiza przepustowości — oszczędziłem na dyskach i switchach.”</p>
+        <div class="small text-muted">Michał, administrator IT</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="quote-card h-100 p-4 shadow-sm">
+        <p class="mb-3">„Wreszcie mam pewność, że wszystkie elementy do siebie pasują.”</p>
+        <div class="small text-muted">Katarzyna, deweloperka</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: Cennik (orientacyjny) ====== -->
+<div class="container mb-5" id="cennik">
+  <h2 class="section-title mb-4">Cennik orientacyjny</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="price-card h-100 p-4 shadow-sm">
+        <h4 class="mb-0">Basic</h4>
+        <div class="display-6 fw-bold mb-3">od 2 900 zł</div>
+        <ul class="list-unstyled small">
+          <li>• Do 4 kamer</li>
+          <li>• Nagrywanie 24/7</li>
+          <li>• Podstawowa analityka</li>
+        </ul>
+        <a class="btn btn-outline-secondary w-100" asp-controller="Configurator" asp-action="Index">Rozpocznij</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="price-card h-100 p-4 shadow-sm featured">
+        <div class="badge-top">Najlepszy stosunek ceny</div>
+        <h4 class="mb-0">Pro</h4>
+        <div class="display-6 fw-bold mb-3">od 6 500 zł</div>
+        <ul class="list-unstyled small">
+          <li>• Do 8 kamer</li>
+          <li>• Zaawansowana analityka</li>
+          <li>• Zdalny podgląd</li>
+        </ul>
+        <a class="btn btn-primary w-100" asp-controller="Configurator" asp-action="Index">Wybierz Pro</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="price-card h-100 p-4 shadow-sm">
+        <h4 class="mb-0">Enterprise</h4>
+        <div class="display-6 fw-bold mb-3">wycena indywidualna</div>
+        <ul class="list-unstyled small">
+          <li>• Powyżej 16 kamer</li>
+          <li>• Redundancja zapisu</li>
+          <li>• SLA i wsparcie</li>
+        </ul>
+        <a class="btn btn-outline-secondary w-100" asp-controller="Contact" asp-action="Index">Skontaktuj się</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: FAQ skrócone ====== -->
+<div class="container mb-5" id="mini-faq">
+  <h2 class="section-title mb-4">Najczęstsze pytania</h2>
+  <div class="accordion" id="faqHome">
+    <div class="accordion-item bg-dark border-0">
+      <h2 class="accordion-header" id="q1">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+          Czy mogę zapisać konfigurację i wrócić później?
+        </button>
+      </h2>
+      <div id="a1" class="accordion-collapse collapse" data-bs-parent="#faqHome">
+        <div class="accordion-body">Tak, po zalogowaniu możesz zapisywać i wczytywać konfiguracje.</div>
+      </div>
+    </div>
+    <div class="accordion-item bg-dark border-0">
+      <h2 class="accordion-header" id="q2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+          Na jakiej podstawie dobierane są urządzenia?
+        </button>
+      </h2>
+      <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faqHome">
+        <div class="accordion-body">Algorytm bierze pod uwagę przepustowość, PoE, rozdzielczość oraz kompatybilność danych modeli.</div>
+      </div>
+    </div>
+    <div class="accordion-item bg-dark border-0">
+      <h2 class="accordion-header" id="q3">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+          Czy mogę dodać własne produkty do zestawu?
+        </button>
+      </h2>
+      <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faqHome">
+        <div class="accordion-body">Jasne — przejdź do katalogu produktów i dodaj brakujące elementy.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: CTA końcowe ====== -->
+<div class="container mb-5">
+  <div class="cta-banner p-4 p-md-5 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 shadow-sm">
+    <div>
+      <h3 class="mb-1">Gotowy, by zbudować idealny zestaw monitoringu?</h3>
+      <p class="mb-0 text-muted">Uruchom konfigurator lub porozmawiaj ze specjalistą.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary btn-lg" asp-controller="Configurator" asp-action="Index">Rozpocznij konfigurację</a>
+      <a class="btn btn-outline-secondary btn-lg" asp-controller="Contact" asp-action="Index">Skontaktuj się</a>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Sekcja: Newsletter ====== -->
+<div class="container mb-5" id="newsletter">
+  <div class="newsletter-box p-4 p-md-5 shadow-sm">
+    <h4 class="mb-3">Zostań na bieżąco</h4>
+    <p class="text-muted mb-3">Dostawaj krótkie porady o konfiguracji CCTV i nowościach sprzętowych.</p>
+    <form class="row g-2" method="post" action="#">
+      <div class="col-md-8">
+        <input class="form-control form-control-lg" type="email" placeholder="Twój e-mail" required />
+      </div>
+      <div class="col-md-4 d-grid">
+        <button class="btn btn-primary btn-lg" type="submit">Zapisz mnie</button>
+      </div>
+    </form>
+  </div>
+</div>
+

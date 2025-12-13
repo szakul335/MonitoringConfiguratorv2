@@ -1,0 +1,54 @@
+@model IEnumerable<MonitoringConfigurator.Controllers.DocumentsController.DocItem>
+@{
+    ViewData["Title"] = "Moje dokumenty";
+}
+<div class="container py-4">
+  <h1 class="mb-4">Moje dokumenty</h1>
+
+  @if (ViewBag.Error != null) { <div class="alert alert-danger">@ViewBag.Error</div> }
+  @if (ViewBag.Message != null) { <div class="alert alert-success">@ViewBag.Message</div> }
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <form asp-action="Upload" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="row g-2 align-items-center">
+          <div class="col-md-8"><input type="file" name="file" class="form-control" /></div>
+          <div class="col-md-4 text-end"><button type="submit" class="btn btn-primary">Prześlij</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Twoje pliki</strong>
+      <span class="text-muted small">/wwwroot/documents/&lt;użytkownik&gt;</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Nazwa pliku</th><th class="text-end">Rozmiar</th><th class="text-end">Akcje</th></tr></thead>
+        <tbody>
+        @if (Model.Any())
+        {
+          foreach (var f in Model)
+          {
+            <tr>
+              <td><a href="@f.Url" target="_blank" rel="noopener">@f.Name</a></td>
+              <td class="text-end">@String.Format("{0:N0} B", f.SizeBytes)</td>
+              <td class="text-end">
+                <form asp-action="Delete" method="post" class="d-inline">
+                  @Html.AntiForgeryToken()
+                  <input type="hidden" name="name" value="@f.Name" />
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Usunąć plik @f.Name ?');">Usuń</button>
+                </form>
+              </td>
+            </tr>
+          }
+        }
+        else { <tr><td colspan="3" class="text-center text-muted py-4">Brak plików</td></tr> }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

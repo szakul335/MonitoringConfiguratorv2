@@ -1,0 +1,23 @@
+@model MonitoringConfigurator.Models.Product
+@{
+    ViewData["Title"] = "Edytuj produkt";
+}
+
+<h1 class="h3 mb-3">Edytuj produkt</h1>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <partial name="_Form" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <a asp-action="Manage" class="btn btn-outline-secondary">Anuluj</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

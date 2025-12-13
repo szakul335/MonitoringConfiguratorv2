@@ -1,0 +1,131 @@
+@model MonitoringConfigurator.Models.Product
+@using MonitoringConfigurator.Models
+
+<input type="hidden" asp-for="Id" />
+
+<div class="row g-2">
+    <div class="col-12">
+        <label asp-for="Name" class="form-label text-muted small">Nazwa produktu</label>
+        <input asp-for="Name" class="form-control form-control-dark" placeholder="np. Kamera kopu³kowa 4MP" />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="Brand" class="form-label text-muted small">Marka</label>
+        <input asp-for="Brand" class="form-control form-control-dark" />
+        <span asp-validation-for="Brand" class="text-danger small"></span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="Model" class="form-label text-muted small">Model</label>
+        <input asp-for="Model" class="form-control form-control-dark" />
+        <span asp-validation-for="Model" class="text-danger small"></span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="Category" class="form-label text-muted small">Kategoria</label>
+        <select asp-for="Category" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<ProductCategory>()"></select>
+    </div>
+    <div class="col-6">
+        <label asp-for="Price" class="form-label text-muted small">Cena (PLN)</label>
+        <div class="input-group">
+            <input asp-for="Price" class="form-control form-control-dark" type="number" step="0.01" />
+            <span class="input-group-text bg-dark border-secondary text-muted">z³</span>
+        </div>
+        <span asp-validation-for="Price" class="text-danger small"></span>
+    </div>
+
+    <div class="col-12 mt-2">
+        <label asp-for="ShortDescription" class="form-label text-muted small">Krótki opis (na listê)</label>
+        <textarea asp-for="ShortDescription" class="form-control form-control-dark" rows="2"></textarea>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Description" class="form-label text-muted small">Pe³ny opis techniczny</label>
+        <textarea asp-for="Description" class="form-control form-control-dark" rows="3"></textarea>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="ImageUpload" class="form-label text-muted small">Zdjêcie produktu</label>
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="mb-2 p-2 border border-secondary rounded bg-black" style="width: fit-content;">
+                <img src="@Model.ImageUrl" alt="Podgl¹d" style="max-height: 100px; max-width: 100%; object-fit: contain;" />
+                <div class="small text-muted mt-1 text-center">Obecne zdjêcie</div>
+            </div>
+        }
+
+        <input asp-for="ImageUpload" class="form-control form-control-dark" type="file" accept=".jpg,.jpeg,.png" />
+        <span asp-validation-for="ImageUpload" class="text-danger small"></span>
+
+        <input type="hidden" asp-for="ImageUrl" />
+    </div>
+
+    <div class="col-12 mt-3 pb-1 border-bottom border-secondary">
+        <span class="badge bg-secondary text-dark">Parametry wideo</span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="ResolutionMp" class="form-label text-muted small">Rozdzielczoœæ (Mpix)</label>
+        <input asp-for="ResolutionMp" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="Lens" class="form-label text-muted small">Obiektyw</label>
+        <input asp-for="Lens" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="IrRangeM" class="form-label text-muted small">Zasiêg IR (m)</label>
+        <input asp-for="IrRangeM" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="Outdoor" class="form-label text-muted small">Zewnêtrzna?</label>
+        <select asp-for="Outdoor" class="form-select form-select-dark">
+            <option value="">-</option>
+            <option value="true">Tak</option>
+            <option value="false">Nie</option>
+        </select>
+    </div>
+
+    <div class="col-12 mt-3 pb-1 border-bottom border-secondary">
+        <span class="badge bg-secondary text-dark">Sieæ i zasilanie</span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="MaxBandwidthMbps" class="form-label text-muted small">Bitrate (Mbps)</label>
+        <input asp-for="MaxBandwidthMbps" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="PoeBudgetW" class="form-label text-muted small">Bud¿et PoE (W)</label>
+        <input asp-for="PoeBudgetW" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="Channels" class="form-label text-muted small">Liczba kana³ów</label>
+        <input asp-for="Channels" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="Ports" class="form-label text-muted small">Liczba portów</label>
+        <input asp-for="Ports" class="form-control form-control-dark" />
+    </div>
+
+    <div class="col-12 mt-3 pb-1 border-bottom border-secondary">
+        <span class="badge bg-secondary text-dark">Magazyn i Inne</span>
+    </div>
+
+    <div class="col-6">
+        <label asp-for="StorageTB" class="form-label text-muted small">Pojemnoœæ (TB)</label>
+        <input asp-for="StorageTB" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="DiskBays" class="form-label text-muted small">Zatoki dysków</label>
+        <input asp-for="DiskBays" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="RollLengthM" class="form-label text-muted small">D³ugoœæ (m)</label>
+        <input asp-for="RollLengthM" class="form-control form-control-dark" />
+    </div>
+    <div class="col-6">
+        <label asp-for="UpsVA" class="form-label text-muted small">Moc UPS (VA)</label>
+        <input asp-for="UpsVA" class="form-control form-control-dark" />
+    </div>
+</div>

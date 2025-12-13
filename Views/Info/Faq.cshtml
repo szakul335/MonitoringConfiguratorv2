@@ -1,0 +1,246 @@
+@{
+    ViewData["Title"] = "FAQ";
+}
+
+<style>
+.accordion-button {
+    background-color: #1e1e22;
+    color: #f1f1f1;
+}
+.accordion-button:not(.collapsed) {
+    background-color: #2a2a2f;
+    color: #ffffff;
+}
+.accordion-body {
+    background-color: #121214;
+    color: #e5e7eb;
+}
+.accordion-button:hover {
+    background-color: #333338;
+    color: #ffffff;
+}
+</style>
+
+<div class="container py-4">
+  <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="mb-0">FAQ</h1>
+      <p class="text-muted mb-0">Najczęściej zadawane pytania o <strong>Konfigurator systemów monitoringu</strong>.</p>
+    </div>
+    <div class="ms-auto" style="min-width:260px;">
+      <div class="input-group">
+        <span class="input-group-text" id="search-addon">🔎</span>
+        <input id="faqSearch" type="search" class="form-control" placeholder="Szukaj w pytaniach…" aria-describedby="search-addon">
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategoria: Konfigurator -->
+  <h5 class="text-uppercase mt-4 mb-2 text-muted">Konfigurator</h5>
+  <div class="accordion mb-4" id="faq-konfigurator">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-k1">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a-k1">
+          Jak rozpocząć konfigurację i jakie dane są potrzebne?
+        </button>
+      </h2>
+      <div id="a-k1" class="accordion-collapse collapse show" data-bs-parent="#faq-konfigurator">
+        <div class="accordion-body">
+          Wejdź w <a asp-controller="Configurator" asp-action="Index">Konfigurator</a> i podaj: liczbę kamer, rozdzielczości, kodek, FPS, oczekiwany czas archiwizacji oraz informację o zasilaniu PoE.
+          Na tej podstawie algorytm wyliczy przepustowość, dobierze NVR oraz switch(e) PoE.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-k2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k2">
+          Czy mogę dodać własne produkty do zestawu?
+        </button>
+      </h2>
+      <div id="a-k2" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
+        <div class="accordion-body">
+          Tak. Po wstępnej konfiguracji przejdź do <a asp-controller="Products" asp-action="Index">katalogu produktów</a> i dodaj brakujące elementy
+          (np. dyski, patchcordy, zasilacze). System sprawdzi kompatybilność i budżet PoE po każdej zmianie.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-k3">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k3">
+          Jak liczony jest budżet PoE i przepustowość?
+        </button>
+      </h2>
+      <div id="a-k3" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
+        <div class="accordion-body">
+          Budżet PoE to suma mocy kamer z uwzględnieniem zapasu. Przepustowość obliczamy na podstawie rozdzielczości, kodeka (H.264/H.265), FPS i sceny.
+          Rekomendacje NVR i switchy dobieramy tak, by nie przekroczyć możliwości urządzeń i zapewnić zapas na rozbudowę.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-k4">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k4">
+          Czy mogę zapisać konfigurację i wrócić później?
+        </button>
+      </h2>
+      <div id="a-k4" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
+        <div class="accordion-body">
+          Tak. Po zalogowaniu <a asp-controller="Account" asp-action="Login">na konto</a> możesz zapisywać wiele konfiguracji, nadawać im nazwy i wczytywać je w dowolnym momencie.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-k5">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k5">
+          Czy konfigurator uwzględnia nagrywanie z detekcji ruchu?
+        </button>
+      </h2>
+      <div id="a-k5" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
+        <div class="accordion-body">
+          Tak. Możesz wskazać tryb nagrywania (ciągły / zdarzeniowy). Szacowany czas archiwizacji uwzględnia wybrany tryb oraz zapas na nagłe zwiększenia ruchu.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategoria: Produkty i zgodność -->
+  <h5 class="text-uppercase mt-4 mb-2 text-muted">Produkty i zgodność</h5>
+  <div class="accordion mb-4" id="faq-produkty">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-p1">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p1">
+          Czy mogę mieszać urządzenia różnych producentów?
+        </button>
+      </h2>
+      <div id="a-p1" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
+        <div class="accordion-body">
+          Tak, o ile używają standardowych protokołów (np. ONVIF). Konfigurator zaznacza elementy w pełni kompatybilne oraz wskazuje ewentualne ograniczenia funkcji inteligentnych.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-p2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p2">
+          Jak dobrać dysk do rejestratora?
+        </button>
+      </h2>
+      <div id="a-p2" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
+        <div class="accordion-body">
+          Wybór dysku zależy od liczby kamer, FPS, kodeka i czasu archiwizacji. Konfigurator wylicza minimalną pojemność i rekomenduje nośniki do pracy 24/7 (np. linie „surveillance”).
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-p3">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p3">
+          Czy oferujecie kamery z AI (analiza obrazu, rozpoznawanie obiektów)?
+        </button>
+      </h2>
+      <div id="a-p3" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
+        <div class="accordion-body">
+          Tak. W ofercie znajdują się modele z funkcjami inteligentnymi (np. ochrona perymetryczna, klasyfikacja osób/pojazdów, ANPR). Przy konfiguracji uwzględniamy wymagania wydajnościowe NVR.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategoria: Koszty i oferta -->
+  <h5 class="text-uppercase mt-4 mb-2 text-muted">Koszty i oferta</h5>
+  <div class="accordion mb-4" id="faq-koszty">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-c1">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c1">
+          Skąd bierze się orientacyjna cena zestawu?
+        </button>
+      </h2>
+      <div id="a-c1" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
+        <div class="accordion-body">
+          Ceny są sumą wybranych podzespołów z katalogu. Wycena jest orientacyjna i nie obejmuje montażu. Po wysłaniu zapytania do <a asp-controller="Contact" asp-action="Index">sprzedaży</a> przygotujemy ofertę końcową.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-c2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c2">
+          Czy są zniżki przy większych zamówieniach?
+        </button>
+      </h2>
+      <div id="a-c2" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
+        <div class="accordion-body">
+          Tak, dla firm i integratorów oferujemy rabaty ilościowe oraz wsparcie presales. Skontaktuj się z nami w celu indywidualnej wyceny.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-c3">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c3">
+          Czy zapewniacie montaż i uruchomienie?
+        </button>
+      </h2>
+      <div id="a-c3" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
+        <div class="accordion-body">
+          Tak. Współpracujemy z siecią instalatorów. Po akceptacji oferty umawiamy termin i realizujemy projekt „pod klucz” wraz ze szkoleniem użytkowników.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategoria: Konto i bezpieczeństwo -->
+  <h5 class="text-uppercase mt-4 mb-2 text-muted">Konto i bezpieczeństwo</h5>
+  <div class="accordion mb-4" id="faq-konto">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-a1">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-a1">
+          Zapomniałem hasła – co robić?
+        </button>
+      </h2>
+      <div id="a-a1" class="accordion-collapse collapse" data-bs-parent="#faq-konto">
+        <div class="accordion-body">
+          Skorzystaj z opcji <a asp-controller="Account" asp-action="ForgotPassword">przypomnienia hasła</a>. Otrzymasz e‑mail z instrukcją resetu.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="q-a2">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-a2">
+          Jak przetwarzacie moje dane (RODO)?
+        </button>
+      </h2>
+      <div id="a-a2" class="accordion-collapse collapse" data-bs-parent="#faq-konto">
+        <div class="accordion-body">
+          Dane używane są do obsługi konta i konfiguracji. Szczegóły znajdziesz w zakładce <a asp-controller="Home" asp-action="Rodo">RODO</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Callout -->
+  <div class="alert alert-dark border mt-4" role="alert">
+    Masz inne pytania? Przejdź do zakładki <a asp-controller="Info" asp-action="Support"><strong>Wsparcie</strong></a> i napisz do nas – chętnie pomożemy.
+  </div>
+</div>
+
+@section Scripts{
+<script>
+(function(){
+  const input = document.getElementById('faqSearch');
+  const groups = document.querySelectorAll('.accordion');
+  if(!input) return;
+  input.addEventListener('input', function(){
+    const q = this.value.trim().toLowerCase();
+    groups.forEach(group => {
+      group.querySelectorAll('.accordion-item').forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
+}
