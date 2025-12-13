@@ -7,40 +7,125 @@
     var userName = User?.Identity?.Name ?? "";
     var isAdmin = User.IsInRole("Admin") || string.Equals(userName, "admin@demo.pl", StringComparison.OrdinalIgnoreCase);
     var isOperator = User.IsInRole("Operator") || string.Equals(userName, "operator@demo.pl", StringComparison.OrdinalIgnoreCase);
-
-    // Pobranie awatara z ciasteczka (Claim) lub ustawienie domyślnego
     var avatarUrl = User?.FindFirst("profile:avatar")?.Value;
     var hasAvatar = !string.IsNullOrEmpty(avatarUrl);
 }
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="background:#111; border-bottom:1px solid #1f1f1f;">
-    <div class="container">
-        <a class="navbar-brand" asp-controller="Home" asp-action="Index">System Monitoring</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+<style>
+    /* Nowoczesny styl paska nawigacji */
+    .navbar-glass {
+        background: rgba(15, 15, 16, 0.85); /* Półprzezroczyste tło */
+        backdrop-filter: blur(12px); /* Efekt rozmycia tła (Glassmorphism) */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+
+    /* Styl linków */
+    .nav-link-modern {
+        color: #e5e7eb !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        margin: 0 2px;
+    }
+
+    .nav-link-modern:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        transform: translateY(-1px);
+    }
+
+    /* Przycisk Konfiguratora - Glowing Button */
+    .nav-btn-highlight {
+        background: linear-gradient(135deg, #e10600 0%, #ff4d4d 100%);
+        color: white !important;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem !important;
+        box-shadow: 0 4px 15px rgba(225, 6, 0, 0.3);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
+    }
+
+    .nav-btn-highlight:hover {
+        box-shadow: 0 6px 20px rgba(225, 6, 0, 0.5);
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #c40500 0%, #e10600 100%);
+    }
+
+    /* Avatar i profil */
+    .user-pill {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 4px 16px 4px 4px;
+        transition: all 0.2s;
+    }
+
+    .user-pill:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<nav class="navbar navbar-expand-xl navbar-dark fixed-top navbar-glass">
+    <div class="container-fluid px-4">
+        
+        <a class="navbar-brand d-flex align-items-center me-4" asp-controller="Home" asp-action="Index">
+            <i class="bi bi-camera-video-fill text-danger me-2 fs-4"></i>
+            <span class="fw-bold tracking-tight">System Monitoring</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Produkty</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="About">O nas</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Contact">Kontakt</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Faq">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Guides">Instrukcje</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Opinions">Opinie</a></li>
-                <li class="nav-item"><a class="nav-link" asp-controller="Info" asp-action="Support">Wsparcie</a></li>
+            <ul class="navbar-nav me-auto mb-2 mb-xl-0 align-items-center">
+                
+                <li class="nav-item me-2">
+                    <a class="nav-link nav-link-modern nav-btn-highlight text-nowrap" asp-controller="Configurator" asp-action="Index">
+                        <i class="bi bi-gear-wide-connected me-1"></i> Konfigurator
+                    </a>
+                </li>
+
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Products" asp-action="Index">Produkty</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="About">O nas</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="Contact">Kontakt</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="Faq">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="Guides">Instrukcje</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="Opinions">Opinie</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-modern text-nowrap" asp-controller="Info" asp-action="Support">Wsparcie</a></li>
 
                 @if (isAdmin)
                 {
-                    <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Użytkownicy</a></li>
+                    <li class="nav-item ms-xl-2 border-start border-secondary ps-xl-2 d-none d-xl-block"></li> <li class="nav-item">
+                        <a class="nav-link nav-link-modern text-warning text-nowrap" asp-controller="Users" asp-action="Index">
+                            <i class="bi bi-shield-lock me-1"></i> Admin
+                        </a>
+                    </li>
                 }
+                
                 @if (isAdmin || isOperator)
                 {
-                    <li class="nav-item"><a class="nav-link" asp-controller="Messages" asp-action="Index">Wiadomości</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern text-warning text-nowrap" asp-controller="Messages" asp-action="Index">
+                            <i class="bi bi-envelope me-1"></i> Wiadomości
+                        </a>
+                    </li>
                 }
+
                 @if (isAuth)
                 {
-                    <li class="nav-item"><a class="nav-link" asp-controller="Documents" asp-action="Index">Moje dokumenty</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern text-info text-nowrap" asp-controller="Documents" asp-action="Index">
+                            <i class="bi bi-folder2-open me-1"></i> Dokumenty
+                        </a>
+                    </li>
                 }
             </ul>
 
@@ -48,26 +133,27 @@
                 @if (isAuth)
                 {
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="kontoDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 user-pill text-nowrap" href="#" id="kontoDropdown" role="button" data-bs-toggle="dropdown">
                             @if (hasAvatar)
                             {
-                                <img src="@avatarUrl" alt="Avatar" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid #333;" />
+                                <img src="@avatarUrl" alt="Avatar" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);" />
                             }
                             else
                             {
-                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white shadow-sm" style="width: 34px; height: 34px; font-size: 0.85rem; font-weight:bold;">
                                     @userName.Substring(0, 1).ToUpper()
                                 </div>
                             }
-                            <span>@userName</span>
+                            <span class="d-none d-md-inline small text-white">@userName</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="kontoDropdown">
-                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Moje konto</a></li>
-                            <li><hr class="dropdown-divider" /></li>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary mt-2" aria-labelledby="kontoDropdown" style="background: #1a1a1d;">
+                            <li><a class="dropdown-item py-2" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-gear me-2"></i> Moje konto</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Documents" asp-action="Index"><i class="bi bi-file-earmark-text me-2"></i> Moje dokumenty</a></li>
+                            <li><hr class="dropdown-divider border-secondary opacity-50" /></li>
                             <li>
-                                <form class="px-3" asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                <form class="px-2" asp-area="Identity" asp-page="/Account/Logout" method="post">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">Wyloguj</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-1"></i> Wyloguj</button>
                                 </form>
                             </li>
                         </ul>
@@ -75,10 +161,16 @@
                 }
                 else
                 {
-                    <li class="nav-item me-2"><a class="btn btn-sm btn-outline-light" asp-area="Identity" asp-page="/Account/Login">Zaloguj się</a></li>
-                    <li class="nav-item"><a class="btn btn-sm btn-primary" asp-area="Identity" asp-page="/Account/Register">Zarejestruj się</a></li>
+                    <li class="nav-item me-2">
+                        <a class="btn btn-sm btn-outline-light px-3 fw-bold" asp-area="Identity" asp-page="/Account/Login">Zaloguj</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-sm btn-danger px-3 fw-bold shadow-sm" asp-area="Identity" asp-page="/Account/Register">Rejestracja</a>
+                    </li>
                 }
             </ul>
         </div>
     </div>
 </nav>
+
+<div style="height: 80px;"></div>
