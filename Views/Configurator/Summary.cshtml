@@ -10,7 +10,8 @@
         <div>
             <h1 class="h2 text-white fw-bold mb-1">Projekt Systemu Monitoringu</h1>
             <p class="text-muted mb-0">
-                Obiekt: <strong class="text-white">@Model.Input.Building</strong> | Tech: <strong class="text-white">@Model.Input.Tech</strong>
+                Obiekt: <strong class="text-white">@Model.Input.Building</strong> |
+                Tech: <strong class="text-white">@Model.Input.Tech</strong>
             </p>
         </div>
         <a asp-action="Index" class="btn btn-outline-secondary">
@@ -33,81 +34,43 @@
                         <tbody>
                             <tr><td colspan="3" class="bg-secondary bg-opacity-10 text-uppercase small fw-bold ps-4 py-2 text-warning">Urządzenia Wizyjne</td></tr>
 
-                            @if (Model.Input.OutdoorCamCount > 0)
+                            @if (Model.SelectedOutdoorCam != null)
                             {
-                                @if (Model.SelectedOutdoorCam != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="fw-bold text-white">@Model.SelectedOutdoorCam.Name</div>
-                                            <div class="small text-muted">Kamera Zewn. • IR @Model.SelectedOutdoorCam.IrRangeM m • @Model.Input.Detection</div>
-                                        </td>
-                                        <td class="text-center">@Model.Input.OutdoorCamCount</td>
-                                        <td class="text-end pe-4 fw-bold">@((Model.SelectedOutdoorCam.Price * Model.Input.OutdoorCamCount).ToString("N2")) zł</td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    <tr><td class="ps-4 text-danger fw-bold">Brak kamer zewn. (@Model.Input.Tech) w ofercie</td><td class="text-center">-</td><td class="text-end pe-4">-</td></tr>
-                                }
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-white">@Model.SelectedOutdoorCam.Name</div>
+                                        <div class="small text-muted">Zewn. • @Model.SelectedOutdoorCam.ResolutionMp MP</div>
+                                    </td>
+                                    <td class="text-center">@Model.Input.OutdoorCamCount</td>
+                                    <td class="text-end pe-4 fw-bold">@((Model.SelectedOutdoorCam.Price * Model.Input.OutdoorCamCount).ToString("N2")) zł</td>
+                                </tr>
                             }
-
-                            @if (Model.Input.IndoorCamCount > 0)
+                            @if (Model.SelectedIndoorCam != null)
                             {
-                                @if (Model.SelectedIndoorCam != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="fw-bold text-white">@Model.SelectedIndoorCam.Name</div>
-                                            <div class="small text-muted">Kamera Wewn. • IR @Model.SelectedIndoorCam.IrRangeM m</div>
-                                        </td>
-                                        <td class="text-center">@Model.Input.IndoorCamCount</td>
-                                        <td class="text-end pe-4 fw-bold">@((Model.SelectedIndoorCam.Price * Model.Input.IndoorCamCount).ToString("N2")) zł</td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    <tr><td class="ps-4 text-danger fw-bold">Brak kamer wewn. (@Model.Input.Tech) w ofercie</td><td class="text-center">-</td><td class="text-end pe-4">-</td></tr>
-                                }
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-white">@Model.SelectedIndoorCam.Name</div>
+                                        <div class="small text-muted">Wewn. • @Model.SelectedIndoorCam.ResolutionMp MP</div>
+                                    </td>
+                                    <td class="text-center">@Model.Input.IndoorCamCount</td>
+                                    <td class="text-end pe-4 fw-bold">@((Model.SelectedIndoorCam.Price * Model.Input.IndoorCamCount).ToString("N2")) zł</td>
+                                </tr>
                             }
-
                             @if (Model.SelectedRecorder != null)
                             {
                                 <tr>
-                                    <td class="ps-4 text-white">@Model.SelectedRecorder.Name <div class="small text-muted">Rejestrator @Model.SelectedRecorder.Channels kanałów</div></td>
+                                    <td class="ps-4 text-white">@Model.SelectedRecorder.Name <div class="small text-muted">Rejestrator</div></td>
                                     <td class="text-center">@Model.RecorderQuantity</td>
                                     <td class="text-end pe-4 fw-bold">@Model.SelectedRecorder.Price.ToString("N2") zł</td>
                                 </tr>
                             }
-                            else
-                            {
-                                <tr><td class="ps-4 text-danger">Brak pasującego rejestratora</td><td>-</td><td>-</td></tr>
-                            }
-
                             @if (Model.SelectedDisk != null)
                             {
                                 <tr>
-                                    <td class="ps-4 text-white">@Model.SelectedDisk.Name <div class="small text-muted">Dysk HDD @Model.SelectedDisk.StorageTB TB</div></td>
+                                    <td class="ps-4 text-white">@Model.SelectedDisk.Name <div class="small text-muted">Dysk @Model.SelectedDisk.StorageTB TB</div></td>
                                     <td class="text-center">@Model.DiskQuantity</td>
                                     <td class="text-end pe-4 fw-bold">@((Model.SelectedDisk.Price * Model.DiskQuantity).ToString("N2")) zł</td>
                                 </tr>
-                            }
-                            else
-                            {
-                                <tr><td class="ps-4 text-danger">Brak dysków o wymaganej pojemności (@Model.EstimatedStorageTB TB)</td><td>-</td><td>-</td></tr>
-                            }
-
-                            @if (Model.SelectedMonitor != null)
-                            {
-                                <tr>
-                                    <td class="ps-4 text-white">@Model.SelectedMonitor.Name <div class="small text-muted">Wyświetlanie obrazu</div></td>
-                                    <td class="text-center">@Model.MonitorQuantity</td>
-                                    <td class="text-end pe-4 fw-bold">@Model.SelectedMonitor.Price.ToString("N2") zł</td>
-                                </tr>
-                            }
-                            else if (Model.Input.DisplayMethod != DisplayType.AppOnly)
-                            {
-                                <tr><td class="ps-4 text-warning">Brak monitorów w ofercie</td><td>-</td><td>-</td></tr>
                             }
 
                             <tr><td colspan="3" class="bg-secondary bg-opacity-10 text-uppercase small fw-bold ps-4 py-2 text-warning">Infrastruktura</td></tr>
@@ -115,73 +78,27 @@
                             @if (Model.SelectedSwitch != null)
                             {
                                 <tr>
-                                    <td class="ps-4 text-white">@Model.SelectedSwitch.Name <div class="small text-muted">Switch PoE</div></td>
+                                    <td class="ps-4 text-white">@Model.SelectedSwitch.Name</td>
                                     <td class="text-center">@Model.SwitchQuantity</td>
                                     <td class="text-end pe-4 fw-bold">@Model.SelectedSwitch.Price.ToString("N2") zł</td>
                                 </tr>
                             }
-
-                            @if (Model.Input.NeedUps)
+                            @if (Model.SelectedCable != null)
                             {
-                                @if (Model.SelectedUps != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4 text-white">@Model.SelectedUps.Name <div class="small text-muted">Zasilanie awaryjne</div></td>
-                                        <td class="text-center">@Model.UpsQuantity</td>
-                                        <td class="text-end pe-4 fw-bold">@Model.SelectedUps.Price.ToString("N2") zł</td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    <tr><td class="ps-4 text-warning">Brak UPS o wystarczającej mocy</td><td>-</td><td>-</td></tr>
-                                }
+                                <tr>
+                                    <td class="ps-4 text-white">@Model.SelectedCable.Name <div class="small text-muted">Szac. @Model.EstimatedCableMeters m</div></td>
+                                    <td class="text-center">@Model.CableQuantity rol.</td>
+                                    <td class="text-end pe-4 fw-bold">@((Model.SelectedCable.Price * Model.CableQuantity).ToString("N2")) zł</td>
+                                </tr>
                             }
-
-                            @if (Model.Input.NeedCabling || Model.Input.NeedAssembly)
+                            @if (Model.AssemblyCost > 0)
                             {
-                                <tr><td colspan="3" class="bg-secondary bg-opacity-10 text-uppercase small fw-bold ps-4 py-2 text-warning">Montaż i Akcesoria</td></tr>
-
-                                @if (Model.SelectedCable != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4 text-white">@Model.SelectedCable.Name <div class="small text-muted">Szac. @Model.EstimatedCableMeters m</div></td>
-                                        <td class="text-center">@Model.CableQuantity rol.</td>
-                                        <td class="text-end pe-4 fw-bold">@((Model.SelectedCable.Price * Model.CableQuantity).ToString("N2")) zł</td>
-                                    </tr>
-                                }
-                                else if (Model.Input.NeedCabling)
-                                {
-                                    <tr><td class="ps-4 text-warning">Brak kabla w ofercie</td><td>-</td><td>-</td></tr>
-                                }
-
-                                @if (Model.SelectedMount != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4 text-white">@Model.SelectedMount.Name <div class="small text-muted">Adaptery/Puszki</div></td>
-                                        <td class="text-center">@Model.MountQuantity</td>
-                                        <td class="text-end pe-4 fw-bold">@((Model.SelectedMount.Price * Model.MountQuantity).ToString("N2")) zł</td>
-                                    </tr>
-                                }
-
-                                @if (Model.SelectedTray != null)
-                                {
-                                    <tr>
-                                        <td class="ps-4 text-white">@Model.SelectedTray.Name <div class="small text-muted">Korytka kablowe</div></td>
-                                        <td class="text-center">@Model.TrayMeters m</td>
-                                        <td class="text-end pe-4 fw-bold">@((Model.SelectedTray.Price * Model.TrayMeters).ToString("N2")) zł</td>
-                                    </tr>
-                                }
-
-                                @if (Model.AssemblyCost > 0)
-                                {
-                                    <tr>
-                                        <td class="ps-4 text-white">Usługa Montażu <div class="small text-muted">Instalacja @Model.Input.InstallType, Konfiguracja</div></td>
-                                        <td class="text-center">1</td>
-                                        <td class="text-end pe-4 fw-bold">@Model.AssemblyCost.ToString("N2") zł</td>
-                                    </tr>
-                                }
+                                <tr>
+                                    <td class="ps-4 text-white">Usługa Montażu</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-end pe-4 fw-bold">@Model.AssemblyCost.ToString("N2") zł</td>
+                                </tr>
                             }
-
                         </tbody>
                         <tfoot class="border-top border-secondary bg-black">
                             <tr>
@@ -203,14 +120,14 @@
                         <li class="mb-2 d-flex justify-content-between"><span>Pasmo:</span> <strong class="text-white">@Model.EstimatedBandwidthMbps Mbps</strong></li>
                         <li class="mb-2 d-flex justify-content-between"><span>Archiwizacja:</span> <strong class="text-white">@Model.EstimatedStorageTB TB</strong></li>
                         <li class="mb-2 d-flex justify-content-between"><span>Moc systemu:</span> <strong class="text-white">@Model.EstimatedPowerW W</strong></li>
-                        <li class="mb-2 d-flex justify-content-between"><span>Długość kabli:</span> <strong class="text-white">~@Model.EstimatedCableMeters m</strong></li>
+                        <li class="mb-2 d-flex justify-content-between"><span>Długość kabli:</span> <strong class="text-white">@Model.EstimatedCableMeters m</strong></li>
                         <li class="mb-0 d-flex justify-content-between"><span>Montaż:</span> <strong class="text-white">@Model.Input.InstallType</strong></li>
                     </ul>
                 </div>
             </div>
 
             <div class="d-grid gap-2">
-                <form asp-action="GeneratePdf" method="post" class="mb-2">
+                <form asp-action="GeneratePdf" method="post">
                     <input type="hidden" name="jsonResult" value="@jsonResult" />
                     <button class="btn btn-danger w-100 py-3 fw-bold shadow-lg">
                         <i class="bi bi-file-earmark-pdf-fill me-2"></i> POBIERZ OFERTĘ (PDF)
@@ -221,15 +138,15 @@
                 {
                     <form asp-controller="Orders" asp-action="CreateFromConfig" method="post">
                         <input type="hidden" name="jsonResult" value="@jsonResult" />
-                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg" onclick="return confirm('Czy na pewno chcesz złożyć zamówienie?');">
+                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg" onclick="return confirm('Złożyć zamówienie?');">
                             <i class="bi bi-cart-check-fill me-2"></i> ZAMÓW ZESTAW
                         </button>
                     </form>
                 }
                 else
                 {
-                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light w-100 py-3">
-                        <i class="bi bi-box-arrow-in-right me-2"></i> Zaloguj się, aby zamówić
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light w-100">
+                        Zaloguj się, aby zamówić
                     </a>
                 }
             </div>

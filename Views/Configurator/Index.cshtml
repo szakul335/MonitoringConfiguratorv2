@@ -8,120 +8,361 @@
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="display-4 fw-bold text-white">Zaawansowany Konfigurator</h1>
-        <p class="text-muted lead">Zaprojektuj kompletny system monitoringu krok po kroku.</p>
+        <p class="text-muted lead">Zaprojektuj system: wypełnij formularz LUB narysuj to na planie.</p>
     </div>
 
-    <form asp-action="Calculate" method="post">
+    <form asp-action="Calculate" method="post" id="mainForm">
         @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+        <input type="hidden" asp-for="CustomCableMeters" id="hiddenCableMeters" />
 
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="card card-dark h-100 shadow-sm border-secondary">
-                    <div class="card-header bg-transparent border-secondary py-3">
-                        <h5 class="mb-0 text-white"><i class="bi bi-geo-alt-fill text-danger me-2"></i> 1. Obiekt</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label asp-for="Building" class="form-label text-muted small fw-bold">TYP BUDYNKU</label>
-                            <select asp-for="Building" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<BuildingType>()"></select>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="AreaM2" class="form-label text-muted small fw-bold">POWIERZCHNIA (m²)</label>
-                            <input asp-for="AreaM2" class="form-control form-control-dark" type="number" />
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="InstallType" class="form-label text-muted small fw-bold">MONTAŻ KABLI</label>
-                            <select asp-for="InstallType" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<InstallationType>()"></select>
-                        </div>
-                        <div class="form-check form-switch mt-4">
-                            <input asp-for="NeedAssembly" class="form-check-input" type="checkbox">
-                            <label class="form-check-label text-white fw-bold" asp-for="NeedAssembly">Wyceń usługę montażu</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active px-5 fw-bold" id="pills-form-tab" data-bs-toggle="pill" data-bs-target="#pills-form" type="button" role="tab">1. Parametry</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-5 fw-bold" id="pills-visual-tab" data-bs-toggle="pill" data-bs-target="#pills-visual" type="button" role="tab">2. Rozmieszczenie (Opcjonalne)</button>
+            </li>
+        </ul>
 
-            <div class="col-lg-4">
-                <div class="card card-dark h-100 shadow-sm border-secondary">
-                    <div class="card-header bg-transparent border-secondary py-3">
-                        <h5 class="mb-0 text-white"><i class="bi bi-camera-reels text-danger me-2"></i> 2. Kamery</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label asp-for="Tech" class="form-label text-muted small fw-bold text-uppercase">Technologia</label>
-                            <select asp-for="Tech" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<CameraTechnology>()"></select>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label asp-for="OutdoorCamCount" class="form-label text-white small">Zewn. (szt)</label>
-                                <input asp-for="OutdoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+        <div class="tab-content" id="pills-tabContent">
+
+            <div class="tab-pane fade show active" id="pills-form" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card card-dark h-100 shadow-sm border-secondary">
+                            <div class="card-header bg-transparent border-secondary py-3">
+                                <h5 class="mb-0 text-white"><i class="bi bi-geo-alt-fill text-danger me-2"></i> 1. Obiekt</h5>
                             </div>
-                            <div class="col-6">
-                                <label asp-for="IndoorCamCount" class="form-label text-white small">Wewn. (szt)</label>
-                                <input asp-for="IndoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="Building" class="form-label text-muted small fw-bold">TYP BUDYNKU</label>
+                                    <select asp-for="Building" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<BuildingType>()"></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="AreaM2" class="form-label text-muted small fw-bold">POWIERZCHNIA (m²)</label>
+                                    <input asp-for="AreaM2" class="form-control form-control-dark" type="number" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="InstallType" class="form-label text-muted small fw-bold">MONTAŻ KABLI</label>
+                                    <select asp-for="InstallType" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<InstallationType>()"></select>
+                                </div>
+                                <div class="form-check form-switch mt-4">
+                                    <input asp-for="NeedAssembly" class="form-check-input" type="checkbox">
+                                    <label class="form-check-label text-white fw-bold" asp-for="NeedAssembly">Wyceń usługę montażu</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="ResolutionMp" class="form-label text-muted small fw-bold">JAKOŚĆ (MPIX)</label>
-                            <select asp-for="ResolutionMp" class="form-select form-select-dark">
-                                <option value="2">2 Mpix (Full HD)</option>
-                                <option value="4">4 Mpix (2K)</option>
-                                <option value="8">8 Mpix (4K)</option>
-                            </select>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-dark h-100 shadow-sm border-secondary">
+                            <div class="card-header bg-transparent border-secondary py-3">
+                                <h5 class="mb-0 text-white"><i class="bi bi-camera-reels text-danger me-2"></i> 2. Kamery</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="Tech" class="form-label text-muted small fw-bold text-uppercase">Technologia</label>
+                                    <select asp-for="Tech" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<CameraTechnology>()"></select>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label asp-for="OutdoorCamCount" class="form-label text-white small">Zewn. (szt)</label>
+                                        <input asp-for="OutdoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                                    </div>
+                                    <div class="col-6">
+                                        <label asp-for="IndoorCamCount" class="form-label text-white small">Wewn. (szt)</label>
+                                        <input asp-for="IndoorCamCount" class="form-control form-control-dark text-center" type="number" min="0" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="ResolutionMp" class="form-label text-muted small fw-bold">JAKOŚĆ (MPIX)</label>
+                                    <select asp-for="ResolutionMp" class="form-select form-select-dark">
+                                        <option value="2">2 Mpix (Full HD)</option>
+                                        <option value="4">4 Mpix (2K)</option>
+                                        <option value="8">8 Mpix (4K)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="NightVisionM" class="form-label text-muted small fw-bold">WIDOCZNOŚĆ W NOCY (M)</label>
+                                    <select asp-for="NightVisionM" class="form-select form-select-dark">
+                                        <option value="20">do 20 m</option>
+                                        <option value="30">do 30 m (Standard)</option>
+                                        <option value="50">do 50 m</option>
+                                        <option value="80">powyżej 80 m</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Detection" class="form-label text-muted small fw-bold">FUNKCJE INTELIGENTNE</label>
+                                    <select asp-for="Detection" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DetectionType>()"></select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="NightVisionM" class="form-label text-muted small fw-bold">WIDOCZNOŚĆ W NOCY (M)</label>
-                            <select asp-for="NightVisionM" class="form-select form-select-dark">
-                                <option value="20">do 20 m</option>
-                                <option value="30">do 30 m (Standard)</option>
-                                <option value="50">do 50 m</option>
-                                <option value="80">powyżej 80 m</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="Detection" class="form-label text-muted small fw-bold">FUNKCJE INTELIGENTNE</label>
-                            <select asp-for="Detection" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DetectionType>()"></select>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-dark h-100 shadow-sm border-secondary">
+                            <div class="card-header bg-transparent border-secondary py-3">
+                                <h5 class="mb-0 text-white"><i class="bi bi-hdd-network text-danger me-2"></i> 3. Wyposażenie</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="DisplayMethod" class="form-label text-muted small fw-bold">PODGLĄD NA:</label>
+                                    <select asp-for="DisplayMethod" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DisplayType>()"></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="RecordingDays" class="form-label text-muted small fw-bold">ARCHIWIZACJA (DNI)</label>
+                                    <input asp-for="RecordingDays" type="number" class="form-control form-control-dark" min="1" max="90">
+                                </div>
+                                <hr class="border-secondary" />
+                                <div class="form-check form-switch mb-2">
+                                    <input asp-for="NeedUps" class="form-check-input" type="checkbox" id="upsToggle">
+                                    <label class="form-check-label text-white" asp-for="NeedUps">Zasilanie awaryjne (UPS)</label>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input asp-for="NeedCabling" class="form-check-input" type="checkbox" checked>
+                                    <label class="form-check-label text-white" asp-for="NeedCabling">Okablowanie i akcesoria</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="card card-dark h-100 shadow-sm border-secondary">
-                    <div class="card-header bg-transparent border-secondary py-3">
-                        <h5 class="mb-0 text-white"><i class="bi bi-hdd-network text-danger me-2"></i> 3. Wyposażenie</h5>
+            <div class="tab-pane fade" id="pills-visual" role="tabpanel">
+                <div class="card bg-dark border-secondary shadow-lg">
+                    <div class="card-body p-0">
+                        <div class="p-3 border-bottom border-secondary d-flex flex-wrap gap-2 align-items-center bg-black bg-opacity-25">
+                            <label class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-upload me-1"></i> Wgraj rzut
+                                <input type="file" id="planUpload" accept="image/*" hidden>
+                            </label>
+
+                            <div class="vr bg-secondary mx-2"></div>
+
+                            <button type="button" class="btn btn-sm btn-outline-warning tool-btn" data-tool="scale">
+                                <i class="bi bi-ruler"></i> 1. Ustaw skalę
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary tool-btn" data-tool="nvr">
+                                <i class="bi bi-hdd-fill"></i> 2. Rejestrator (NVR)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger tool-btn" data-tool="camera">
+                                <i class="bi bi-camera-video-fill"></i> 3. Kamera
+                            </button>
+
+                            <div class="ms-auto d-flex align-items-center gap-3">
+                                <div class="text-white small">
+                                    Suma kabla: <span id="cableSum" class="fw-bold text-success fs-5">0</span> m
+                                </div>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="clearCanvas()">Reset</button>
+                            </div>
+                        </div>
+
+                        <div class="position-relative bg-secondary bg-opacity-10 overflow-hidden" style="min-height: 500px; cursor: crosshair;">
+                            <canvas id="planCanvas" style="display:block; width:100%; height:100%;"></canvas>
+
+                            <div id="canvasOverlay" class="position-absolute top-50 start-50 translate-middle text-center text-muted">
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                <p>Wgraj rzut budynku, aby rozpocząć projektowanie.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label asp-for="DisplayMethod" class="form-label text-muted small fw-bold">PODGLĄD NA:</label>
-                            <select asp-for="DisplayMethod" class="form-select form-select-dark" asp-items="Html.GetEnumSelectList<DisplayType>()"></select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="RecordingDays" class="form-label text-muted small fw-bold">ARCHIWIZACJA (DNI)</label>
-                            <input asp-for="RecordingDays" type="number" class="form-control form-control-dark" min="1" max="90">
-                        </div>
-
-                        <hr class="border-secondary" />
-
-                        <div class="form-check form-switch mb-2">
-                            <input asp-for="NeedUps" class="form-check-input" type="checkbox" id="upsToggle">
-                            <label class="form-check-label text-white" asp-for="NeedUps">Zasilanie awaryjne (UPS)</label>
-                        </div>
-
-                        <div class="form-check form-switch mb-2">
-                            <input asp-for="NeedCabling" class="form-check-input" type="checkbox" checked>
-                            <label class="form-check-label text-white" asp-for="NeedCabling">Okablowanie i akcesoria</label>
-                        </div>
+                    <div class="card-footer bg-dark border-top border-secondary text-secondary small">
+                        <strong>Instrukcja:</strong>
+                        1. Wgraj obraz.
+                        2. Wybierz "Ustaw skalę" i kliknij dwa punkty na rzucie (np. wzdłuż ściany), podaj jej długość.
+                        3. Ustaw Rejestrator (kliknij w miejscu szafy RACK/TV).
+                        4. Klikaj, aby dodawać kamery – system automatycznie narysuje trasy i policzy metry.
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 mt-4 text-center">
-                <button type="submit" class="btn btn-danger btn-lg px-5 py-3 fw-bold text-uppercase shadow-lg hover-scale rounded-pill">
-                    <i class="bi bi-calculator me-2"></i> Oblicz i Dobierz Sprzęt
-                </button>
-            </div>
+        </div>
+
+        <div class="col-12 mt-5 text-center">
+            <button type="submit" class="btn btn-danger btn-lg px-5 py-3 fw-bold text-uppercase shadow-lg hover-scale rounded-pill">
+                <i class="bi bi-calculator me-2"></i> Oblicz i Dobierz Sprzęt
+            </button>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        const canvas = document.getElementById('planCanvas');
+        const ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('canvasOverlay');
+        const upload = document.getElementById('planUpload');
+
+        let img = new Image();
+        let scalePixels = 0; // ile pikseli to 1 metr
+        let nvrPos = null;
+        let cameras = [];
+        let activeTool = null;
+        let scalePoints = []; // punkty do definicji skali
+
+        // Inicjalizacja canvas
+        function resizeCanvas() {
+            if(canvas.parentElement) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = 500; // Stała wysokość lub dynamiczna wg obrazka
+                draw();
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Obsługa uploadu
+        upload.addEventListener('change', function(e) {
+            if(this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    img.src = evt.target.result;
+                    img.onload = () => {
+                        overlay.style.display = 'none';
+                        // Dopasuj canvas do proporcji obrazka (zachowując szerokość kontenera)
+                        const aspect = img.height / img.width;
+                        canvas.height = canvas.width * aspect;
+                        draw();
+                    }
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Wybór narzędzia
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Resetuj wybór
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active', 'bg-opacity-50'));
+
+                if (activeTool === this.dataset.tool) {
+                    activeTool = null; // odznacz
+                } else {
+                    activeTool = this.dataset.tool;
+                    this.classList.add('active', 'bg-white', 'text-dark');
+                }
+
+                // Reset punktów skali jeśli zmieniono narzędzie
+                if(activeTool !== 'scale') scalePoints = [];
+                draw();
+            });
+        });
+
+        // Kliknięcia na płótnie
+        canvas.addEventListener('mousedown', function(e) {
+            if (!img.src) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (activeTool === 'nvr') {
+                nvrPos = {x, y};
+                recalcCables();
+            }
+            else if (activeTool === 'camera') {
+                if (!nvrPos) { alert("Najpierw ustaw Rejestrator (NVR)!"); return; }
+                if (scalePixels === 0) { alert("Najpierw ustaw skalę (wymiar ściany)!"); return; }
+                cameras.push({x, y});
+                // Zwiększ licznik w formularzu (opcjonalne, ale pomocne)
+                // document.getElementById('OutdoorCamCount').value = parseInt(document.getElementById('OutdoorCamCount').value || 0) + 1;
+                recalcCables();
+            }
+            else if (activeTool === 'scale') {
+                scalePoints.push({x, y});
+                if (scalePoints.length === 2) {
+                    const distPix = Math.hypot(scalePoints[1].x - scalePoints[0].x, scalePoints[1].y - scalePoints[0].y);
+                    const meters = prompt("Jaka jest rzeczywista długość tego odcinka (w metrach)?", "10");
+                    if (meters && !isNaN(meters)) {
+                        scalePixels = distPix / parseFloat(meters);
+                        alert(`Skala ustawiona: 1m = ${Math.round(scalePixels)}px`);
+                    }
+                    scalePoints = []; // reset po ustawieniu
+                    // Odznacz narzędzie
+                    document.querySelector('[data-tool="scale"]').click();
+                }
+            }
+            draw();
+        });
+
+        function recalcCables() {
+            if (!nvrPos || scalePixels === 0) return;
+            let totalMeters = 0;
+            cameras.forEach(cam => {
+                const distPix = Math.hypot(cam.x - nvrPos.x, cam.y - nvrPos.y);
+                // Dodajemy 20% zapasu na zakręty + 3m na zejścia ze ściany
+                const m = (distPix / scalePixels) * 1.2 + 3;
+                totalMeters += m;
+            });
+
+            const final = Math.ceil(totalMeters);
+            document.getElementById('cableSum').innerText = final;
+            document.getElementById('hiddenCableMeters').value = final;
+        }
+
+        function draw() {
+            // Czyść
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Rysuj tło
+            if (img.src) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+
+            // Rysuj połączenia (pod spodem)
+            if (nvrPos) {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
+                cameras.forEach(cam => {
+                    ctx.moveTo(nvrPos.x, nvrPos.y);
+                    ctx.lineTo(cam.x, cam.y);
+                });
+                ctx.stroke();
+            }
+
+            // Rysuj Skalę (jeśli w trakcie rysowania)
+            if (scalePoints.length > 0) {
+                ctx.fillStyle = 'yellow';
+                scalePoints.forEach(p => {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+                });
+                if(scalePoints.length === 2) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'yellow';
+                    ctx.moveTo(scalePoints[0].x, scalePoints[0].y);
+                    ctx.lineTo(scalePoints[1].x, scalePoints[1].y);
+                    ctx.stroke();
+                }
+            }
+
+            // Rysuj NVR
+            if (nvrPos) {
+                ctx.fillStyle = '#0d6efd'; // Primary blue
+                ctx.beginPath(); ctx.arc(nvrPos.x, nvrPos.y, 8, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.fillText("NVR", nvrPos.x + 12, nvrPos.y + 4);
+            }
+
+            // Rysuj Kamery
+            cameras.forEach((cam, i) => {
+                ctx.fillStyle = '#dc3545'; // Danger red
+                ctx.beginPath(); ctx.arc(cam.x, cam.y, 6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.fillText(`K${i+1}`, cam.x + 10, cam.y + 4);
+            });
+        }
+
+        function clearCanvas() {
+            if(confirm("Wyczyścić wszystko?")) {
+                nvrPos = null;
+                cameras = [];
+                scalePixels = 0;
+                scalePoints = [];
+                document.getElementById('cableSum').innerText = "0";
+                document.getElementById('hiddenCableMeters').value = "";
+                draw();
+            }
+        }
+    </script>
+}
