@@ -210,12 +210,28 @@
             </div>
 
             <div class="d-grid gap-2">
-                <form asp-action="GeneratePdf" method="post">
+                <form asp-action="GeneratePdf" method="post" class="mb-2">
                     <input type="hidden" name="jsonResult" value="@jsonResult" />
                     <button class="btn btn-danger w-100 py-3 fw-bold shadow-lg">
                         <i class="bi bi-file-earmark-pdf-fill me-2"></i> POBIERZ OFERTĘ (PDF)
                     </button>
                 </form>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Orders" asp-action="CreateFromConfig" method="post">
+                        <input type="hidden" name="jsonResult" value="@jsonResult" />
+                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg" onclick="return confirm('Czy na pewno chcesz złożyć zamówienie?');">
+                            <i class="bi bi-cart-check-fill me-2"></i> ZAMÓW ZESTAW
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light w-100 py-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Zaloguj się, aby zamówić
+                    </a>
+                }
             </div>
         </div>
     </div>

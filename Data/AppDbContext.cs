@@ -10,7 +10,12 @@ namespace MonitoringConfigurator.Data
 
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Contact> Contacts => Set<Contact>();
-        public DbSet<UserDocument> UserDocuments { get; set; } = default!;
+        public DbSet<UserDocument> UserDocuments => Set<UserDocument>();
+
+        // --- NOWE TABELE ---
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
+        // -------------------
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,0 +1,16 @@
+﻿@model int
+@{
+    ViewData["Title"] = "Dziękujemy";
+}
+<div class="container py-5 text-center">
+    <div class="mb-4">
+        <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+    </div>
+    <h1 class="text-white display-5 fw-bold">Dziękujemy!</h1>
+    <p class="text-secondary lead">Twoje zamówienie nr <strong>#@Model</strong> zostało przyjęte do realizacji.</p>
+
+    <div class="mt-5 d-flex justify-content-center gap-3">
+        <a asp-action="Index" class="btn btn-outline-light px-4">Historia zamówień</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">Strona główna</a>
+    </div>
+</div>

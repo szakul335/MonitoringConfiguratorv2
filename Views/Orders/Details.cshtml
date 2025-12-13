@@ -1,0 +1,52 @@
+﻿@model MonitoringConfigurator.Models.Order
+@{
+    ViewData["Title"] = $"Zamówienie #{Model.Id}";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Zamówienie #@Model.Id</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <div class="d-flex justify-content-between text-white">
+                <span>Data: <strong>@Model.OrderDate.ToLocalTime().ToString("g")</strong></span>
+                <span>Status: <span class="badge bg-success">Przyjęte</span></span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-dark table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Produkt</th>
+                        <th class="text-center">Ilość</th>
+                        <th class="text-end">Cena jedn.</th>
+                        <th class="text-end pe-4">Wartość</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div>@item.Product.Name</div>
+                                <small class="text-muted">@item.Product.Brand @item.Product.Model</small>
+                            </td>
+                            <td class="text-center">@item.Quantity</td>
+                            <td class="text-end">@item.UnitPrice.ToString("N2") zł</td>
+                            <td class="text-end pe-4">@((item.UnitPrice * item.Quantity).ToString("N2")) zł</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="fs-5">
+                        <td colspan="3" class="text-end fw-bold pt-3">Suma:</td>
+                        <td class="text-end fw-bold text-danger pe-4 pt-3">@Model.TotalAmount.ToString("N2") zł</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
