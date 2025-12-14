@@ -1,150 +1,291 @@
 @model MonitoringConfigurator.Models.OpinionViewModel
 @{
-    ViewData["Title"] = "Opinie użytkowników";
+    ViewData["Title"] = "Opinie";
 }
+
+<style>
+    /* Ulepszone style wykresu i boxów */
+    .progress-stacked {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-label {
+        width: 35px;
+        font-size: 0.85rem;
+        color: #a1a1aa;
+        text-align: right;
+        margin-right: 12px;
+        font-weight: 600;
+    }
+
+    .progress {
+        flex-grow: 1;
+        height: 10px;
+        background-color: #27272a;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background-color: #fbbf24;
+    }
+
+    .progress-count {
+        width: 40px;
+        font-size: 0.85rem;
+        color: #71717a;
+        margin-left: 12px;
+        text-align: left;
+    }
+
+    .rating-box {
+        text-align: center;
+        padding: 2rem;
+        background: #1a1a1e;
+        border-radius: 16px;
+        border: 1px solid #2b2b2b;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .big-score {
+        font-size: 4.5rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #fff;
+    }
+
+    .opinion-tile {
+        background: #151518;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+        .opinion-tile:hover {
+            border-color: #52525b;
+            transform: translateY(-3px);
+        }
+
+    .avatar-circle {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        background: linear-gradient(135deg, #27272a 0%, #3f3f46 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        margin-right: 16px;
+        font-size: 1.2rem;
+        border: 1px solid #3f3f46;
+    }
+
+    .verified-badge {
+        color: #10b981;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(16, 185, 129, 0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        margin-top: 4px;
+    }
+
+    /* Ukryty input i style gwiazdek formularza */
+    .rating-group {
+        display: inline-flex;
+        flex-direction: row-reverse;
+        gap: 0.5rem;
+    }
+
+        .rating-group label {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #3f3f46;
+            transition: color 0.2s;
+        }
+
+            .rating-group label:hover, .rating-group label:hover ~ label, .rating-group input:checked ~ label {
+                color: #fbbf24;
+            }
+
+        .rating-group input {
+            display: none;
+        }
+</style>
 
 <div class="container py-5">
 
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-white mb-2">Opinie klientów</h1>
-        <p class="text-muted lead mx-auto" style="max-width: 600px;">
-            Zobacz, co inni sądzą o naszym konfiguratorze. Cenimy każdy głos, który pomaga nam być lepsi.
-        </p>
+        <h1 class="display-5 fw-bold text-white mb-2">Opinie klientów</h1>
+        <p class="text-muted fs-5">Sprawdź, co użytkownicy sądzą o naszym konfiguratorze.</p>
     </div>
 
     @if (TempData["Msg"] is string msg)
     {
-        <div class="alert alert-success border-0 bg-success bg-opacity-25 text-white text-center mb-5 shadow-sm rounded-pill d-inline-block px-5 mx-auto d-block">
+        <div class="alert alert-success text-center mb-5 border-0 bg-success bg-opacity-25 text-white d-inline-block px-5 start-50 position-relative translate-middle-x rounded-pill">
             <i class="bi bi-check-circle-fill me-2"></i> @msg
         </div>
     }
 
+    <div class="row g-4 justify-content-center mb-5">
+        <div class="col-12 col-md-5 col-lg-4 col-xl-3">
+            <div class="rating-box">
+                <div class="big-score">@Model.AverageRating.ToString("0.0")</div>
+                <div class="text-warning fs-4 my-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi @(i <= Math.Round(Model.AverageRating) ? "bi-star-fill" : "bi-star")"></i>
+                    }
+                </div>
+                <div class="text-muted small">Na podstawie @Model.TotalCount opinii</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-7 col-lg-6 col-xl-5">
+            <div class="h-100 p-4 rounded-4 border border-secondary border-opacity-25 bg-black bg-opacity-25 d-flex flex-column justify-content-center">
+                @for (int i = 5; i >= 1; i--)
+                {
+                    var count = Model.StarCounts[i];
+                    var percent = Model.TotalCount > 0 ? (double)count / Model.TotalCount * 100 : 0;
+                    <div class="progress-stacked">
+                        <div class="progress-label">@i <i class="bi bi-star-fill"></i></div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @percent.ToString("0")%"></div>
+                        </div>
+                        <div class="progress-count">@count</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
     <div class="row g-5">
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-lg sticky-top" style="top: 20px; background: #151518; border-radius: 16px;">
+        <div class="col-lg-4 order-1 order-lg-1">
+            <div class="card border-0 shadow-lg sticky-lg-top" style="top: 20px; background: #151518; border-radius: 16px; z-index: 1;">
                 <div class="card-body p-4">
-                    <h4 class="text-white fw-bold mb-4 text-center">Dodaj recenzję</h4>
+                    <h5 class="text-white fw-bold mb-4 text-center text-lg-start">
+                        <i class="bi bi-pencil-square me-2 text-danger"></i> Dodaj opinię
+                    </h5>
 
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <form asp-action="Opinions" method="post">
                             @Html.AntiForgeryToken()
-                            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 text-center"></div>
 
-                            <div class="mb-4 text-center">
-                                <div class="rating-group">
+                            <div class="mb-4 text-center p-3 rounded bg-black bg-opacity-25 border border-secondary border-opacity-25">
+                                <div class="rating-group justify-content-center">
                                     <input type="radio" id="star5" name="Rating" value="5" checked />
-                                    <label for="star5" title="Rewelacja (5)"><i class="bi bi-star-fill"></i></label>
-
+                                    <label for="star5" title="5 gwiazdek"><i class="bi bi-star-fill"></i></label>
                                     <input type="radio" id="star4" name="Rating" value="4" />
-                                    <label for="star4" title="Dobrze (4)"><i class="bi bi-star-fill"></i></label>
-
+                                    <label for="star4" title="4 gwiazdki"><i class="bi bi-star-fill"></i></label>
                                     <input type="radio" id="star3" name="Rating" value="3" />
-                                    <label for="star3" title="Przeciętnie (3)"><i class="bi bi-star-fill"></i></label>
-
+                                    <label for="star3" title="3 gwiazdki"><i class="bi bi-star-fill"></i></label>
                                     <input type="radio" id="star2" name="Rating" value="2" />
-                                    <label for="star2" title="Słabo (2)"><i class="bi bi-star-fill"></i></label>
-
+                                    <label for="star2" title="2 gwiazdki"><i class="bi bi-star-fill"></i></label>
                                     <input type="radio" id="star1" name="Rating" value="1" />
-                                    <label for="star1" title="Tragedia (1)"><i class="bi bi-star-fill"></i></label>
+                                    <label for="star1" title="1 gwiazdka"><i class="bi bi-star-fill"></i></label>
                                 </div>
-                                <span asp-validation-for="Rating" class="text-danger small d-block mt-2"></span>
-                                <div class="text-muted small mt-1">Kliknij, aby ocenić</div>
+                                <div class="text-muted small mt-2">Kliknij gwiazdkę, aby ocenić</div>
                             </div>
 
-                            <div class="mb-4">
-                                <label asp-for="Message" class="form-label text-secondary small text-uppercase fw-bold ls-1">Treść opinii</label>
-                                <textarea asp-for="Message" class="form-control bg-dark border-secondary text-light" rows="4" placeholder="Co Ci się podobało, a co możemy poprawić?" style="resize: none;"></textarea>
+                            <div class="mb-3">
+                                <label asp-for="Message" class="form-label text-secondary small text-uppercase fw-bold">Treść</label>
+                                <textarea asp-for="Message" class="form-control bg-dark border-secondary text-light" rows="4" placeholder="Podziel się wrażeniami..."></textarea>
                                 <span asp-validation-for="Message" class="text-danger small"></span>
                             </div>
 
-                            <button type="submit" class="btn btn-warning w-100 py-3 fw-bold text-dark rounded-3 shadow-sm hover-scale">
-                                <i class="bi bi-send-fill me-2"></i> Opublikuj
-                            </button>
+                            <button type="submit" class="btn btn-danger w-100 py-2 fw-bold shadow-sm">Opublikuj</button>
                         </form>
                     }
                     else
                     {
-                        <div class="text-center py-4 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25">
-                            <i class="bi bi-shield-lock-fill display-4 text-warning mb-3 d-block"></i>
-                            <h6 class="text-white">Zaloguj się</h6>
-                            <p class="text-muted small mb-3 px-3">Tylko zweryfikowani użytkownicy mogą dodawać opinie.</p>
-                            <div class="d-grid gap-2 px-4">
-                                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm">Logowanie</a>
-                                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-link text-muted btn-sm text-decoration-none">Załóż konto</a>
-                            </div>
+                        <div class="text-center py-4">
+                            <i class="bi bi-shield-lock fs-1 text-secondary mb-3 d-block opacity-50"></i>
+                            <p class="text-muted small mb-3">Zaloguj się, aby ocenić.</p>
+                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm px-4 rounded-pill">Logowanie</a>
                         </div>
                     }
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-secondary border-opacity-25">
-                <h5 class="text-white mb-0">Ostatnie recenzje <span class="badge bg-secondary ms-2 rounded-pill">@(Model.ExistingOpinions?.Count() ?? 0)</span></h5>
+        <div class="col-lg-8 order-2 order-lg-2">
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                <h4 class="text-white mb-0">Recenzje <small class="text-muted fs-6 ms-2">(@Model.TotalCount)</small></h4>
+
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Najnowsze
+                    <button class="btn btn-dark border-secondary dropdown-toggle text-light" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-filter me-2"></i>
+                        @(Model.CurrentSort == "highest" ? "Najwyższa ocena" :
+                            Model.CurrentSort == "lowest" ? "Najniższa ocena" : "Najnowsze")
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item active" href="#">Najnowsze</a></li>
-                        <li><a class="dropdown-item" href="#">Najwyższa ocena</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary">
+                        <li><a class="dropdown-item @(Model.CurrentSort == "newest" ? "active":"")" asp-action="Opinions" asp-route-sort="newest">Najnowsze</a></li>
+                        <li><a class="dropdown-item @(Model.CurrentSort == "highest" ? "active":"")" asp-action="Opinions" asp-route-sort="highest">Najwyższa ocena</a></li>
+                        <li><a class="dropdown-item @(Model.CurrentSort == "lowest" ? "active":"")" asp-action="Opinions" asp-route-sort="lowest">Najniższa ocena</a></li>
                     </ul>
                 </div>
             </div>
 
-            @if (Model.ExistingOpinions != null && Model.ExistingOpinions.Any())
+            @if (Model.Reviews.Any())
             {
-                <div class="d-flex flex-column gap-4">
-                    @foreach (var op in Model.ExistingOpinions)
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var op in Model.Reviews)
                     {
-                        // Logika gwiazdek
-                        int stars = 5;
-                        if (op.Subject != null && op.Subject.StartsWith("Ocena:"))
-                        {
-                            int.TryParse(op.Subject.Replace("Ocena:", "").Trim(), out stars);
-                        }
-
-                        // Generowanie inicjału (dla estetyki)
-                        string initial = "U";
-                        if (!string.IsNullOrEmpty(op.UserId)) { initial = "K"; } // "K" jak Klient
-
                         <div class="opinion-tile">
-                            <div class="opinion-header">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between mb-3 gap-2">
                                 <div class="d-flex align-items-center">
-                                    <div class="opinion-avatar shadow-sm">
-                                        @initial
-                                    </div>
+                                    <div class="avatar-circle">@op.Initials</div>
                                     <div>
-                                        <span class="user-name">
-                                            @(string.IsNullOrEmpty(op.UserId) ? "Gość" : "Użytkownik")
-                                            @if (!string.IsNullOrEmpty(op.UserId))
-                                            {
-                                                <span class="user-role" title="Zweryfikowany zakup"><i class="bi bi-patch-check-fill text-info"></i> Zweryfikowany</span>
-                                            }
-                                        </span>
-                                        <div class="stars-display mt-1">
-                                            @for (int i = 1; i <= 5; i++)
-                                            {
-                                                <i class="bi @(i <= stars ? "bi-star-fill" : "bi-star")"></i>
-                                            }
+                                        <div class="fw-bold text-white fs-5">
+                                            @op.UserName
                                         </div>
+                                        @if (!string.IsNullOrEmpty(op.UserId))
+                                        {
+                                            <div class="verified-badge" title="Użytkownik zarejestrowany">
+                                                <i class="bi bi-check-circle-fill"></i> Zweryfikowany zakup
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">Gość</small>
+                                        }
                                     </div>
                                 </div>
-                                <span class="opinion-date">@op.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                                <div class="text-sm-end mt-2 mt-sm-0">
+                                    <div class="text-warning small mb-1" style="letter-spacing: 2px;">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="bi @(i <= op.Stars ? "bi-star-fill" : "bi-star")"></i>
+                                        }
+                                    </div>
+                                    <div class="text-muted small">
+                                        @op.CreatedAt.ToLocalTime().ToString("d MMMM yyyy, HH:mm")
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="opinion-content">
-                                <i class="bi bi-quote quote-icon"></i> @op.Message
-                            </div>
+                            <p class="text-light opacity-75 mb-0 ps-sm-1" style="line-height: 1.6; white-space: pre-wrap;">@op.Message</p>
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <div class="text-end mt-3 pt-2 border-top border-secondary border-opacity-25">
-                                    <form asp-controller="Info" asp-action="DeleteOpinion" asp-route-id="@op.Id" method="post" class="d-inline">
+                                <div class="text-end mt-3 pt-2 border-top border-secondary border-opacity-10">
+                                    <form asp-controller="Info" asp-action="DeleteOpinion" asp-route-id="@op.Id" method="post">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-link text-danger btn-sm p-0 text-decoration-none opacity-75 hover-opacity-100" onclick="return confirm('Usunąć tę opinię trwale?');">
+                                        <button class="btn btn-link btn-sm text-danger text-decoration-none p-0 opacity-75 hover-opacity-100" onclick="return confirm('Usunąć tę opinię?');">
                                             <i class="bi bi-trash"></i> Usuń wpis
                                         </button>
                                     </form>
@@ -156,12 +297,10 @@
             }
             else
             {
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="bi bi-chat-heart display-1 text-muted opacity-25"></i>
-                    </div>
-                    <h3 class="text-muted">Brak opinii</h3>
-                    <p class="text-muted small">Bądź pierwszą osobą, która podzieli się wrażeniami!</p>
+                <div class="text-center py-5 opacity-50">
+                    <i class="bi bi-chat-square-quote display-1 mb-3 d-block"></i>
+                    <h4 class="fw-normal">Brak opinii</h4>
+                    <p>Bądź pierwszą osobą, która podzieli się wrażeniami!</p>
                 </div>
             }
         </div>
