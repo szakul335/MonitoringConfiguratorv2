@@ -17,10 +17,26 @@
 
         <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active px-4 px-md-5 fw-bold" id="pills-form-tab" data-bs-toggle="pill" data-bs-target="#pills-form" type="button" role="tab">1. Parametry</button>
+                <button class="nav-link active px-4 px-md-5 fw-bold text-danger"
+                        id="pills-form-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#pills-form"
+                        type="button"
+                        role="tab"
+                        style="box-shadow: none !important; outline: none !important;">
+                    1. Parametry
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link px-4 px-md-5 fw-bold" id="pills-visual-tab" data-bs-toggle="pill" data-bs-target="#pills-visual" type="button" role="tab">2. Mapa / Rzut</button>
+                <button class="nav-link px-4 px-md-5 fw-bold text-danger"
+                        id="pills-visual-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#pills-visual"
+                        type="button"
+                        role="tab"
+                        style="box-shadow: none !important; outline: none !important;">
+                    2. Mapa / Rzut
+                </button>
             </li>
         </ul>
 
@@ -132,59 +148,128 @@
             </div>
 
             <div class="tab-pane fade" id="pills-visual" role="tabpanel">
-                <div class="card bg-dark border-secondary shadow-lg">
-                    <div class="card-body p-0">
-                        <div class="p-2 p-md-3 border-bottom border-secondary d-flex flex-wrap gap-2 align-items-center bg-black bg-opacity-25 justify-content-center justify-content-md-start">
-                            <label class="btn btn-outline-light btn-sm">
-                                <i class="bi bi-upload me-1"></i> Wgraj
-                                <input type="file" id="planUpload" accept="image/*" hidden>
-                            </label>
+                <div class="row g-3">
+                    <div class="col-lg-9">
+                        <div class="card bg-dark border-secondary shadow-lg h-100">
+                            <div class="card-body p-0 d-flex flex-column">
+                                <div class="p-2 p-md-3 border-bottom border-secondary d-flex flex-wrap gap-2 align-items-center bg-black bg-opacity-25 justify-content-center justify-content-md-start">
+                                    <label class="btn btn-outline-light btn-sm">
+                                        <i class="bi bi-upload me-1"></i> Wgraj
+                                        <input type="file" id="planUpload" accept="image/*" hidden>
+                                    </label>
 
-                            <div class="vr bg-secondary mx-1 d-none d-md-block"></div>
+                                    <div class="vr bg-secondary mx-1 d-none d-md-block"></div>
 
-                            <button type="button" class="btn btn-sm btn-outline-warning tool-btn" data-tool="scale" title="Kliknij dwa punkty i podaj odległość">
-                                <i class="bi bi-ruler"></i> <span class="d-none d-sm-inline">Skala</span>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary tool-btn" data-tool="nvr" title="Ustaw Rejestrator">
-                                <i class="bi bi-hdd-fill"></i> <span class="d-none d-sm-inline">NVR</span>
-                            </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning tool-btn" data-tool="scale" title="Kliknij dwa punkty i podaj odległość">
+                                        <i class="bi bi-ruler"></i> <span class="d-none d-sm-inline">Skala</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary tool-btn" data-tool="nvr" title="Ustaw Rejestrator">
+                                        <i class="bi bi-hdd-fill"></i> <span class="d-none d-sm-inline">NVR</span>
+                                    </button>
 
-                            <div class="d-inline-flex align-items-center border border-secondary rounded px-2 py-1 bg-dark">
-                                <button type="button" class="btn btn-sm btn-danger tool-btn me-2" data-tool="camera" title="Dodaj kamerę">
-                                    <i class="bi bi-camera-video-fill"></i> <span class="d-none d-sm-inline">Kamera</span>
-                                </button>
-                                <select id="camTypeSelect" class="form-select form-select-sm bg-dark text-light border-0 py-0 shadow-none" style="width:auto; font-size: 0.85rem;">
-                                    <option value="outdoor">Zewn.</option>
-                                    <option value="indoor">Wewn.</option>
-                                </select>
-                            </div>
+                                    <div class="d-inline-flex align-items-center border border-secondary rounded px-2 py-1 bg-dark">
+                                        <button type="button" class="btn btn-sm btn-danger tool-btn me-2" data-tool="camera" title="Dodaj kamerę">
+                                            <i class="bi bi-camera-video-fill"></i> <span class="d-none d-sm-inline">Kamera</span>
+                                        </button>
+                                        <select id="camTypeSelect" class="form-select form-select-sm bg-dark text-light border-0 py-0 shadow-none" style="width:auto; font-size: 0.85rem;">
+                                            <option value="outdoor">Zewn.</option>
+                                            <option value="indoor">Wewn.</option>
+                                        </select>
+                                    </div>
 
-                            <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
-                                <div class="text-white small text-nowrap">
-                                    Kabel: <span id="cableSum" class="fw-bold text-success fs-5">0</span> m
+                                    <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
+                                        <div class="text-white small text-nowrap">
+                                            Kabel: <span id="cableSum" class="fw-bold text-success fs-5">0</span> m
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="clearCanvas()">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="clearCanvas()">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </button>
+
+                                <div id="canvasContainer" class="position-relative bg-secondary bg-opacity-10 overflow-hidden flex-grow-1" style="width: 100%; min-height: 500px; cursor: crosshair;">
+                                    <canvas id="planCanvas" style="display:block;"></canvas>
+
+                                    <div id="canvasOverlay" class="position-absolute top-50 start-50 translate-middle text-center text-muted w-100 px-3">
+                                        <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                        <p class="mb-0">Wgraj rzut budynku, aby rozpocząć.</p>
+                                        <small>Obsługuje formaty JPG, PNG.</small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div id="canvasContainer" class="position-relative bg-secondary bg-opacity-10 overflow-hidden" style="width: 100%; cursor: crosshair;">
-                            <canvas id="planCanvas" style="display:block;"></canvas>
-
-                            <div id="canvasOverlay" class="position-absolute top-50 start-50 translate-middle text-center text-muted w-100 px-3">
-                                <i class="bi bi-image fs-1 d-block mb-2"></i>
-                                <p class="mb-0">Wgraj rzut budynku, aby rozpocząć.</p>
-                                <small>Obsługuje formaty JPG, PNG.</small>
+                            <div class="card-footer bg-dark border-top border-secondary text-secondary small">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-info-circle-fill mt-1"></i>
+                                    <div>
+                                        <strong>Kroki:</strong> 1. Wgraj rzut &rarr; 2. Ustaw skalę (kliknij dwa końce ściany) &rarr; 3. Ustaw NVR &rarr; 4. Dodaj kamery.<br />
+                                        <em>System automatycznie przelicza metry kabla przy każdej zmianie rozmiaru okna.</em>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-dark border-top border-secondary text-secondary small">
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-info-circle-fill mt-1"></i>
-                            <div>
-                                <strong>Kroki:</strong> 1. Wgraj rzut &rarr; 2. Ustaw skalę (kliknij dwa końce ściany) &rarr; 3. Ustaw NVR &rarr; 4. Dodaj kamery.<br />
-                                <em>System automatycznie przelicza metry kabla przy każdej zmianie rozmiaru okna.</em>
+
+                    <div class="col-lg-3">
+                        <div class="card card-dark h-100 border-secondary shadow-sm">
+                            <div class="card-header bg-transparent border-secondary py-3">
+                                <h6 class="mb-0 text-white"><i class="bi bi-sliders me-2 text-danger"></i>Opcje Systemu</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">TECHNOLOGIA</label>
+                                    <select id="visual_Tech" class="form-select form-select-sm form-select-dark" onchange="syncRealInput('Tech')">
+                                        @foreach (var item in Html.GetEnumSelectList<CameraTechnology>())
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">JAKOŚĆ (MPIX)</label>
+                                    <select id="visual_ResolutionMp" class="form-select form-select-sm form-select-dark" onchange="syncRealInput('ResolutionMp')">
+                                        <option value="2">2 Mpix (Full HD)</option>
+                                        <option value="4" selected>4 Mpix (2K)</option>
+                                        <option value="8">8 Mpix (4K)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">WIDOCZNOŚĆ NOCNA</label>
+                                    <select id="visual_NightVisionM" class="form-select form-select-sm form-select-dark" onchange="syncRealInput('NightVisionM')">
+                                        <option value="20">do 20 m</option>
+                                        <option value="30" selected>do 30 m (Standard)</option>
+                                        <option value="50">do 50 m</option>
+                                        <option value="80">powyżej 80 m</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">ARCHIWIZACJA (DNI)</label>
+                                    <input id="visual_RecordingDays" type="number" class="form-control form-control-sm form-control-dark" min="1" max="90" value="14" onchange="syncRealInput('RecordingDays')">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold">PODGLĄD</label>
+                                    <select id="visual_DisplayMethod" class="form-select form-select-sm form-select-dark" onchange="syncRealInput('DisplayMethod')">
+                                        @foreach (var item in Html.GetEnumSelectList<DisplayType>())
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <hr class="border-secondary" />
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="visual_upsToggle" onchange="syncRealInput('upsToggle')">
+                                    <label class="form-check-label text-white small" for="visual_upsToggle">Zasilanie awaryjne (UPS)</label>
+                                </div>
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="visual_NeedAssembly" onchange="syncRealInput('NeedAssembly')">
+                                    <label class="form-check-label text-white small" for="visual_NeedAssembly">Montaż</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,16 +289,10 @@
 @section Scripts {
     <script>
         // --- DEFINICJE IKON (SVG Data URI) ---
-
-        // NVR (Niebieski Serwer)
         const iconNvr = new Image();
         iconNvr.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='16' width='56' height='12' rx='2' fill='%233b82f6'/%3E%3Crect x='4' y='36' width='56' height='12' rx='2' fill='%232563eb'/%3E%3Ccircle cx='12' cy='22' r='2' fill='%23a5f3fc'/%3E%3Ccircle cx='18' cy='22' r='2' fill='%23a5f3fc'/%3E%3Ccircle cx='12' cy='42' r='2' fill='%23bfdbfe'/%3E%3C/svg%3E";
-
-        // Kamera Zewnętrzna (Czerwona Tuba)
         const iconCamOut = new Image();
         iconCamOut.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M44 24H12c-2.2 0-4 1.8-4 4v12c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V28c0-2.2-1.8-4-4-4z' fill='%23ef4444'/%3E%3Cpath d='M48 28l12-6v20l-12-6V28z' fill='%23b91c1c'/%3E%3Crect x='14' y='20' width='24' height='4' fill='%23fca5a5'/%3E%3C/svg%3E";
-
-        // Kamera Wewnętrzna (Błękitna Kopułka)
         const iconCamIn = new Image();
         iconCamIn.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 12C20.95 12 12 20.95 12 32h40c0-11.05-8.95-20-20-20z' fill='%2306b6d4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23ecfeff'/%3E%3Crect x='8' y='32' width='48' height='6' fill='%230e7490'/%3E%3C/svg%3E";
 
@@ -236,20 +315,47 @@
         const inputIndoor = document.getElementById('IndoorCamCount');
         const inputCable = document.getElementById('hiddenCableMeters');
         const displayCable = document.getElementById('cableSum');
-
         let img = new Image();
         let scaleRatio = 1;
         let originalImgWidth = 0;
         let originalImgHeight = 0;
-
         let logic = {
             scalePixels: 0,
             nvr: null,
             cameras: [],
             scalePoints: []
         };
-
         let activeTool = null;
+
+        // --- SYNCHRONIZACJA PÓL FORMULARZA (VISUAL <-> REAL) ---
+        function syncRealInput(id) {
+            const visual = document.getElementById('visual_' + id);
+            const real = document.getElementById(id);
+            if (!visual || !real) return;
+
+            if (real.type === 'checkbox') {
+                real.checked = visual.checked;
+            } else {
+                real.value = visual.value;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const ids = ['Tech', 'ResolutionMp', 'NightVisionM', 'RecordingDays', 'DisplayMethod', 'upsToggle', 'NeedAssembly'];
+            ids.forEach(id => {
+                const real = document.getElementById(id);
+                const visual = document.getElementById('visual_' + id);
+                if (real && visual) {
+                    if (real.type === 'checkbox') visual.checked = real.checked;
+                    else visual.value = real.value;
+
+                    real.addEventListener('change', function() {
+                        if (this.type === 'checkbox') visual.checked = this.checked;
+                        else visual.value = this.value;
+                    });
+                }
+            });
+        });
 
         function draw() {
             canvas.width = container.clientWidth;
@@ -257,18 +363,16 @@
                 canvas.height = canvas.width * (originalImgHeight / originalImgWidth);
                 scaleRatio = canvas.width / originalImgWidth;
             } else {
-                canvas.height = 400;
+                canvas.height = 500;
                 scaleRatio = 1;
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             if (img.src) {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             }
 
             const toScreen = (pos) => ({ x: pos.x * scaleRatio, y: pos.y * scaleRatio });
-
             // Rysuj Kable
             if (logic.nvr) {
                 const screenNvr = toScreen(logic.nvr);
@@ -328,7 +432,6 @@
         }
 
         window.addEventListener('resize', draw);
-
         upload.addEventListener('change', function(e) {
             if(this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -348,7 +451,6 @@
                 reader.readAsDataURL(this.files[0]);
             }
         });
-
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active', 'bg-white', 'text-dark'));
@@ -362,12 +464,10 @@
                 draw();
             });
         });
-
         function getMousePos(evt) {
             const rect = canvas.getBoundingClientRect();
             const xCanvas = evt.clientX - rect.left;
             const yCanvas = evt.clientY - rect.top;
-
             return { x: xCanvas / scaleRatio, y: yCanvas / scaleRatio };
         }
 
@@ -394,7 +494,6 @@
                 if (logic.scalePoints.length === 2) {
                     const dist = Math.hypot(logic.scalePoints[1].x - logic.scalePoints[0].x, logic.scalePoints[1].y - logic.scalePoints[0].y);
                     const meters = prompt("Podaj rzeczywistą długość odcinka (m):", "10");
-
                     if (meters && !isNaN(meters) && parseFloat(meters) > 0) {
                         logic.scalePixels = dist / parseFloat(meters);
                         alert("Skala zapisana!");
@@ -411,14 +510,12 @@
 
         function recalcCables() {
             if (!logic.nvr || logic.scalePixels === 0) return;
-
             let total = 0;
             logic.cameras.forEach(cam => {
                 const distPix = Math.hypot(cam.x - logic.nvr.x, cam.y - logic.nvr.y);
                 const m = (distPix / logic.scalePixels) * 1.2 + 3;
                 total += m;
             });
-
             const final = Math.ceil(total);
             displayCable.innerText = final;
             inputCable.value = final;

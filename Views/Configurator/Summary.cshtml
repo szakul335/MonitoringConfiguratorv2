@@ -181,7 +181,7 @@
                                 }
                             }
 
-                            @* 7. Uchwyty / Puszki montażowe (NOWE) *@
+                            @* 7. Uchwyty / Puszki montażowe *@
                             @if (Model.Input.TotalCameras > 0)
                             {
                                 @if (Model.SelectedMount != null)
@@ -205,7 +205,7 @@
                                 }
                             }
 
-                            @* 8. Monitor (NOWE) *@
+                            @* 8. Monitor *@
                             @if (Model.Input.DisplayMethod != DisplayType.AppOnly)
                             {
                                 @if (Model.SelectedMonitor != null)
@@ -229,7 +229,7 @@
                                 }
                             }
 
-                            @* 9. UPS (NOWE) *@
+                            @* 9. UPS *@
                             @if (Model.Input.NeedUps)
                             {
                                 @if (Model.SelectedUps != null)
@@ -275,7 +275,7 @@
             </div>
         </div>
 
-        @* PANEL BOCZNY (BEZ ZMIAN) *@
+        @* PANEL BOCZNY *@
         <div class="col-lg-4">
             <div class="card card-dark shadow-sm border-secondary mb-3">
                 <div class="card-header bg-transparent border-secondary"><h6 class="mb-0 text-white">Specyfikacja techniczna</h6></div>
@@ -303,15 +303,15 @@
                 {
                     <form asp-controller="Orders" asp-action="CreateFromConfig" method="post">
                         <input type="hidden" name="jsonResult" value="@jsonResult" />
-                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg" onclick="return confirm('Złożyć zamówienie?');">
-                            <i class="bi bi-cart-check-fill me-2"></i> ZAMÓW ZESTAW
+                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg" onclick="return confirm('Wysłać zapytanie do weryfikacji?');">
+                            <i class="bi bi-envelope-check-fill me-2"></i> WYŚLIJ ZAPYTANIE
                         </button>
                     </form>
                 }
                 else
                 {
                     <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light w-100">
-                        Zaloguj się, aby zamówić
+                        Zaloguj się, aby wysłać zapytanie
                     </a>
                 }
             </div>
