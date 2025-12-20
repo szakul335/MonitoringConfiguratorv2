@@ -248,7 +248,17 @@
                         <div class="opinion-tile">
                             <div class="d-flex flex-column flex-sm-row justify-content-between mb-3 gap-2">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle">@op.Initials</div>
+
+                                    @* [NOWA LOGIKA] Wyświetlanie awatara lub inicjałów *@
+                                    @if (!string.IsNullOrEmpty(op.AvatarUrl))
+                                    {
+                                        <img src="@op.AvatarUrl" alt="@op.Initials" class="avatar-circle p-0" style="object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar-circle">@op.Initials</div>
+                                    }
+
                                     <div>
                                         <div class="fw-bold text-white fs-5">
                                             @op.UserName

@@ -39,5 +39,6 @@ namespace MonitoringConfigurator.Models
         public DateTime CreatedAt { get; set; }
         public int Stars { get; set; }
         public string Initials { get; set; } = "U";
+        public string? AvatarUrl { get; set; }
     }
 }
