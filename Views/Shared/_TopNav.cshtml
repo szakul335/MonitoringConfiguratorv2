@@ -14,8 +14,8 @@
 <style>
     /* Nowoczesny styl paska nawigacji */
     .navbar-glass {
-        background: rgba(15, 15, 16, 0.85); /* Półprzezroczyste tło */
-        backdrop-filter: blur(12px); /* Efekt rozmycia tła (Glassmorphism) */
+        background: rgba(15, 15, 16, 0.85);
+        backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         transition: all 0.3s ease;
         padding-top: 0.8rem;
@@ -33,11 +33,11 @@
         margin: 0 2px;
     }
 
-    .nav-link-modern:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff !important;
-        transform: translateY(-1px);
-    }
+        .nav-link-modern:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+            transform: translateY(-1px);
+        }
 
     /* Przycisk Konfiguratora - Glowing Button */
     .nav-btn-highlight {
@@ -51,11 +51,11 @@
         border: 1px solid transparent;
     }
 
-    .nav-btn-highlight:hover {
-        box-shadow: 0 6px 20px rgba(225, 6, 0, 0.5);
-        transform: translateY(-2px);
-        background: linear-gradient(135deg, #c40500 0%, #e10600 100%);
-    }
+        .nav-btn-highlight:hover {
+            box-shadow: 0 6px 20px rgba(225, 6, 0, 0.5);
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #c40500 0%, #e10600 100%);
+        }
 
     /* Avatar i profil */
     .user-pill {
@@ -66,15 +66,15 @@
         transition: all 0.2s;
     }
 
-    .user-pill:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
+        .user-pill:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 </style>
 
 <nav class="navbar navbar-expand-xl navbar-dark fixed-top navbar-glass">
     <div class="container-fluid px-4">
-        
+
         <a class="navbar-brand d-flex align-items-center me-4" asp-controller="Home" asp-action="Index">
             <i class="bi bi-camera-video-fill text-danger me-2 fs-4"></i>
             <span class="fw-bold tracking-tight">System Monitoring</span>
@@ -86,7 +86,7 @@
 
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav me-auto mb-2 mb-xl-0 align-items-center">
-                
+
                 <li class="nav-item me-2">
                     <a class="nav-link nav-link-modern nav-btn-highlight text-nowrap" asp-controller="Configurator" asp-action="Index">
                         <i class="bi bi-gear-wide-connected me-1"></i> Konfigurator
@@ -103,13 +103,14 @@
 
                 @if (isAdmin)
                 {
-                    <li class="nav-item ms-xl-2 border-start border-secondary ps-xl-2 d-none d-xl-block"></li> <li class="nav-item">
+                    <li class="nav-item ms-xl-2 border-start border-secondary ps-xl-2 d-none d-xl-block"></li>
+                    <li class="nav-item">
                         <a class="nav-link nav-link-modern text-warning text-nowrap" asp-controller="Users" asp-action="Index">
                             <i class="bi bi-shield-lock me-1"></i> Admin
                         </a>
                     </li>
                 }
-                
+
                 @if (isAdmin || isOperator)
                 {
                     <li class="nav-item">
@@ -121,6 +122,12 @@
 
                 @if (isAuth)
                 {
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern text-nowrap" asp-controller="Orders" asp-action="Index">
+                            <i class="bi bi-cart3 me-1"></i> @(isAdmin || isOperator ? "Zamówienia klientów" : "Moje zamówienia")
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link nav-link-modern text-info text-nowrap" asp-controller="Documents" asp-action="Index">
                             <i class="bi bi-folder2-open me-1"></i> Dokumenty
@@ -148,6 +155,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary mt-2" aria-labelledby="kontoDropdown" style="background: #1a1a1d;">
                             <li><a class="dropdown-item py-2" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-gear me-2"></i> Moje konto</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Orders" asp-action="Index"><i class="bi bi-basket me-2"></i> Zamówienia</a></li>
                             <li><a class="dropdown-item py-2" asp-controller="Documents" asp-action="Index"><i class="bi bi-file-earmark-text me-2"></i> Moje dokumenty</a></li>
                             <li><hr class="dropdown-divider border-secondary opacity-50" /></li>
                             <li>

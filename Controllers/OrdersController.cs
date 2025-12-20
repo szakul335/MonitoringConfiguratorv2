@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using MonitoringConfigurator.Data;
 using MonitoringConfigurator.Models;
 using System.Text.Json;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace MonitoringConfigurator.Controllers
 {
@@ -20,15 +23,37 @@ namespace MonitoringConfigurator.Controllers
             _userManager = userManager;
         }
 
-        // Lista zamówień użytkownika
+        // Lista zamówień
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            var orders = await _ctx.Orders
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.OrderDate)
+            bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
+
+            // Budujemy zapytanie podstawowe
+            var query = _ctx.Orders
                 .Include(o => o.Items)
+                .AsQueryable();
+
+            // Jeśli to zwykły użytkownik (nie Admin/Operator), filtrujemy tylko jego zamówienia
+            if (!isStaff)
+            {
+                query = query.Where(o => o.UserId == userId);
+            }
+
+            var orders = await query
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            // Opcjonalnie: Przekazujemy listę emaili użytkowników do widoku (dla Admina),
+            // aby wyświetlić email zamiast samego ID.
+            if (isStaff)
+            {
+                var userIds = orders.Select(o => o.UserId).Distinct().ToList();
+                var users = await _ctx.Users
+                    .Where(u => userIds.Contains(u.Id))
+                    .ToDictionaryAsync(u => u.Id, u => u.Email);
+                ViewBag.UserEmails = users;
+            }
 
             return View(orders);
         }
@@ -37,12 +62,29 @@ namespace MonitoringConfigurator.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var userId = _userManager.GetUserId(User);
-            var order = await _ctx.Orders
+            bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
+
+            var query = _ctx.Orders
                 .Include(o => o.Items)
                 .ThenInclude(i => i.Product)
-                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+                .AsQueryable();
+
+            // Zabezpieczenie: zwykły użytkownik widzi tylko swoje, Staff widzi wszystko
+            if (!isStaff)
+            {
+                query = query.Where(o => o.UserId == userId);
+            }
+
+            var order = await query.FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null) return NotFound();
+
+            // Dla Admina pobieramy email właściciela zamówienia
+            if (isStaff)
+            {
+                var owner = await _userManager.FindByIdAsync(order.UserId);
+                ViewBag.OwnerEmail = owner?.Email ?? order.UserId;
+            }
 
             return View(order);
         }
@@ -95,9 +137,6 @@ namespace MonitoringConfigurator.Controllers
             AddItem(config.SelectedMount, config.MountQuantity);
             AddItem(config.SelectedMonitor, config.MonitorQuantity);
             AddItem(config.SelectedUps, config.UpsQuantity);
-
-            // Uwaga: Usługa montażu nie jest produktem w bazie, więc na razie ją pomijamy w strukturze relacyjnej,
-            // chyba że dodasz "Produkt-Usługa" do bazy. W tym modelu zapisujemy tylko fizyczne towary.
 
             _ctx.Orders.Add(order);
             await _ctx.SaveChangesAsync();

@@ -1,15 +1,33 @@
 ﻿@model IEnumerable<MonitoringConfigurator.Models.Order>
 @{
-    ViewData["Title"] = "Moje zamówienia";
+    ViewData["Title"] = "Zamówienia";
+    bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
+    var userEmails = ViewBag.UserEmails as Dictionary<string, string>;
 }
 
 <div class="container py-5">
-    <h2 class="text-white mb-4">Moje zamówienia</h2>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="text-white mb-1">
+                @(isStaff ? "Wszystkie zamówienia (Panel Admina)" : "Moje zamówienia")
+            </h2>
+            @if (isStaff)
+            {
+                <p class="text-muted mb-0">Przeglądaj zamówienia złożone przez klientów.</p>
+            }
+        </div>
+    </div>
 
     @if (!Model.Any())
     {
         <div class="alert alert-dark border-secondary text-secondary">
-            Nie złożyłeś jeszcze żadnego zamówienia. <a asp-controller="Configurator" asp-action="Index" class="alert-link">Przejdź do konfiguratora</a>.
+            Brak zamówień w systemie.
+            @if (!isStaff)
+            {
+                <a asp-controller="Configurator" asp-action="Index" class="alert-link">Przejdź do konfiguratora</a>
+            }
+            .
+        }
         </div>
     }
     else
@@ -19,22 +37,47 @@
                 <thead>
                     <tr>
                         <th>Numer</th>
+                        @if (isStaff)
+                        {
+                            <th>Klient</th>
+                        }
                         <th>Data</th>
                         <th>Ilość pozycji</th>
                         <th>Kwota</th>
-                        <th>Akcje</th>
+                        <th class="text-end">Akcje</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var order in Model)
                     {
                         <tr>
-                            <td>#@order.Id</td>
+                            <td>
+                                <span class="badge bg-secondary font-monospace">#@order.Id</span>
+                            </td>
+
+                            @if (isStaff)
+                            {
+                                <td>
+                                    @if (userEmails != null && userEmails.ContainsKey(order.UserId))
+                                    {
+                                        var email = userEmails[order.UserId];
+                                        <div class="fw-bold text-white">@email</div>
+                                        <small class="text-muted" style="font-size: 0.75rem;">ID: @order.UserId</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">@order.UserId</span>
+                                    }
+                                </td>
+                            }
+
                             <td>@order.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                             <td>@order.Items.Count</td>
                             <td class="fw-bold text-danger">@order.TotalAmount.ToString("N2") zł</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">Szczegóły</a>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">
+                                    Szczegóły
+                                </a>
                             </td>
                         </tr>
                     }
