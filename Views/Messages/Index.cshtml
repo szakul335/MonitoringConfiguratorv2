@@ -1,44 +1,225 @@
-@model IEnumerable<MonitoringConfigurator.Models.Contact>
+@using MonitoringConfigurator.Models
+@model IEnumerable<Contact>
+
 @{
-    ViewData["Title"] = "Wiadomości";
-}
-<ul class="nav nav-tabs mb-3">
-  <li class="nav-item">
-    <a class="nav-link active" asp-action="Index">Odebrane</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" asp-action="Mine">Moje wiadomości</a>
-  </li>
-</ul>
+    ViewData["Title"] = "Centrum Wiadomości";
 
-@if (TempData["Msg"] != null) {
-  <div class="alert alert-success">@TempData["Msg"]</div>
+    // Dane do filtrów i paginacji
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    ContactStatus? currentStatus = ViewBag.CurrentStatus;
+    ContactType? currentType = ViewBag.CurrentType;
+
+    // Słownik e-maili
+    var userEmails = ViewBag.UserEmails as Dictionary<string, string>;
+
+    // Funkcja kolorów badge'y
+    string GetStatusBadge(ContactStatus status)
+    {
+        return status switch
+        {
+            ContactStatus.New => "bg-danger",       // Czerwony
+            ContactStatus.Read => "bg-warning text-dark", // Żółty
+            ContactStatus.Replied => "bg-success",  // Zielony
+            ContactStatus.Closed => "bg-secondary", // Szary
+            _ => "bg-light text-dark"
+        };
+    }
+
+    // --- NOWE: Funkcja ikon statusów ---
+    string GetStatusIcon(ContactStatus status)
+    {
+        return status switch
+        {
+            ContactStatus.New => "bi-exclamation-circle-fill", // Wykrzyknik
+            ContactStatus.Read => "bi-hourglass-split",        // Klepsydra
+            ContactStatus.Replied => "bi-reply-fill",          // Strzałka odpowiedzi
+            ContactStatus.Closed => "bi-check-circle-fill",    // "Ptaszek"
+            _ => "bi-circle"
+        };
+    }
+
+    // --- NOWE: Tłumaczenie nazw statusów ---
+    string GetStatusName(ContactStatus status)
+    {
+        return status switch
+        {
+            ContactStatus.New => "Nowe",
+            ContactStatus.Read => "W trakcie",
+            ContactStatus.Replied => "Odpowiedziane",
+            ContactStatus.Closed => "Zamknięte",
+            _ => status.ToString()
+        };
+    }
 }
 
-<h2>Odebrane wiadomości</h2>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Data</th>
-      <th>Temat</th>
-      <th>Treść</th>
-      <th style="width:160px">Akcje</th>
-    </tr>
-  </thead>
-  <tbody>
-  @foreach (var msg in Model)
-  {
-    <tr>
-      <td>@msg.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
-      <td>@msg.Subject</td>
-      <td>@msg.Message</td>
-      <td>
-        <a asp-action="Details" asp-route-id="@msg.Id" class="btn btn-sm btn-outline-info me-1">Podgląd</a>
-        <form asp-action="Delete" asp-route-id="@msg.Id" method="post" class="d-inline" onsubmit="return confirm('Usunąć tę wiadomość?');">
-            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
-        </form>
-      </td>
-    </tr>
-  }
-  </tbody>
-</table>
+<div class="container py-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="text-white mb-1">Wszystkie wiadomości (Panel Admina)</h2>
+            <p class="text-muted mb-0">Zarządzaj zgłoszeniami i opiniami od klientów.</p>
+        </div>
+    </div>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success border-0 mb-4">@TempData["Msg"]</div>
+    }
+
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-body py-2">
+            <form method="get" class="row g-2 align-items-center text-white">
+                <div class="col-auto">
+                    <i class="bi bi-funnel"></i> Filtruj:
+                </div>
+
+                <div class="col-auto">
+                    <select name="status" class="form-select form-select-sm bg-secondary text-white border-0" onchange="this.form.submit()">
+                        <option value="" class="bg-dark">-- Wszystkie Statusy --</option>
+                        <!option value="@ContactStatus.New" class="bg-dark" selected="@(currentStatus == ContactStatus.New)">Nowe</!option>
+                        <!option value="@ContactStatus.Read" class="bg-dark" selected="@(currentStatus == ContactStatus.Read)">W trakcie</!option>
+                        <!option value="@ContactStatus.Replied" class="bg-dark" selected="@(currentStatus == ContactStatus.Replied)">Odpowiedziane</!option>
+                        <!option value="@ContactStatus.Closed" class="bg-dark" selected="@(currentStatus == ContactStatus.Closed)">Zamknięte</!option>
+                    </select>
+                </div>
+
+                <div class="col-auto">
+                    <select name="type" class="form-select form-select-sm bg-secondary text-white border-0" onchange="this.form.submit()">
+                        <option value="" class="bg-dark">-- Wszystkie Typy --</option>
+                        <!option value="@ContactType.Support" class="bg-dark" selected="@(currentType == ContactType.Support)">Wsparcie</!option>
+                        <!option value="@ContactType.General" class="bg-dark" selected="@(currentType == ContactType.General)">Kontakt (Gość)</!option>
+                        <!option value="@ContactType.Opinion" class="bg-dark" selected="@(currentType == ContactType.Opinion)">Opinia</!option>
+                    </select>
+                </div>
+
+                <div class="col-auto ms-auto">
+                    <a asp-action="Index" class="btn btn-sm btn-outline-light">Wyczyść</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-dark border-secondary text-secondary">
+            Brak wiadomości spełniających kryteria.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Typ</th>
+                        <th>Od kogo</th>
+                        <th>Temat</th>
+                        <th class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var replyCount = item.Replies?.Count ?? 0;
+                        <tr>
+                            <td>
+                                <span class="badge @GetStatusBadge(item.Status)">
+                                    <i class="bi @GetStatusIcon(item.Status) me-1"></i>
+                                    @GetStatusName(item.Status)
+                                </span>
+                            </td>
+
+                            <td>@item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+
+                            <td>
+                                @if (item.Type == ContactType.Support)
+                                {
+                                    <span class="badge bg-primary">Wsparcie</span>
+                                }
+                                else if (item.Type == ContactType.Opinion)
+                                {
+                                    <span class="badge bg-warning text-dark">Opinia</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Kontakt</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.UserId != null && userEmails != null && userEmails.ContainsKey(item.UserId))
+                                {
+                                    <div class="fw-bold text-white">@userEmails[item.UserId]</div>
+                                }
+                                else if (!string.IsNullOrEmpty(item.GuestEmail))
+                                {
+                                    <div class="fw-bold text-white">@item.GuestEmail</div>
+                                    <span class="text-muted small">Gość: @item.GuestName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Anonim</span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="text-white">@item.Subject</span>
+                                @if (replyCount > 0)
+                                {
+                                    <span class="badge bg-secondary border border-secondary ms-1 small" title="Liczba odpowiedzi">+@replyCount</span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light">
+                                    Szczegóły
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger ms-1">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">Strona @currentPage z @totalPages</small>
+
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-secondary" asp-action="Index"
+                               asp-route-page="@(currentPage - 1)"
+                               asp-route-status="@currentStatus"
+                               asp-route-type="@currentType">&laquo; Poprzednia</a>
+                        </li>
+
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link @(i == currentPage ? "bg-primary border-primary" : "bg-dark text-white border-secondary")"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-status="@currentStatus"
+                                   asp-route-type="@currentType">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-secondary" asp-action="Index"
+                               asp-route-page="@(currentPage + 1)"
+                               asp-route-status="@currentStatus"
+                               asp-route-type="@currentType">Następna &raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    }
+</div>

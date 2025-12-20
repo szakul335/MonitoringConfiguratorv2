@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MonitoringConfigurator.Data;
 
@@ -11,9 +12,11 @@ using MonitoringConfigurator.Data;
 namespace MonitoringConfigurator.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220094233_UpgradeContactModel")]
+    partial class UpgradeContactModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,9 +249,6 @@ namespace MonitoringConfigurator.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -264,8 +264,6 @@ namespace MonitoringConfigurator.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
 
                     b.ToTable("Contacts");
                 });
@@ -504,15 +502,6 @@ namespace MonitoringConfigurator.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MonitoringConfigurator.Models.Contact", b =>
-                {
-                    b.HasOne("MonitoringConfigurator.Models.Contact", "Parent")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentId");
-
-                    b.Navigation("Parent");
-                });
-
             modelBuilder.Entity("MonitoringConfigurator.Models.OrderDetail", b =>
                 {
                     b.HasOne("MonitoringConfigurator.Models.Order", "Order")
@@ -530,11 +519,6 @@ namespace MonitoringConfigurator.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("MonitoringConfigurator.Models.Contact", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("MonitoringConfigurator.Models.Order", b =>

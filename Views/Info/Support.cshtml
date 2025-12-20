@@ -4,97 +4,101 @@
 }
 
 <div class="container py-4">
-  <h1 class="mb-3">Wsparcie</h1>
+    <h1 class="mb-3">Centrum Wsparcia</h1>
 
-  @if (ViewBag.Success != null)
-  {
-    <div class="alert alert-success">@ViewBag.Success</div>
-  }
-  @if (!ViewData.ModelState.IsValid)
-  {
-    <div class="alert alert-danger">Uzupełnij wymagane pola.</div>
-  }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 
-  <div class="card mb-4">
-    <div class="card-header"><strong>Napisz wiadomość</strong></div>
-    <div class="card-body">
-      <form asp-action="Support" method="post">
-        @Html.AntiForgeryToken()
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">Adresat</label>
-            <select asp-for="Recipient" class="form-select">
-              <option value="Admin">Admin</option>
-              <option value="Operator">Operator</option>
-            </select>
-            <span asp-validation-for="Recipient" class="text-danger"></span>
-          </div>
-          <div class="col-md-8">
-            <label class="form-label">Temat</label>
-            <input asp-for="Subject" class="form-control" maxlength="200" />
-            <span asp-validation-for="Subject" class="text-danger"></span>
-          </div>
-          <div class="col-12">
-            <label class="form-label">Treść</label>
-            <textarea asp-for="Message" class="form-control" rows="6" maxlength="4000"></textarea>
-            <span asp-validation-for="Message" class="text-danger"></span>
-          </div>
-          <div class="col-12 text-end">
-            <button type="submit" class="btn btn-primary">Wyślij</button>
-          </div>
+    <div class="card mb-5 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <strong>Utwórz nowe zgłoszenie</strong>
         </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0">Wysłane wiadomości</h5>
-    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#sentCollapse" aria-expanded="false" aria-controls="sentCollapse">
-      Pokaż wysłane wiadomości
-    </button>
-  </div>
-
-  <div class="collapse" id="sentCollapse">
-    <div class="card">
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-striped align-middle mb-0">
-            <thead>
-              <tr>
-                <th style="width: 160px;">Data</th>
-                <th style="width: 110px;">Do</th>
-                <th>Temat</th>
-                <th>Treść</th>
-              </tr>
-            </thead>
-            <tbody>
-            @if (Model?.Sent != null && Model.Sent.Any())
-            {
-              foreach (var c in Model.Sent)
-              {
-                var recipient = c.Subject?.StartsWith("[Operator]") == true ? "Operator" :
-                                c.Subject?.StartsWith("[Admin]") == true ? "Admin" : "-";
-                var plainSubject = c.Subject?.Replace("[Admin] ", "").Replace("[Operator] ", "");
-                <tr>
-                  <td>@c.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
-                  <td>@recipient</td>
-                  <td>@plainSubject</td>
-                  <td><div style="max-width:600px; white-space:pre-wrap;">@c.Message</div></td>
-                </tr>
-              }
-            }
-            else
-            {
-              <tr><td colspan="4" class="text-center text-muted py-4">Brak wysłanych wiadomości</td></tr>
-            }
-            </tbody>
-          </table>
+        <div class="card-body">
+            <form asp-action="Support" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Dział</label>
+                        <select asp-for="Recipient" class="form-select">
+                            <option value="Admin">Administrator</option>
+                            <option value="Operator">Operator</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Temat</label>
+                        <input asp-for="Subject" class="form-control" placeholder="Czego dotyczy problem?" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Treść wiadomości</label>
+                        <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">Wyślij zgłoszenie</button>
+                    </div>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Twoje zgłoszenia</h3>
+    </div>
+
+    <div class="list-group">
+        @if (Model.Sent != null && Model.Sent.Any())
+        {
+            foreach (var thread in Model.Sent)
+            {
+                var replyCount = thread.Replies?.Count ?? 0;
+                // Pobieramy datę ostatniej aktywności (data odpowiedzi lub utworzenia wątku)
+                var lastActivity = thread.Replies?.OrderByDescending(r => r.CreatedAt).FirstOrDefault()?.CreatedAt ?? thread.CreatedAt;
+
+                <a asp-action="TicketDetails" asp-route-id="@thread.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" aria-current="true">
+                    <div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@thread.Subject.Replace("[Admin] ", "").Replace("[Operator] ", "")</h5>
+                        </div>
+                        <p class="mb-1 text-muted small">
+                            Ostatnia aktywność: @lastActivity.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                        </p>
+                        <small class="text-secondary">
+                            @(thread.Message.Length > 60 ? thread.Message.Substring(0, 60) + "..." : thread.Message)
+                        </small>
+                    </div>
+                    <div class="text-end" style="min-width: 140px;">
+                        @switch (thread.Status)
+                        {
+                            case MonitoringConfigurator.Models.ContactStatus.New:
+                                <span class="badge bg-primary">Wysłano</span>
+                                break;
+                            case MonitoringConfigurator.Models.ContactStatus.Read:
+                                <span class="badge bg-info text-dark">W trakcie</span>
+                                break;
+                            case MonitoringConfigurator.Models.ContactStatus.Replied:
+                                <span class="badge bg-success">Otrzymano odpowiedź</span>
+                                break;
+                            case MonitoringConfigurator.Models.ContactStatus.Closed:
+                                <span class="badge bg-secondary">Zamknięte</span>
+                                break;
+                        }
+                        <div class="mt-1">
+                            <span class="badge bg-light text-dark border">Wiadomości: @(replyCount + 1)</span>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+        else
+        {
+            <div class="alert alert-light text-center border">Brak historii zgłoszeń.</div>
+        }
+    </div>
 </div>
 
 @section Scripts {
-  <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 }

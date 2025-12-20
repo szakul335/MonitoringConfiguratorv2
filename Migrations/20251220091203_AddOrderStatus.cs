@@ -11,7 +11,7 @@ namespace MonitoringConfigurator.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Dodajemy tylko nową kolumnę Status do istniejącej tabeli Orders
+       
             migrationBuilder.AddColumn<int>(
                 name: "Status",
                 table: "Orders",
@@ -23,7 +23,7 @@ namespace MonitoringConfigurator.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // W razie cofnięcia migracji, usuwamy tę kolumnę
+    
             migrationBuilder.DropColumn(
                 name: "Status",
                 table: "Orders");

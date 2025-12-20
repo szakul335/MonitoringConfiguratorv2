@@ -5,11 +5,29 @@ using Microsoft.EntityFrameworkCore;
 using MonitoringConfigurator.Data;
 using MonitoringConfigurator.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MonitoringConfigurator.Controllers
 {
+    // Model pomocniczy dla formularza kontaktowego
+    public class ContactFormModel
+    {
+        [Required(ErrorMessage = "Imię jest wymagane")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Email jest wymagany")]
+        [EmailAddress(ErrorMessage = "Niepoprawny format adresu email")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Temat jest wymagany")]
+        public string Subject { get; set; }
+
+        [Required(ErrorMessage = "Wiadomość jest wymagana")]
+        public string Message { get; set; }
+    }
+
     public class InfoController : Controller
     {
         private readonly AppDbContext _ctx;
@@ -21,10 +39,36 @@ namespace MonitoringConfigurator.Controllers
             _userManager = userManager;
         }
 
-        // --- ZAKŁADKI INFORMACYJNE (Przywrócone) ---
+        // --- ZAKŁADKI INFORMACYJNE ---
 
         [HttpGet, AllowAnonymous]
         public IActionResult Contact() => View();
+
+        [HttpPost, AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendContact(ContactFormModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Contact", model);
+
+            var contact = new Contact
+            {
+                Type = ContactType.General,
+                Status = ContactStatus.New,
+                GuestName = model.Name,
+                GuestEmail = model.Email,
+                Subject = model.Subject,
+                Message = model.Message,
+                CreatedAt = DateTime.UtcNow
+                // UserId zostaje null
+            };
+
+            _ctx.Contacts.Add(contact);
+            await _ctx.SaveChangesAsync();
+
+            TempData["Success"] = "Wiadomość została wysłana. Dziękujemy!";
+            return RedirectToAction(nameof(Contact));
+        }
 
         [HttpGet, AllowAnonymous]
         public IActionResult Faq() => View();
@@ -35,7 +79,7 @@ namespace MonitoringConfigurator.Controllers
         [HttpGet, AllowAnonymous]
         public IActionResult Guides() => View();
 
-        // --- OBSŁUGA OPINII (Nowa logika) ---
+        // --- OBSŁUGA OPINII ---
 
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Opinions(string sort = "newest")
@@ -77,7 +121,6 @@ namespace MonitoringConfigurator.Controllers
                     int.TryParse(x.Subject.Replace("Ocena:", "").Trim(), out stars);
                 }
 
-                // LOGIKA NAZWY: Imię > Część E-maila > Gość
                 string displayName = "Gość";
                 string initials = "G";
 
@@ -155,6 +198,8 @@ namespace MonitoringConfigurator.Controllers
             var opinion = new Contact
             {
                 UserId = user?.Id,
+                Type = ContactType.Opinion, // Ustawiamy typ na Opinię
+                Status = ContactStatus.New,
                 Subject = $"Ocena: {model.Rating}",
                 Message = model.Message,
                 CreatedAt = DateTime.UtcNow
@@ -185,7 +230,9 @@ namespace MonitoringConfigurator.Controllers
             return RedirectToAction(nameof(Opinions));
         }
 
-        // --- WSPARCIE I PROFIL (Przywrócone) ---
+        // --- WSPARCIE I PROFIL ---
+
+        // --- WSPARCIE (Ticket System) ---
 
         [Authorize]
         [HttpGet]
@@ -194,56 +241,110 @@ namespace MonitoringConfigurator.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var sent = await _ctx.Contacts
-                .Where(c => c.UserId == user.Id)
+            // Pobieramy tylko GŁÓWNE wątki (ParentId == null)
+            var threads = await _ctx.Contacts
+                .Include(c => c.Replies) // Dołączamy odpowiedzi, aby wiedzieć ile ich jest
+                .Where(c => c.UserId == user.Id && c.ParentId == null && c.Type == ContactType.Support)
                 .OrderByDescending(c => c.CreatedAt)
-                .Take(200)
                 .ToListAsync();
 
-            var vm = new SupportViewModel { Recipient = "Admin", Sent = sent };
+            // Używamy tego samego modelu co wcześniej, ale w liście 'Sent' są teraz wątki
+            var vm = new SupportViewModel { Recipient = "Admin", Sent = threads };
             return View(vm);
         }
 
+        // TWORZENIE NOWEGO WĄTKU
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Support(SupportViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
             if (!ModelState.IsValid)
             {
-                if (user == null) return Challenge();
+                // W razie błędu ponownie ładujemy listę wątków
                 model.Sent = await _ctx.Contacts
-                    .Where(c => c.UserId == user.Id)
+                    .Include(c => c.Replies)
+                    .Where(c => c.UserId == user.Id && c.ParentId == null && c.Type == ContactType.Support)
                     .OrderByDescending(c => c.CreatedAt)
-                    .Take(200)
                     .ToListAsync();
                 return View(model);
             }
-
-            if (user == null) return Challenge();
 
             var prefix = model.Recipient == "Operator" ? "[Operator] " : "[Admin] ";
             var contact = new Contact
             {
                 UserId = user.Id,
+                Type = ContactType.Support,
+                Status = ContactStatus.New,
                 Subject = prefix + model.Subject,
-                Message = model.Message
+                Message = model.Message,
+                CreatedAt = DateTime.UtcNow,
+                ParentId = null // To jest początek wątku
             };
+
             _ctx.Contacts.Add(contact);
             await _ctx.SaveChangesAsync();
 
-            ViewBag.Success = "Wiadomość została wysłana.";
+            TempData["Success"] = "Nowe zgłoszenie zostało utworzone.";
+            return RedirectToAction(nameof(Support));
+        }
 
-            var sent = await _ctx.Contacts
-                .Where(c => c.UserId == user.Id)
-                .OrderByDescending(c => c.CreatedAt)
-                .Take(200)
-                .ToListAsync();
+        // SZCZEGÓŁY WĄTKU + CZAT (Nowa Akcja)
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> TicketDetails(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
 
-            var vm = new SupportViewModel { Recipient = model.Recipient, Sent = sent };
-            ModelState.Clear();
-            return View(vm);
+            // Pobierz wątek wraz z odpowiedziami
+            var thread = await _ctx.Contacts
+                .Include(c => c.Replies)
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == user.Id);
+
+            if (thread == null) return NotFound();
+
+            return View(thread);
+        }
+
+        // ODPOWIEDŹ KLIENTA W ISTNIEJĄCYM WĄTKU
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReplyToTicket(int parentId, string message)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return RedirectToAction(nameof(TicketDetails), new { id = parentId });
+            }
+
+            var parentThread = await _ctx.Contacts.FirstOrDefaultAsync(c => c.Id == parentId && c.UserId == user.Id);
+            if (parentThread == null) return NotFound();
+
+            // Zmieniamy status głównego wątku na 'New' (bo klient odpisał, więc admin musi zobaczyć)
+            parentThread.Status = ContactStatus.New;
+
+            var reply = new Contact
+            {
+                UserId = user.Id, // Klient odpisuje
+                Type = ContactType.Support,
+                Status = ContactStatus.New,
+                Subject = "RE: " + parentThread.Subject,
+                Message = message,
+                CreatedAt = DateTime.UtcNow,
+                ParentId = parentId // Podpinamy pod wątek
+            };
+
+            _ctx.Contacts.Add(reply);
+            await _ctx.SaveChangesAsync();
+
+            return RedirectToAction(nameof(TicketDetails), new { id = parentId });
         }
 
         [Authorize]

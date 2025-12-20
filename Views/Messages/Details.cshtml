@@ -1,14 +1,159 @@
+@using MonitoringConfigurator.Models
 @model MonitoringConfigurator.Models.Contact
 @{
-    ViewData["Title"] = "Podgląd wiadomości";
+    ViewData["Title"] = "Obsługa zgłoszenia";
+    var allMessages = new List<MonitoringConfigurator.Models.Contact> { Model };
+    if (Model.Replies != null)
+    {
+        allMessages.AddRange(Model.Replies);
+    }
+    allMessages = allMessages.OrderBy(m => m.CreatedAt).ToList();
 }
-<h2>Podgląd wiadomości</h2>
-<dl class="row">
-  <dt class="col-sm-2">Data</dt>
-  <dd class="col-sm-10">@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</dd>
-  <dt class="col-sm-2">Temat</dt>
-  <dd class="col-sm-10">@Model.Subject</dd>
-  <dt class="col-sm-2">Treść</dt>
-  <dd class="col-sm-10"><pre class="mb-0">@Model.Message</pre></dd>
-</dl>
-<a asp-action="Index" class="btn btn-secondary">Wróć</a>
+
+<div class="container-fluid py-3">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-secondary text-white">Informacje</div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Od:</strong></p>
+                    <p class="text-primary text-break">@ViewBag.UserEmail</p>
+
+                    <p class="mb-1"><strong>Imię (Gość):</strong></p>
+                    <p>@(Model.GuestName ?? "-")</p>
+
+                    <p class="mb-1"><strong>Data utworzenia:</strong></p>
+                    <p>@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+
+                    <p class="mb-1"><strong>Status:</strong></p>
+                    <p>
+                        @switch (Model.Status)
+                        {
+                            case ContactStatus.New:
+                                <span class="badge bg-danger">Nowe</span>
+                                ; break;
+                            case ContactStatus.Read:
+                                <span class="badge bg-warning text-dark">W trakcie</span>
+                                ; break;
+                            case ContactStatus.Replied:
+                                <span class="badge bg-success">Odpowiedziane</span>
+                                ; break;
+                            case ContactStatus.Closed:
+                                <span class="badge bg-secondary">Zamknięte</span>
+                                ; break;
+                        }
+                    </p>
+                    <hr />
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">Wróć do listy</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            @if (TempData["Msg"] != null)
+            {
+                <div class="alert alert-success">@TempData["Msg"]</div>
+            }
+
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                    <h5 class="mb-0 text-truncate" title="@Model.Subject">
+                        @if (Model.Type == ContactType.Opinion)
+                        {
+                            <span class="badge bg-warning text-dark me-2">OPINIA</span>
+                        }
+                        @Model.Subject
+                    </h5>
+
+                    <div>
+                        @if (Model.Status == ContactStatus.Closed)
+                        {
+                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="newStatus" value="@((int)ContactStatus.Read)" />
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-arrow-clockwise"></i> Otwórz ponownie
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <input type="hidden" name="newStatus" value="@((int)ContactStatus.Closed)" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-check-circle"></i> Zamknij zgłoszenie
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+
+                <div class="card-body bg-light" style="height: 500px; overflow-y: auto; display: flex; flex-direction: column;">
+                    @foreach (var msg in allMessages)
+                    {
+                        bool isClient = false;
+                        if (Model.UserId != null)
+                        {
+                            isClient = (msg.UserId == Model.UserId);
+                        }
+                        else
+                        {
+                            isClient = (msg.UserId == null);
+                        }
+
+                        <div class="d-flex mb-3 @(isClient ? "justify-content-start" : "justify-content-end")">
+                            <div class="card shadow-sm @(isClient ? "border-secondary" : "border-primary")" style="max-width: 80%;">
+                                <div class="card-header p-2 small @(isClient ? "bg-white" : "bg-primary text-white")">
+                                    <strong>@(isClient ? "Klient" : "Admin")</strong> &bull; @msg.CreatedAt.ToLocalTime().ToString("dd.MM HH:mm")
+                                </div>
+                                <div class="card-body p-2">
+                                    <p class="mb-0" style="white-space: pre-wrap;">@msg.Message</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-white">
+                    @* Formularz odpowiedzi *@
+                    @if (Model.Type != ContactType.Opinion)
+                    {
+                        @if (Model.Status == ContactStatus.Closed)
+                        {
+                            <div class="alert alert-secondary mb-0 text-center">
+                                To zgłoszenie jest zamknięte. Kliknij "Otwórz ponownie" powyżej, aby odpowiedzieć.
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-action="AdminReply" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+
+                                <div class="mb-2">
+                                    <textarea name="message" class="form-control" rows="3" placeholder="Treść odpowiedzi..."></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="closeTicket" value="true" id="closeTicketCheck" checked>
+                                        <label class="form-check-label" for="closeTicketCheck">
+                                            Zamknij zgłoszenie po wysłaniu
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">Wyślij odpowiedź</button>
+                                </div>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mb-0 text-center">
+                            <i class="bi bi-info-circle-fill"></i> To jest opinia (automatycznie zamknięta).
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
