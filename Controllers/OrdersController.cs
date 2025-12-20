@@ -79,11 +79,19 @@ namespace MonitoringConfigurator.Controllers
 
             if (order == null) return NotFound();
 
-            // Dla Admina pobieramy email właściciela zamówienia
+            // DLA ADMINA/OPERATORA: Pobieramy pełne dane właściciela zamówienia
             if (isStaff)
             {
                 var owner = await _userManager.FindByIdAsync(order.UserId);
-                ViewBag.OwnerEmail = owner?.Email ?? order.UserId;
+                if (owner != null)
+                {
+                    // Pobieramy dodatkowe dane (claims: adres, imię, firma)
+                    var claims = await _userManager.GetClaimsAsync(owner);
+
+                    // Przekazujemy do widoku
+                    ViewBag.OwnerUser = owner;
+                    ViewBag.OwnerClaims = claims.ToDictionary(c => c.Type, c => c.Value);
+                }
             }
 
             return View(order);

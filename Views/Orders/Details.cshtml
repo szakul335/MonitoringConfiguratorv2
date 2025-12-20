@@ -1,6 +1,17 @@
-﻿@model MonitoringConfigurator.Models.Order
+﻿@using Microsoft.AspNetCore.Identity
+@model MonitoringConfigurator.Models.Order
 @{
     ViewData["Title"] = $"Zamówienie #{Model.Id}";
+
+    // Sprawdzamy uprawnienia
+    bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
+
+    // Pobieramy dane przekazane z kontrolera (jeśli istnieją)
+    var owner = ViewBag.OwnerUser as IdentityUser;
+    var claims = ViewBag.OwnerClaims as Dictionary<string, string>;
+
+    // Funkcja pomocnicza do bezpiecznego pobierania wartości z claims
+    string GetClaim(string key) => (claims != null && claims.ContainsKey(key)) ? claims[key] : "-";
 }
 
 <div class="container py-5">
@@ -8,6 +19,37 @@
         <h2 class="text-white">Zamówienie #@Model.Id</h2>
         <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
     </div>
+
+    @* --- SEKCJA DANYCH KLIENTA (WIDOCZNA TYLKO DLA ADMINA/OPERATORA) --- *@
+    @if (isStaff && owner != null)
+    {
+        <div class="card bg-dark border-info mb-4">
+            <div class="card-header border-info text-info fw-bold">
+                <i class="bi bi-person-lines-fill me-2"></i> Dane zamawiającego
+            </div>
+            <div class="card-body text-white">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-muted text-uppercase small">Dane kontaktowe</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1"><strong>Imię i nazwisko:</strong> @GetClaim("profile:fullName")</li>
+                            <li class="mb-1"><strong>Firma:</strong> @GetClaim("profile:company")</li>
+                            <li class="mb-1"><strong>Email:</strong> <a href="mailto:@owner.Email" class="text-info text-decoration-none">@owner.Email</a></li>
+                            <li class="mb-1"><strong>Telefon:</strong> @(owner.PhoneNumber ?? "-")</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        @* Pusta przestrzeń dla wyrównania (opcjonalnie) lub po prostu brak nagłówka *@
+                        <div style="height: 1.4em;"></div>
+                        <ul class="list-unstyled">
+                          
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @* ------------------------------------------------------------------- *@
 
     <div class="card bg-dark border-secondary">
         <div class="card-header border-secondary">
