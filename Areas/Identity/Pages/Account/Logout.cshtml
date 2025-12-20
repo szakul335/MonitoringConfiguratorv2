@@ -1,0 +1,13 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    ViewData["Title"] = "Wylogowano";
+}
+
+<header>
+    <h1>@ViewData["Title"]</h1>
+    <p>Pomyślnie wylogowano z aplikacji.</p>
+</header>
