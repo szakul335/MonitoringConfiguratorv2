@@ -1,61 +1,97 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using MonitoringConfigurator.Models
 @model MonitoringConfigurator.Models.Order
 @{
-    ViewData["Title"] = $"Zamówienie #{Model.Id}";
-
-    // Sprawdzamy uprawnienia
+    ViewData["Title"] = $"Zapytanie #{Model.Id}";
     bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
-
-    // Pobieramy dane przekazane z kontrolera (jeśli istnieją)
     var owner = ViewBag.OwnerUser as IdentityUser;
     var claims = ViewBag.OwnerClaims as Dictionary<string, string>;
 
-    // Funkcja pomocnicza do bezpiecznego pobierania wartości z claims
     string GetClaim(string key) => (claims != null && claims.ContainsKey(key)) ? claims[key] : "-";
+
+    string GetStatusBadge(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Nowe => "bg-primary",
+            OrderStatus.WTrakcie => "bg-warning text-dark",
+            OrderStatus.Zatwierdzone => "bg-info text-dark",
+            OrderStatus.Zrealizowane => "bg-success",
+            OrderStatus.Anulowane => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
 }
 
 <div class="container py-5">
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-white">Zamówienie #@Model.Id</h2>
+        <h2 class="text-white">Zapytanie Ofertowe #@Model.Id</h2>
         <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
     </div>
 
-    @* --- SEKCJA DANYCH KLIENTA (WIDOCZNA TYLKO DLA ADMINA/OPERATORA) --- *@
+    @* --- PANEL ZMIANY STATUSU (TYLKO STAFF) --- *@
+    @if (isStaff)
+    {
+        <div class="card bg-dark border-warning mb-4">
+            <div class="card-header border-warning text-warning fw-bold">
+                <i class="bi bi-gear-fill me-2"></i> Zarządzanie statusem
+            </div>
+            <div class="card-body">
+                <form asp-action="ChangeStatus" method="post" class="row align-items-end g-3">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="col-auto">
+                        <label class="text-white form-label">Zmień status na:</label>
+                        <select name="newStatus" class="form-select bg-dark text-white border-secondary" asp-items="Html.GetEnumSelectList<OrderStatus>()" asp-for="Status">
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-warning">Zaktualizuj status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    @* --- DANE KONTAKTOWE (TYLKO STAFF) --- *@
     @if (isStaff && owner != null)
     {
         <div class="card bg-dark border-info mb-4">
             <div class="card-header border-info text-info fw-bold">
-                <i class="bi bi-person-lines-fill me-2"></i> Dane zamawiającego
+                <i class="bi bi-person-lines-fill me-2"></i> Dane klienta (do kontaktu)
             </div>
             <div class="card-body text-white">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <h6 class="text-muted text-uppercase small">Dane kontaktowe</h6>
-                        <ul class="list-unstyled">
-                            <li class="mb-1"><strong>Imię i nazwisko:</strong> @GetClaim("profile:fullName")</li>
-                            <li class="mb-1"><strong>Firma:</strong> @GetClaim("profile:company")</li>
-                            <li class="mb-1"><strong>Email:</strong> <a href="mailto:@owner.Email" class="text-info text-decoration-none">@owner.Email</a></li>
-                            <li class="mb-1"><strong>Telefon:</strong> @(owner.PhoneNumber ?? "-")</li>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><strong>Osoba:</strong> @GetClaim("profile:fullName")</li>
+                            <li class="mb-2"><strong>Firma:</strong> @GetClaim("profile:company")</li>
                         </ul>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        @* Pusta przestrzeń dla wyrównania (opcjonalnie) lub po prostu brak nagłówka *@
-                        <div style="height: 1.4em;"></div>
-                        <ul class="list-unstyled">
-                          
+                    <div class="col-md-6">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><strong>Email:</strong> <a href="mailto:@owner.Email" class="text-info text-decoration-none">@owner.Email</a></li>
+                            <li class="mb-2"><strong>Telefon:</strong> <a href="tel:@owner.PhoneNumber" class="text-info text-decoration-none">@owner.PhoneNumber</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     }
-    @* ------------------------------------------------------------------- *@
 
     <div class="card bg-dark border-secondary">
         <div class="card-header border-secondary">
-            <div class="d-flex justify-content-between text-white">
-                <span>Data: <strong>@Model.OrderDate.ToLocalTime().ToString("g")</strong></span>
-                <span>Status: <span class="badge bg-success">Przyjęte</span></span>
+            <div class="d-flex justify-content-between text-white align-items-center">
+                <span>Data złożenia: <strong>@Model.OrderDate.ToLocalTime().ToString("g")</strong></span>
+                <span class="fs-5">Status: <span class="badge @GetStatusBadge(Model.Status)">@Model.Status</span></span>
             </div>
         </div>
         <div class="card-body p-0">
@@ -64,7 +100,7 @@
                     <tr>
                         <th class="ps-4">Produkt</th>
                         <th class="text-center">Ilość</th>
-                        <th class="text-end">Cena jedn.</th>
+                        <th class="text-end">Cena katalogowa</th>
                         <th class="text-end pe-4">Wartość</th>
                     </tr>
                 </thead>
@@ -84,11 +120,14 @@
                 </tbody>
                 <tfoot>
                     <tr class="fs-5">
-                        <td colspan="3" class="text-end fw-bold pt-3">Suma:</td>
-                        <td class="text-end fw-bold text-danger pe-4 pt-3">@Model.TotalAmount.ToString("N2") zł</td>
+                        <td colspan="3" class="text-end fw-bold pt-3">Szacunkowa suma:</td>
+                        <td class="text-end fw-bold text-info pe-4 pt-3">@Model.TotalAmount.ToString("N2") zł</td>
                     </tr>
                 </tfoot>
             </table>
+        </div>
+        <div class="card-footer border-secondary text-center text-muted small py-3">
+            Podane ceny są cenami brutto. Ostateczna oferta może uwzględniać rabaty ilościowe oraz koszty instalacji ustalone indywidualnie.
         </div>
     </div>
 </div>

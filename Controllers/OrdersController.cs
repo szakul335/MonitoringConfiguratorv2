@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace MonitoringConfigurator.Controllers
 {
@@ -23,18 +24,16 @@ namespace MonitoringConfigurator.Controllers
             _userManager = userManager;
         }
 
-        // Lista zamówień
+        // Lista zamówień / zapytań
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
             bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
 
-            // Budujemy zapytanie podstawowe
             var query = _ctx.Orders
                 .Include(o => o.Items)
                 .AsQueryable();
 
-            // Jeśli to zwykły użytkownik (nie Admin/Operator), filtrujemy tylko jego zamówienia
             if (!isStaff)
             {
                 query = query.Where(o => o.UserId == userId);
@@ -44,8 +43,6 @@ namespace MonitoringConfigurator.Controllers
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
-            // Opcjonalnie: Przekazujemy listę emaili użytkowników do widoku (dla Admina),
-            // aby wyświetlić email zamiast samego ID.
             if (isStaff)
             {
                 var userIds = orders.Select(o => o.UserId).Distinct().ToList();
@@ -58,7 +55,7 @@ namespace MonitoringConfigurator.Controllers
             return View(orders);
         }
 
-        // Szczegóły zamówienia
+        // Szczegóły zapytania
         public async Task<IActionResult> Details(int id)
         {
             var userId = _userManager.GetUserId(User);
@@ -69,7 +66,6 @@ namespace MonitoringConfigurator.Controllers
                 .ThenInclude(i => i.Product)
                 .AsQueryable();
 
-            // Zabezpieczenie: zwykły użytkownik widzi tylko swoje, Staff widzi wszystko
             if (!isStaff)
             {
                 query = query.Where(o => o.UserId == userId);
@@ -79,16 +75,12 @@ namespace MonitoringConfigurator.Controllers
 
             if (order == null) return NotFound();
 
-            // DLA ADMINA/OPERATORA: Pobieramy pełne dane właściciela zamówienia
             if (isStaff)
             {
                 var owner = await _userManager.FindByIdAsync(order.UserId);
                 if (owner != null)
                 {
-                    // Pobieramy dodatkowe dane (claims: adres, imię, firma)
                     var claims = await _userManager.GetClaimsAsync(owner);
-
-                    // Przekazujemy do widoku
                     ViewBag.OwnerUser = owner;
                     ViewBag.OwnerClaims = claims.ToDictionary(c => c.Type, c => c.Value);
                 }
@@ -97,7 +89,23 @@ namespace MonitoringConfigurator.Controllers
             return View(order);
         }
 
-        // Akcja tworząca zamówienie na podstawie JSON z konfiguratora
+        // Zmiana statusu (Tylko dla Admina/Operatora)
+        [HttpPost]
+        [Authorize(Roles = "Admin,Operator")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int id, OrderStatus newStatus)
+        {
+            var order = await _ctx.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            order.Status = newStatus;
+            await _ctx.SaveChangesAsync();
+
+            TempData["Message"] = $"Status zamówienia #{id} został zmieniony na: {newStatus}.";
+            return RedirectToAction(nameof(Details), new { id = id });
+        }
+
+        // Tworzenie zapytania z konfiguratora
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFromConfig(string jsonResult)
@@ -113,15 +121,14 @@ namespace MonitoringConfigurator.Controllers
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Challenge();
 
-            // Tworzenie zamówienia
             var order = new Order
             {
                 UserId = userId,
                 OrderDate = DateTime.UtcNow,
-                TotalAmount = config.TotalPrice
+                TotalAmount = config.TotalPrice,
+                Status = OrderStatus.Nowe // Domyślny status: Nowe zapytanie
             };
 
-            // Pomocnicza funkcja dodawania pozycji
             void AddItem(Product? p, int qty)
             {
                 if (p != null && qty > 0)
@@ -135,7 +142,6 @@ namespace MonitoringConfigurator.Controllers
                 }
             }
 
-            // Przepisanie produktów z konfiguracji do zamówienia
             AddItem(config.SelectedOutdoorCam, config.Input.OutdoorCamCount);
             AddItem(config.SelectedIndoorCam, config.Input.IndoorCamCount);
             AddItem(config.SelectedRecorder, config.RecorderQuantity);
@@ -148,6 +154,8 @@ namespace MonitoringConfigurator.Controllers
 
             _ctx.Orders.Add(order);
             await _ctx.SaveChangesAsync();
+
+            // Tutaj opcjonalnie: wysłanie maila do handlowca
 
             return RedirectToAction(nameof(Success), new { id = order.Id });
         }

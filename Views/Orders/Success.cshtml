@@ -1,16 +1,24 @@
 ﻿@model int
 @{
-    ViewData["Title"] = "Dziękujemy";
+    ViewData["Title"] = "Zapytanie wysłane";
 }
 <div class="container py-5 text-center">
     <div class="mb-4">
-        <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+        <i class="bi bi-envelope-check text-info" style="font-size: 5rem;"></i>
     </div>
-    <h1 class="text-white display-5 fw-bold">Dziękujemy!</h1>
-    <p class="text-secondary lead">Twoje zamówienie nr <strong>#@Model</strong> zostało przyjęte do realizacji.</p>
+    <h1 class="text-white display-5 fw-bold">Zapytanie wysłane!</h1>
+    <p class="text-white lead mt-3">
+        Twoja konfiguracja nr <strong class="text-info">#@Model</strong> została przekazana do działu handlowego.
+    </p>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8 text-secondary">
+            <p>To <strong>nie jest</strong> ostateczne zamówienie. Nasz doradca zweryfikuje dobór sprzętu pod kątem Twojego obiektu i skontaktuje się z Tobą telefonicznie, aby potwierdzić szczegóły oraz zaproponować ewentualne rabaty.</p>
+        </div>
+    </div>
 
     <div class="mt-5 d-flex justify-content-center gap-3">
-        <a asp-action="Index" class="btn btn-outline-light px-4">Historia zamówień</a>
+        <a asp-action="Index" class="btn btn-outline-light px-4">Moje zapytania</a>
         <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4">Strona główna</a>
     </div>
 </div>

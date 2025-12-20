@@ -1,19 +1,32 @@
 ﻿@model IEnumerable<MonitoringConfigurator.Models.Order>
 @{
-    ViewData["Title"] = "Zamówienia";
+    ViewData["Title"] = "Historia zapytań";
     bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
     var userEmails = ViewBag.UserEmails as Dictionary<string, string>;
+
+    string GetStatusBadge(MonitoringConfigurator.Models.OrderStatus status)
+    {
+        return status switch
+        {
+            MonitoringConfigurator.Models.OrderStatus.Nowe => "bg-primary",
+            MonitoringConfigurator.Models.OrderStatus.WTrakcie => "bg-warning text-dark",
+            MonitoringConfigurator.Models.OrderStatus.Zatwierdzone => "bg-info text-dark",
+            MonitoringConfigurator.Models.OrderStatus.Zrealizowane => "bg-success",
+            MonitoringConfigurator.Models.OrderStatus.Anulowane => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
 }
 
 <div class="container py-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
             <h2 class="text-white mb-1">
-                @(isStaff ? "Wszystkie zamówienia (Panel Admina)" : "Moje zamówienia")
+                @(isStaff ? "Wszystkie zapytania (Panel Admina)" : "Moje zapytania ofertowe")
             </h2>
             @if (isStaff)
             {
-                <p class="text-muted mb-0">Przeglądaj zamówienia złożone przez klientów.</p>
+                <p class="text-muted mb-0">Zarządzaj zapytaniami od klientów.</p>
             }
         </div>
     </div>
@@ -21,13 +34,12 @@
     @if (!Model.Any())
     {
         <div class="alert alert-dark border-secondary text-secondary">
-            Brak zamówień w systemie.
+            Brak zapytań w systemie.
             @if (!isStaff)
             {
                 <a asp-controller="Configurator" asp-action="Index" class="alert-link">Przejdź do konfiguratora</a>
             }
             .
-        }
         </div>
     }
     else
@@ -42,8 +54,9 @@
                             <th>Klient</th>
                         }
                         <th>Data</th>
-                        <th>Ilość pozycji</th>
-                        <th>Kwota</th>
+                        <th>Status</th>
+                        <th>Ilość poz.</th>
+                        <th>Szacunkowa kwota</th>
                         <th class="text-end">Akcje</th>
                     </tr>
                 </thead>
@@ -62,7 +75,6 @@
                                     {
                                         var email = userEmails[order.UserId];
                                         <div class="fw-bold text-white">@email</div>
-                                        <small class="text-muted" style="font-size: 0.75rem;">ID: @order.UserId</small>
                                     }
                                     else
                                     {
@@ -72,8 +84,14 @@
                             }
 
                             <td>@order.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+
+                            @* --- KOLUMNA STATUSU --- *@
+                            <td>
+                                <span class="badge @GetStatusBadge(order.Status)">@order.Status</span>
+                            </td>
+
                             <td>@order.Items.Count</td>
-                            <td class="fw-bold text-danger">@order.TotalAmount.ToString("N2") zł</td>
+                            <td class="fw-bold text-info">@order.TotalAmount.ToString("N2") zł</td>
                             <td class="text-end">
                                 <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">
                                     Szczegóły
