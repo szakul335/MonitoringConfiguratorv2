@@ -3,183 +3,392 @@
 }
 
 <style>
-  /* NEW minimal look for the Guides page */
-  body { background:#0e0f11; color:#e8eaed; }
-  .headline { letter-spacing:.3px }
-  .subtle { color:#a6a9ad }
-  .pill { border:1px solid #2b2f36; background:#13151a; color:#e8eaed; padding:.45rem .9rem; border-radius:999px; cursor:pointer; }
-  .pill.active { background:#ff3b30; border-color:#ff3b30; color:#fff; }
-  .pill:hover { border-color:#3a3f48 }
-  .guide-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
-  .guide-item { border:1px solid #2b2f36; background:linear-gradient(180deg,#15171c 0%, #121419 100%); border-radius:14px; padding:16px; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
-  .guide-item:hover { transform:translateY(-2px); border-color:#3a3f48; box-shadow:0 6px 24px rgba(0,0,0,.25); }
-  .guide-item h6 { margin:0 0 .35rem 0; font-weight:600; }
-  .guide-item .meta { font-size:.9rem; color:#a6a9ad }
-  .guide-item .actions a { text-decoration:none; font-size:.92rem; margin-right:10px; }
-  .tag { font-size:.75rem; padding:.15rem .5rem; border:1px solid #2b2f36; border-radius:999px; color:#cfd2d5 }
-  .stepper { display:flex; gap:14px; overflow:auto; padding-bottom:6px }
-  .step { flex:1 1 200px; border:1px dashed #32363e; border-radius:12px; padding:12px; background:#121419 }
-  .step b { display:block; margin-bottom:6px }
-  .callout { border:1px solid #2b2f36; background:#121419; border-radius:14px; padding:16px }
-  .search { background:#121419; border:1px solid #2b2f36; color:#e8eaed }
-  a.link { color:#ff5c52 }
+    body {
+        background-color: #111;
+        color: #eaeaea;
+    }
+
+    .guides-hero {
+        background: linear-gradient(135deg, rgba(21, 21, 24, 0.95) 0%, rgba(21, 21, 24, 0.8) 100%);
+        border-bottom: 1px solid #2b2b2b;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .guide-box {
+        background: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+        .guide-box:hover {
+            background: #202025;
+            border-color: #ff3b30;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+    .guide-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 59, 48, 0.1);
+        color: #ff3b30;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .guide-category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #a1a1aa;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .guide-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.75rem;
+    }
+
+    .guide-desc {
+        color: #d4d4d8;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .step-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed #3f3f46;
+        border-radius: 12px;
+        padding: 1.25rem;
+        min-width: 220px;
+        flex: 1;
+    }
+
+    .step-num {
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #ff3b30;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .filter-btn {
+        background: transparent;
+        border: 1px solid #3f3f46;
+        color: #a1a1aa;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ff3b30;
+            border-color: #ff3b30;
+            color: #fff;
+        }
+
+    .search-container {
+        background: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 1rem;
+    }
 </style>
 
-<div class="container py-4">
-  <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-3">
-    <div>
-      <h1 class="headline mb-1">Instrukcje</h1>
-      <div class="subtle">Zebrane w jednym miejscu krótkie, praktyczne poradniki.</div>
+<div class="container-fluid p-0">
+    <div class="guides-hero">
+        <div class="container text-center">
+            @* Nagłówek jednolity biały *@
+            <h1 class="display-4 fw-bold text-white mb-2">Baza Wiedzy</h1>
+            <p class="lead text-secondary mx-auto" style="max-width: 600px;">
+                Praktyczne poradniki, konfiguracje krok po kroku i baza wiedzy technicznej.
+            </p>
+        </div>
     </div>
-    <div class="ms-auto" style="min-width:280px;">
-      <div class="input-group">
-        <span class="input-group-text search">🔎</span>
-        <input id="q" class="form-control search" placeholder="Szukaj…">
-      </div>
-    </div>
-  </div>
-
-  <!-- Filter pills -->
-  <div class="d-flex flex-wrap gap-2 mb-3" id="pills">
-    <button class="pill active" data-cat="all">Wszystko</button>
-    <button class="pill" data-cat="start">Start</button>
-    <button class="pill" data-cat="sieć">Sieć</button>
-    <button class="pill" data-cat="nagrywanie">Nagrywanie</button>
-    <button class="pill" data-cat="sprzęt">Sprzęt</button>
-    <button class="pill" data-cat="bezpieczeństwo">Bezpieczeństwo</button>
-  </div>
-
-  <!-- Quick stepper -->
-  <div class="stepper mb-3">
-    <div class="step"><b>1. Uruchom</b> Podłącz dysk, PoE i monitor. Przejdź kreator, ustaw hasło i e‑mail odzyskiwania.</div>
-    <div class="step"><b>2. Sieć</b> DHCP albo IP statyczne. Sprawdź łączność i ustaw NTP/strefę.</div>
-    <div class="step"><b>3. Dodaj kamery</b> ONVIF/auto‑wyszukiwanie. Zmień hasła domyślne.</div>
-    <div class="step"><b>4. Nagrywanie</b> Harmonogram + zdarzenia. Włącz H.265 i ustal retencję.</div>
-    <div class="step"><b>5. Dostęp zdalny</b> P2P lub DDNS. Aktywuj 2FA.</div>
-  </div>
-
-  <!-- Grid of guides -->
-  <div class="guide-grid" id="grid">
-    <!-- Start -->
-    <div class="guide-item" data-cat="start">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Konfiguracja „szybki start”</h6><span class="tag">Start</span>
-      </div>
-      <div class="meta mb-2">Pierwsze uruchomienie rejestratora krok po kroku.</div>
-      <div class="actions">
-        <a href="#" class="link">PDF</a>
-        <a href="#" class="link">Wideo</a>
-      </div>
-    </div>
-
-    <!-- Sieć -->
-    <div class="guide-item" data-cat="sieć">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>PoE i segmentacja VLAN</h6><span class="tag">Sieć</span>
-      </div>
-      <div class="meta mb-2">Jak podłączyć kamery PoE i odseparować ruch CCTV.</div>
-      <div class="actions">
-        <a href="#" class="link">PDF</a>
-        <a href="https://www.youtube.com/embed/dQw4w9WgXcQ" class="link" target="_blank">Wideo</a>
-      </div>
-    </div>
-
-    <div class="guide-item" data-cat="sieć">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Zdalny dostęp P2P / DDNS</h6><span class="tag">Sieć</span>
-      </div>
-      <div class="meta mb-2">Podgląd w aplikacji i przez przeglądarkę – bezpieczna konfiguracja.</div>
-      <div class="actions">
-        <a href="#" class="link">PDF</a>
-      </div>
-    </div>
-
-    <!-- Nagrywanie -->
-    <div class="guide-item" data-cat="nagrywanie">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Harmonogram i zdarzenia</h6><span class="tag">Nagrywanie</span>
-      </div>
-      <div class="meta mb-2">Konfiguracja nagrywania ciągłego + detekcji / VCA.</div>
-      <div class="actions">
-        <a href="#" class="link">PDF</a>
-      </div>
-    </div>
-
-    <div class="guide-item" data-cat="nagrywanie">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Kalkulacja pojemności dysków</h6><span class="tag">Nagrywanie</span>
-      </div>
-      <div class="meta mb-2">Jak policzyć retencję – FPS, kodek, bitrate. </div>
-      <div class="actions">
-        <a asp-controller="Configurator" asp-action="Index" class="link">Otwórz Konfigurator</a>
-      </div>
-    </div>
-
-    <!-- Sprzęt -->
-    <div class="guide-item" data-cat="sprzęt">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Dobór obiektywu</h6><span class="tag">Sprzęt</span>
-      </div>
-      <div class="meta mb-2">Ogniskowa vs. kąt widzenia – kiedy 2.8 mm, a kiedy 12 mm.</div>
-      <div class="actions">
-        <a href="#" class="link">Tabela ogniskowych (PDF)</a>
-      </div>
-    </div>
-
-    <div class="guide-item" data-cat="sprzęt">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Okablowanie i zasilanie</h6><span class="tag">Sprzęt</span>
-      </div>
-      <div class="meta mb-2">Kable CU kat.5e/6, limity 90 m, budżet PoE +20%.</div>
-      <div class="actions">
-        <a href="#" class="link">Poradnik (PDF)</a>
-      </div>
-    </div>
-
-    <!-- Bezpieczeństwo -->
-    <div class="guide-item" data-cat="bezpieczeństwo">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6>Bezpieczeństwo systemu</h6><span class="tag">Bezpieczeństwo</span>
-      </div>
-      <div class="meta mb-2">Silne hasła, 2FA, aktualizacje, segmentacja sieci.</div>
-      <div class="actions">
-        <a href="#" class="link">Checklist (PDF)</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout mt-3">
-    Nie znalazłeś instrukcji? Sprawdź <a asp-controller="Info" asp-action="Faq" class="link">FAQ</a> lub przejdź do <a asp-controller="Info" asp-action="Support" class="link"><b>Wsparcia</b></a>.
-  </div>
 </div>
 
-@section Scripts{
-<script>
-(function(){
-  const q = document.getElementById('q');
-  const pills = document.querySelectorAll('#pills .pill');
-  const items = document.querySelectorAll('.guide-item');
+<div class="container pb-5">
 
-  function applyFilter(){
-    const text = (q.value||'').trim().toLowerCase();
-    const active = document.querySelector('#pills .pill.active')?.dataset.cat || 'all';
-    items.forEach(it=>{
-      const hay = it.innerText.toLowerCase();
-      const cat = it.getAttribute('data-cat');
-      const matchText = hay.includes(text);
-      const matchCat = (active==='all') || (cat===active);
-      it.style.display = (matchText && matchCat) ? '' : 'none';
-    });
-  }
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="search-container mb-4 d-flex align-items-center">
+                <i class="bi bi-search text-secondary fs-5 ms-2 me-3"></i>
+                <input type="text" id="searchInput" class="form-control bg-transparent border-0 text-white shadow-none p-0" placeholder="Wpisz temat (np. PoE, P2P, dysk)..." style="font-size: 1.1rem;">
+            </div>
 
-  q.addEventListener('input', applyFilter);
-  pills.forEach(p=>{
-    p.addEventListener('click', ()=>{
-      pills.forEach(x=>x.classList.remove('active'));
-      p.classList.add('active');
-      applyFilter();
-    });
-  });
-})();
-</script>
+            <div class="d-flex flex-wrap justify-content-center gap-2" id="filterContainer">
+                <button class="filter-btn active" data-filter="all">Wszystkie</button>
+                <button class="filter-btn" data-filter="start">Start</button>
+                <button class="filter-btn" data-filter="sieć">Sieć</button>
+                <button class="filter-btn" data-filter="nagrywanie">Nagrywanie</button>
+                <button class="filter-btn" data-filter="sprzęt">Sprzęt</button>
+                <button class="filter-btn" data-filter="bezpieczeństwo">Bezpieczeństwo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <div class="d-flex align-items-center mb-4">
+            <h4 class="text-white fw-bold mb-0 ps-3 border-start border-4 border-danger">
+                Szybki Start
+            </h4>
+            <span class="text-muted ms-3 small">5 kroków do uruchomienia</span>
+        </div>
+
+        <div class="d-flex gap-3 overflow-auto pb-3" style="scrollbar-color: #3f3f46 #111; scrollbar-width: thin;">
+            <div class="step-card">
+                <span class="step-num">Krok 01</span>
+                <div class="fw-bold text-white mb-1">Podłączenie</div>
+                <div class="text-secondary small">Zasilanie PoE, dysk HDD i monitor.</div>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Krok 02</span>
+                <div class="fw-bold text-white mb-1">Sieć</div>
+                <div class="text-secondary small">Adresacja IP, DHCP i serwer NTP.</div>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Krok 03</span>
+                <div class="fw-bold text-white mb-1">Kamery</div>
+                <div class="text-secondary small">Aktywacja i dodawanie (ONVIF).</div>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Krok 04</span>
+                <div class="fw-bold text-white mb-1">Nagrywanie</div>
+                <div class="text-secondary small">Harmonogram, detekcja ruchu.</div>
+            </div>
+            <div class="step-card">
+                <span class="step-num">Krok 05</span>
+                <div class="fw-bold text-white mb-1">Online</div>
+                <div class="text-secondary small">Chmura P2P i aplikacja mobilna.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="guidesGrid">
+        <div class="col-md-6 col-lg-4 guide-item" data-category="start">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-rocket-takeoff"></i>
+                </div>
+                <div class="guide-category">Start</div>
+                <h3 class="guide-title">Pierwsze uruchomienie</h3>
+                <p class="guide-desc">
+                    Kompletny przewodnik konfiguracji rejestratora od wyjęcia z pudełka. Kreator wstępny i podstawowe ustawienia.
+                </p>
+                <div class="mt-auto d-flex gap-2">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">Instrukcja PDF</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="sieć">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-router"></i>
+                </div>
+                <div class="guide-category">Sieć</div>
+                <h3 class="guide-title">PoE i VLAN</h3>
+                <p class="guide-desc">
+                    Jak poprawnie podłączyć kamery PoE, zarządzać budżetem mocy i odseparować sieć monitoringu od biurowej.
+                </p>
+                <div class="mt-auto d-flex gap-2">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">PDF</a>
+                    <a href="https://www.youtube.com/embed/dQw4w9WgXcQ" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75"><i class="bi bi-play-circle me-1"></i> Wideo</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="sieć">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-cloud-check"></i>
+                </div>
+                <div class="guide-category">Sieć</div>
+                <h3 class="guide-title">Dostęp zdalny P2P</h3>
+                <p class="guide-desc">
+                    Konfiguracja podglądu w aplikacji mobilnej bez stałego adresu IP. Bezpieczne połączenie szyfrowane.
+                </p>
+                <div class="mt-auto">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">Zobacz poradnik</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="nagrywanie">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-hdd-network"></i>
+                </div>
+                <div class="guide-category">Nagrywanie</div>
+                <h3 class="guide-title">Kalkulator dyskowy</h3>
+                <p class="guide-desc">
+                    Jak dobrać pojemność dysku HDD? Zależności między rozdzielczością, klatkarzem (FPS) a czasem archiwizacji.
+                </p>
+                <div class="mt-auto">
+                    <a asp-controller="Configurator" asp-action="Index" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold">
+                        Przejdź do konfiguratora
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="nagrywanie">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-film"></i>
+                </div>
+                <div class="guide-category">Nagrywanie</div>
+                <h3 class="guide-title">Detekcja i Analityka</h3>
+                <p class="guide-desc">
+                    Konfiguracja nagrywania z detekcji ruchu oraz zaawansowane reguły VCA (przekroczenie linii, wtargnięcie).
+                </p>
+                <div class="mt-auto">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">PDF</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="sprzęt">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-camera-video"></i>
+                </div>
+                <div class="guide-category">Sprzęt</div>
+                <h3 class="guide-title">Dobór obiektywu</h3>
+                <p class="guide-desc">
+                    Kąty widzenia a ogniskowa (mm). Kiedy stosować obiektywy szerokokątne 2.8mm, a kiedy motozoom?
+                </p>
+                <div class="mt-auto">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">Tabela (PDF)</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="sprzęt">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-lightning-charge"></i>
+                </div>
+                <div class="guide-category">Sprzęt</div>
+                <h3 class="guide-title">Okablowanie</h3>
+                <p class="guide-desc">
+                    Zasady doboru skrętki (Cat 5e/6), maksymalne odległości transmisji i zabezpieczenia przepięciowe.
+                </p>
+                <div class="mt-auto">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">Standardy</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4 guide-item" data-category="bezpieczeństwo">
+            <div class="guide-box">
+                <div class="guide-icon-wrapper">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <div class="guide-category">Bezpieczeństwo</div>
+                <h3 class="guide-title">Cyberbezpieczeństwo</h3>
+                <p class="guide-desc">
+                    Hardening rejestratora: silne hasła, aktualizacja firmware, wyłączanie zbędnych usług i izolacja sieci.
+                </p>
+                <div class="mt-auto">
+                    <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-3 opacity-75">Checklista</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="noResults" class="text-center py-5 d-none">
+        <i class="bi bi-search display-1 text-secondary opacity-25"></i>
+        <h4 class="text-white mt-3">Nic nie znaleziono</h4>
+        <p class="text-muted">Spróbuj zmienić słowa kluczowe.</p>
+    </div>
+
+    <div class="mt-5 p-4 rounded-4 text-center" style="background: #1a1a1e; border: 1px solid #2b2b2b;">
+        <p class="text-secondary mb-0">
+            Nie znalazłeś odpowiedzi? Sprawdź
+            <a asp-controller="Info" asp-action="Faq" class="text-white text-decoration-underline fw-bold mx-1">FAQ</a>
+            lub skontaktuj się ze
+            <a asp-controller="Info" asp-action="Support" class="text-danger text-decoration-underline fw-bold mx-1">Wsparciem</a>.
+        </p>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const guideItems = document.querySelectorAll('.guide-item');
+            const noResults = document.getElementById('noResults');
+
+            function filterGuides() {
+                const searchText = searchInput.value.toLowerCase().trim();
+                const activeCategory = document.querySelector('.filter-btn.active').dataset.filter;
+                let visibleCount = 0;
+
+                guideItems.forEach(item => {
+                    const itemCategory = item.dataset.category;
+                    const itemText = item.innerText.toLowerCase();
+
+                    const matchesSearch = itemText.includes(searchText);
+                    const matchesCategory = activeCategory === 'all' || itemCategory === activeCategory;
+
+                    if (matchesSearch && matchesCategory) {
+                        item.classList.remove('d-none');
+                        item.style.animation = 'none';
+                        item.offsetHeight; /* trigger reflow */
+                        item.style.animation = 'fadeIn 0.4s ease forwards';
+                        visibleCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filterGuides();
+                });
+            });
+
+            searchInput.addEventListener('input', filterGuides);
+        });
+    </script>
+
+    <style>
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 }

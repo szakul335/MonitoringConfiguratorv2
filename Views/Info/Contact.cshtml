@@ -2,122 +2,246 @@
 @{
     ViewData["Title"] = "Kontakt";
 }
+
 <style>
-    .contact-card {
-        background: #151518;
-        border: 1px solid #2b2b2b;
-        border-radius: .5rem;
+    /* Spójny motyw ciemny */
+    body {
+        background-color: #111;
+        color: #eaeaea;
     }
 
-        .contact-card h5 {
-            margin-bottom: .5rem
+    /* Sekcja Hero */
+    .contact-hero {
+        background: linear-gradient(135deg, rgba(21, 21, 24, 0.95) 0%, rgba(21, 21, 24, 0.8) 100%);
+        border-bottom: 1px solid #2b2b2b;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    /* Karty Informacyjne (Info Box) */
+    .info-box {
+        background: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+        .info-box:hover {
+            background: #202025;
+            border-color: #ff3b30;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-    .contact-list li {
-        margin-bottom: .4rem
-    }
-
-    .contact-list a {
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 59, 48, 0.1); /* Czerwona poświata */
         color: #ff3b30;
-        text-decoration: none
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
     }
 
-        .contact-list a:hover {
-            text-decoration: underline
+    .info-box:hover .icon-wrapper {
+        transform: scale(1.1);
+        background: #ff3b30;
+        color: #fff;
+    }
+
+    .info-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #a1a1aa;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .info-content {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0;
+    }
+
+        .info-content a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s;
         }
 
-    .map-wrap {
-        border: 1px solid #2b2b2b;
-        border-radius: .5rem;
+            .info-content a:hover {
+                color: #ff3b30;
+            }
+
+    /* Mapa */
+    .map-container {
+        border-radius: 12px;
         overflow: hidden;
-        background: #0f0f10
+        border: 1px solid #2b2b2b;
+        height: 100%;
+        min-height: 400px;
+        background: #1a1a1e;
     }
 
-    .muted {
-        color: #9ca3af
+    /* Formularz */
+    .form-card {
+        background: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
+        padding: 2rem;
     }
+
+    .form-control-dark {
+        background-color: #0b0b0b;
+        border: 1px solid #2b2b2b;
+        color: #e5e7eb;
+        padding: 0.75rem 1rem;
+    }
+
+        .form-control-dark:focus {
+            background-color: #000;
+            border-color: #ff3b30;
+            box-shadow: 0 0 0 0.25rem rgba(225, 6, 0, 0.15);
+            color: #fff;
+        }
 </style>
 
-<div class="container py-4">
-    <h1 class="mb-2">Kontakt</h1>
-    <p class="text-muted">
-        Skontaktuj się z nami w sprawach technicznych i handlowych.
-        Odpowiadamy w dni robocze 9:00–17:00.
-    </p>
+<div class="container-fluid p-0">
+    <div class="contact-hero">
+        <div class="container text-center">
+            @* Jednolity, biały tytuł *@
+            <h1 class="display-4 fw-bold text-white mb-2">Jesteśmy do Twojej dyspozycji</h1>
+            <p class="lead text-secondary mx-auto" style="max-width: 600px;">
+                Masz pytania dotyczące konfiguratora lub zamówienia? Skontaktuj się z nami.
+            </p>
+        </div>
+    </div>
+</div>
 
-    <div class="row g-3 mb-3">
-        <div class="col-12 col-lg-6">
-            <div class="contact-card p-3 h-100">
-                <h5>Dane kontaktowe</h5>
-                <ul class="list-unstyled contact-list mb-0">
-                    <li><strong>E‑mail:</strong> <a href="mailto:kontakt@przyklad.pl">kontakt@przyklad.pl</a></li>
-                    <li><strong>Telefon:</strong> <a href="tel:+48123456789">+48 123 456 789</a></li>
-                    <li><strong>Godziny:</strong> pon–pt 9:00–17:00</li>
-                </ul>
+<div class="container pb-5">
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="info-box">
+                <div class="icon-wrapper">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+                <div class="info-title">Zadzwoń do nas</div>
+                <div class="info-content">
+                    <a href="tel:+48123456789">+48 123 456 789</a>
+                </div>
             </div>
         </div>
-        <div class="col-12 col-lg-6">
-            <div class="contact-card p-3 h-100">
-                <h5>Dane firmy</h5>
-                <ul class="list-unstyled contact-list mb-0">
-                    <li><strong>Adres:</strong> Gorzechowo 1, 09‑414 Gorzechowo</li>
-                    <li><strong>NIP:</strong> 734‑197‑45‑21</li>
-                    <li class="muted">Wejście od strony parkingu, biuro na I piętrze.</li>
-                </ul>
+        <div class="col-md-6 col-lg-3">
+            <div class="info-box">
+                <div class="icon-wrapper">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <div class="info-title">Napisz maila</div>
+                <div class="info-content">
+                    <a href="mailto:kontakt@przyklad.pl">kontakt@przyklad.pl</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="info-box">
+                <div class="icon-wrapper">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <div class="info-title">Odwiedź nas</div>
+                <div class="info-content">
+                    Gorzechowo 1<br />
+                    <span class="fs-6 fw-normal text-secondary">09‑414 Gorzechowo</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="info-box">
+                <div class="icon-wrapper">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <div class="info-title">Godziny pracy</div>
+                <div class="info-content">
+                    Pon – Pt<br />
+                    <span class="fs-6 fw-normal text-secondary">9:00 – 17:00</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-3">
-        <div class="col-12 col-lg-7">
-            <div class="map-wrap">
-                <iframe src="https://maps.google.com/maps?q=Gorzechowo%201&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                        width="100%" height="360" style="border:0" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="map-container shadow-lg">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2443.766750377484!2d20.00000000000000!3d52.00000000000000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAwJzAwLjAiTiAyMMKwMDAnMDAuMCJF!5e0!3m2!1spl!2spl!4v1600000000000!5m2!1spl!2spl"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
-        <div class="col-12 col-lg-5">
-            <div class="contact-card p-3 h-100">
-                <h5>Napisz wiadomość</h5>
+
+        <div class="col-lg-6">
+            <div class="form-card shadow-lg h-100">
+                <h3 class="text-white fw-bold mb-3">Wyślij wiadomość</h3>
 
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success">@TempData["Success"]</div>
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success text-white d-flex align-items-center mb-4">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                    </div>
                 }
 
-                <p class="muted">
-                    Najwygodniej przez zakładkę <a asp-controller="Info" asp-action="Support">Wsparcie</a>.
-                    Możesz też skorzystać z poniższego formularza.
+                <p class="text-secondary mb-4">
+                    Najszybciej uzyskasz pomoc przez zakładkę <a asp-controller="Info" asp-action="Support" class="text-danger text-decoration-underline fw-bold">Wsparcie</a>, ale możesz też użyć tego formularza do zapytań ogólnych.
                 </p>
 
                 <form asp-action="SendContact" method="post">
-                    <div class="mb-2">
-                        <label class="form-label">Imię i nazwisko</label>
-                        <input class="form-control" asp-for="Name" />
-                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Imię i nazwisko</label>
+                            <input asp-for="Name" class="form-control form-control-dark" placeholder="Jan Kowalski" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small text-uppercase fw-bold">E-mail</label>
+                            <input asp-for="Email" type="email" class="form-control form-control-dark" placeholder="jan@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Temat</label>
+                            <input asp-for="Subject" class="form-control form-control-dark" placeholder="Czego dotyczy wiadomość?" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Wiadomość</label>
+                            <textarea asp-for="Message" class="form-control form-control-dark" rows="5" placeholder="Treść wiadomości..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-danger w-100 py-3 fw-bold shadow-sm">
+                                <i class="bi bi-send-fill me-2"></i> Wyślij zgłoszenie
+                            </button>
+                        </div>
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label">E‑mail</label>
-                        <input class="form-control" type="email" asp-for="Email" />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    <div class="text-center mt-3">
+                        <small class="text-muted opacity-50">Administratorem Twoich danych jest MonitoringConfigurator Sp. z o.o.</small>
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label">Temat</label>
-                        <input class="form-control" asp-for="Subject" />
-                        <span asp-validation-for="Subject" class="text-danger small"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wiadomość</label>
-                        <textarea class="form-control" asp-for="Message" rows="4"></textarea>
-                        <span asp-validation-for="Message" class="text-danger small"></span>
-                    </div>
-                    <button type="submit" class="btn btn-danger">Wyślij</button>
-                    <p class="muted mt-2 mb-0" style="font-size:.9rem">Wysyłając wiadomość akceptujesz przetwarzanie danych w celu kontaktu zwrotnego.</p>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

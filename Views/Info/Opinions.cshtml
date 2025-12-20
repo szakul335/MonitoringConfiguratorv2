@@ -4,315 +4,289 @@
 }
 
 <style>
-    /* Ulepszone style wykresu i boxów */
-    .progress-stacked {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
+    body {
+        background-color: #111;
+        color: #eaeaea;
     }
 
-    .progress-label {
-        width: 35px;
-        font-size: 0.85rem;
-        color: #a1a1aa;
-        text-align: right;
-        margin-right: 12px;
-        font-weight: 600;
-    }
-
-    .progress {
-        flex-grow: 1;
-        height: 10px;
-        background-color: #27272a;
-        border-radius: 6px;
+    .opinions-hero {
+        background: linear-gradient(135deg, rgba(21, 21, 24, 0.95) 0%, rgba(21, 21, 24, 0.8) 100%);
+        border-bottom: 1px solid #2b2b2b;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
         overflow: hidden;
     }
 
-    .progress-bar {
-        background-color: #fbbf24;
-    }
-
-    .progress-count {
-        width: 40px;
-        font-size: 0.85rem;
-        color: #71717a;
-        margin-left: 12px;
-        text-align: left;
-    }
-
-    .rating-box {
-        text-align: center;
-        padding: 2rem;
+    .stat-box {
         background: #1a1a1e;
-        border-radius: 16px;
         border: 1px solid #2b2b2b;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
         height: 100%;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
 
-    .big-score {
-        font-size: 4.5rem;
+        .stat-box:hover {
+            transform: translateY(-5px);
+            border-color: #ff3b30;
+        }
+
+    .stat-val {
+        font-size: 3.5rem;
         font-weight: 800;
-        line-height: 1;
         color: #fff;
+        line-height: 1;
+        margin-bottom: 0.5rem;
     }
 
-    .opinion-tile {
-        background: #151518;
+    .stat-desc {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+        color: #a1a1aa;
+    }
+
+    .progress {
+        background-color: #27272a;
+        height: 6px;
+        border-radius: 4px;
+    }
+
+    .progress-bar {
+        background-color: #ff3b30;
+    }
+
+    .opinion-card {
+        background: #1a1a1e;
         border: 1px solid #2b2b2b;
         border-radius: 12px;
         padding: 1.5rem;
-        transition: transform 0.2s, border-color 0.2s;
+        transition: all 0.3s ease;
+        position: relative;
     }
 
-        .opinion-tile:hover {
-            border-color: #52525b;
+        .opinion-card:hover {
+            background: #202025;
+            border-color: #ff3b30;
             transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-    .avatar-circle {
+    .avatar-box {
         width: 48px;
         height: 48px;
-        min-width: 48px;
-        background: linear-gradient(135deg, #27272a 0%, #3f3f46 100%);
+        background: #27272a;
+        color: #ff3b30;
+        border: 1px solid #3f3f46;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        color: #fff;
-        margin-right: 16px;
         font-size: 1.2rem;
-        border: 1px solid #3f3f46;
+        object-fit: cover;
     }
 
-    .verified-badge {
-        color: #10b981;
-        font-size: 0.75rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(16, 185, 129, 0.1);
-        padding: 2px 8px;
-        border-radius: 4px;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        margin-top: 4px;
+    .form-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid #2b2b2b;
+        border-radius: 12px;
     }
 
-    /* Ukryty input i style gwiazdek formularza */
-    .rating-group {
+    .rating-select {
         display: inline-flex;
         flex-direction: row-reverse;
         gap: 0.5rem;
     }
 
-        .rating-group label {
-            font-size: 2rem;
-            cursor: pointer;
+        .rating-select input {
+            display: none;
+        }
+
+        .rating-select label {
+            font-size: 1.8rem;
             color: #3f3f46;
+            cursor: pointer;
             transition: color 0.2s;
         }
 
-            .rating-group label:hover, .rating-group label:hover ~ label, .rating-group input:checked ~ label {
+            .rating-select label:hover,
+            .rating-select label:hover ~ label,
+            .rating-select input:checked ~ label {
                 color: #fbbf24;
             }
-
-        .rating-group input {
-            display: none;
-        }
 </style>
 
-<div class="container py-5">
-
-    <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-white mb-2">Opinie klientów</h1>
-        <p class="text-muted fs-5">Sprawdź, co użytkownicy sądzą o naszym konfiguratorze.</p>
+<div class="container-fluid p-0">
+    <div class="opinions-hero">
+        <div class="container text-center">
+            @* Nagłówek jednolity biały *@
+            <h1 class="display-4 fw-bold text-white mb-2">Opinie Klientów</h1>
+            <p class="lead text-secondary mx-auto" style="max-width: 600px;">
+                Zobacz, co mówią o nas użytkownicy i dlaczego warto nam zaufać.
+            </p>
+        </div>
     </div>
+</div>
 
-    @if (TempData["Msg"] is string msg)
+<div class="container pb-5">
+
+    @if (TempData["Msg"] != null)
     {
-        <div class="alert alert-success text-center mb-5 border-0 bg-success bg-opacity-25 text-white d-inline-block px-5 start-50 position-relative translate-middle-x rounded-pill">
-            <i class="bi bi-check-circle-fill me-2"></i> @msg
+        <div class="alert alert-success bg-success bg-opacity-10 border-success text-white d-flex align-items-center mb-5">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Msg"]
         </div>
     }
 
-    <div class="row g-4 justify-content-center mb-5">
-        <div class="col-12 col-md-5 col-lg-4 col-xl-3">
-            <div class="rating-box">
-                <div class="big-score">@Model.AverageRating.ToString("0.0")</div>
-                <div class="text-warning fs-4 my-2">
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="stat-box d-flex flex-column justify-content-center">
+                <div class="stat-val">@Model.AverageRating.ToString("0.0")</div>
+                <div class="text-warning fs-4 mb-3">
                     @for (int i = 1; i <= 5; i++)
                     {
                         <i class="bi @(i <= Math.Round(Model.AverageRating) ? "bi-star-fill" : "bi-star")"></i>
                     }
                 </div>
-                <div class="text-muted small">Na podstawie @Model.TotalCount opinii</div>
+                <div class="stat-desc">Średnia ocena (@Model.TotalCount opinii)</div>
             </div>
         </div>
-        <div class="col-12 col-md-7 col-lg-6 col-xl-5">
-            <div class="h-100 p-4 rounded-4 border border-secondary border-opacity-25 bg-black bg-opacity-25 d-flex flex-column justify-content-center">
-                @for (int i = 5; i >= 1; i--)
-                {
-                    var count = Model.StarCounts[i];
-                    var percent = Model.TotalCount > 0 ? (double)count / Model.TotalCount * 100 : 0;
-                    <div class="progress-stacked">
-                        <div class="progress-label">@i <i class="bi bi-star-fill"></i></div>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: @percent.ToString("0")%"></div>
+        <div class="col-lg-8">
+            <div class="stat-box">
+                <div class="d-flex flex-column justify-content-center h-100 px-lg-4">
+                    @for (int i = 5; i >= 1; i--)
+                    {
+                        var count = Model.StarCounts[i];
+                        var percent = Model.TotalCount > 0 ? (double)count / Model.TotalCount * 100 : 0;
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="text-secondary fw-bold small me-3" style="width: 20px;">@i</div>
+                            <div class="progress flex-grow-1">
+                                <div class="progress-bar" style="width: @percent.ToString("0")%"></div>
+                            </div>
+                            <div class="text-secondary small ms-3" style="width: 30px; text-align: right;">@count</div>
                         </div>
-                        <div class="progress-count">@count</div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
 
     <div class="row g-5">
+        <div class="col-lg-4 order-lg-last">
+            <div class="form-card p-4 sticky-top" style="top: 2rem;">
+                <h4 class="text-white fw-bold mb-4">
+                    <i class="bi bi-pencil-square text-danger me-2"></i> Dodaj opinię
+                </h4>
 
-        <div class="col-lg-4 order-1 order-lg-1">
-            <div class="card border-0 shadow-lg sticky-lg-top" style="top: 20px; background: #151518; border-radius: 16px; z-index: 1;">
-                <div class="card-body p-4">
-                    <h5 class="text-white fw-bold mb-4 text-center text-lg-start">
-                        <i class="bi bi-pencil-square me-2 text-danger"></i> Dodaj opinię
-                    </h5>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="Opinions" method="post">
+                        @Html.AntiForgeryToken()
 
-                    @if (User.Identity != null && User.Identity.IsAuthenticated)
-                    {
-                        <form asp-action="Opinions" method="post">
-                            @Html.AntiForgeryToken()
-
-                            <div class="mb-4 text-center p-3 rounded bg-black bg-opacity-25 border border-secondary border-opacity-25">
-                                <div class="rating-group justify-content-center">
-                                    <input type="radio" id="star5" name="Rating" value="5" checked />
-                                    <label for="star5" title="5 gwiazdek"><i class="bi bi-star-fill"></i></label>
-                                    <input type="radio" id="star4" name="Rating" value="4" />
-                                    <label for="star4" title="4 gwiazdki"><i class="bi bi-star-fill"></i></label>
-                                    <input type="radio" id="star3" name="Rating" value="3" />
-                                    <label for="star3" title="3 gwiazdki"><i class="bi bi-star-fill"></i></label>
-                                    <input type="radio" id="star2" name="Rating" value="2" />
-                                    <label for="star2" title="2 gwiazdki"><i class="bi bi-star-fill"></i></label>
-                                    <input type="radio" id="star1" name="Rating" value="1" />
-                                    <label for="star1" title="1 gwiazdka"><i class="bi bi-star-fill"></i></label>
-                                </div>
-                                <div class="text-muted small mt-2">Kliknij gwiazdkę, aby ocenić</div>
+                        <div class="mb-4 text-center">
+                            <div class="rating-select">
+                                <input type="radio" id="star5" name="Rating" value="5" checked />
+                                <label for="star5"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star4" name="Rating" value="4" />
+                                <label for="star4"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star3" name="Rating" value="3" />
+                                <label for="star3"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star2" name="Rating" value="2" />
+                                <label for="star2"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star1" name="Rating" value="1" />
+                                <label for="star1"><i class="bi bi-star-fill"></i></label>
                             </div>
-
-                            <div class="mb-3">
-                                <label asp-for="Message" class="form-label text-secondary small text-uppercase fw-bold">Treść</label>
-                                <textarea asp-for="Message" class="form-control bg-dark border-secondary text-light" rows="4" placeholder="Podziel się wrażeniami..."></textarea>
-                                <span asp-validation-for="Message" class="text-danger small"></span>
-                            </div>
-
-                            <button type="submit" class="btn btn-danger w-100 py-2 fw-bold shadow-sm">Opublikuj</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <i class="bi bi-shield-lock fs-1 text-secondary mb-3 d-block opacity-50"></i>
-                            <p class="text-muted small mb-3">Zaloguj się, aby ocenić.</p>
-                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm px-4 rounded-pill">Logowanie</a>
+                            <div class="text-muted small mt-2">Wybierz ocenę</div>
                         </div>
-                    }
-                </div>
+
+                        <div class="mb-3">
+                            <textarea asp-for="Message" class="form-control bg-dark border-secondary text-white" rows="4" placeholder="Napisz kilka słów..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">Opublikuj</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-lock fs-1 mb-2 d-block opacity-50"></i>
+                        <p>Zaloguj się, aby dodać recenzję.</p>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-sm rounded-pill px-4">Logowanie</a>
+                    </div>
+                }
             </div>
         </div>
 
-        <div class="col-lg-8 order-2 order-lg-2">
-
-            <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
-                <h4 class="text-white mb-0">Recenzje <small class="text-muted fs-6 ms-2">(@Model.TotalCount)</small></h4>
-
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white mb-0">Ostatnie wpisy</h3>
                 <div class="dropdown">
-                    <button class="btn btn-dark border-secondary dropdown-toggle text-light" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-filter me-2"></i>
-                        @(Model.CurrentSort == "highest" ? "Najwyższa ocena" :
-                            Model.CurrentSort == "lowest" ? "Najniższa ocena" : "Najnowsze")
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle border-secondary text-light" type="button" data-bs-toggle="dropdown">
+                        Sortuj
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary">
-                        <li><a class="dropdown-item @(Model.CurrentSort == "newest" ? "active":"")" asp-action="Opinions" asp-route-sort="newest">Najnowsze</a></li>
-                        <li><a class="dropdown-item @(Model.CurrentSort == "highest" ? "active":"")" asp-action="Opinions" asp-route-sort="highest">Najwyższa ocena</a></li>
-                        <li><a class="dropdown-item @(Model.CurrentSort == "lowest" ? "active":"")" asp-action="Opinions" asp-route-sort="lowest">Najniższa ocena</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark border-secondary shadow-lg">
+                        <li><a class="dropdown-item @(Model.CurrentSort == "newest" ? "active":"")" asp-route-sort="newest">Najnowsze</a></li>
+                        <li><a class="dropdown-item @(Model.CurrentSort == "highest" ? "active":"")" asp-route-sort="highest">Najwyższa ocena</a></li>
+                        <li><a class="dropdown-item @(Model.CurrentSort == "lowest" ? "active":"")" asp-route-sort="lowest">Najniższa ocena</a></li>
                     </ul>
                 </div>
             </div>
 
-            @if (Model.Reviews.Any())
-            {
-                <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-3">
+                @if (Model.Reviews.Any())
+                {
                     @foreach (var op in Model.Reviews)
                     {
-                        <div class="opinion-tile">
-                            <div class="d-flex flex-column flex-sm-row justify-content-between mb-3 gap-2">
+                        <div class="opinion-card">
+                            <div class="d-flex justify-content-between mb-3">
                                 <div class="d-flex align-items-center">
-
-                                    @* [NOWA LOGIKA] Wyświetlanie awatara lub inicjałów *@
                                     @if (!string.IsNullOrEmpty(op.AvatarUrl))
                                     {
-                                        <img src="@op.AvatarUrl" alt="@op.Initials" class="avatar-circle p-0" style="object-fit: cover;" />
+                                        <img src="@op.AvatarUrl" class="avatar-box p-0 me-3" />
                                     }
                                     else
                                     {
-                                        <div class="avatar-circle">@op.Initials</div>
+                                        <div class="avatar-box me-3">@op.Initials</div>
                                     }
-
                                     <div>
-                                        <div class="fw-bold text-white fs-5">
-                                            @op.UserName
-                                        </div>
-                                        @if (!string.IsNullOrEmpty(op.UserId))
-                                        {
-                                            <div class="verified-badge" title="Użytkownik zarejestrowany">
-                                                <i class="bi bi-check-circle-fill"></i> Zweryfikowany zakup
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <small class="text-muted">Gość</small>
-                                        }
+                                        <div class="fw-bold text-white">@op.UserName</div>
+                                        <div class="small text-muted">@op.CreatedAt.ToLocalTime().ToString("d MMMM yyyy")</div>
                                     </div>
                                 </div>
-                                <div class="text-sm-end mt-2 mt-sm-0">
-                                    <div class="text-warning small mb-1" style="letter-spacing: 2px;">
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            <i class="bi @(i <= op.Stars ? "bi-star-fill" : "bi-star")"></i>
-                                        }
-                                    </div>
-                                    <div class="text-muted small">
-                                        @op.CreatedAt.ToLocalTime().ToString("d MMMM yyyy, HH:mm")
-                                    </div>
+                                <div class="text-warning">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= op.Stars ? "bi-star-fill" : "bi-star")"></i>
+                                    }
                                 </div>
                             </div>
-
-                            <p class="text-light opacity-75 mb-0 ps-sm-1" style="line-height: 1.6; white-space: pre-wrap;">@op.Message</p>
+                            <p class="text-light opacity-75 mb-0" style="white-space: pre-wrap;">@op.Message</p>
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <div class="text-end mt-3 pt-2 border-top border-secondary border-opacity-10">
+                                <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 text-end">
                                     <form asp-controller="Info" asp-action="DeleteOpinion" asp-route-id="@op.Id" method="post">
                                         @Html.AntiForgeryToken()
-                                        <button class="btn btn-link btn-sm text-danger text-decoration-none p-0 opacity-75 hover-opacity-100" onclick="return confirm('Usunąć tę opinię?');">
-                                            <i class="bi bi-trash"></i> Usuń wpis
+                                        <button class="btn btn-link btn-sm text-danger text-decoration-none p-0 opacity-75 hover-opacity-100" onclick="return confirm('Usunąć?');">
+                                            <i class="bi bi-trash"></i> Usuń
                                         </button>
                                     </form>
                                 </div>
                             }
                         </div>
                     }
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5 opacity-50">
-                    <i class="bi bi-chat-square-quote display-1 mb-3 d-block"></i>
-                    <h4 class="fw-normal">Brak opinii</h4>
-                    <p>Bądź pierwszą osobą, która podzieli się wrażeniami!</p>
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="text-center py-5 opacity-50">
+                        <i class="bi bi-chat-left-quote display-1 mb-3 d-block text-secondary"></i>
+                        <p class="text-muted">Brak opinii.</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>

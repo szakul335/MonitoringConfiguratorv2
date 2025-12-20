@@ -1,246 +1,344 @@
 @{
-    ViewData["Title"] = "FAQ";
+    ViewData["Title"] = "FAQ - Pytania i odpowiedzi";
 }
 
 <style>
-.accordion-button {
-    background-color: #1e1e22;
-    color: #f1f1f1;
-}
-.accordion-button:not(.collapsed) {
-    background-color: #2a2a2f;
-    color: #ffffff;
-}
-.accordion-body {
-    background-color: #121214;
-    color: #e5e7eb;
-}
-.accordion-button:hover {
-    background-color: #333338;
-    color: #ffffff;
-}
+    body {
+        background-color: #111;
+        color: #eaeaea;
+    }
+
+    .faq-hero {
+        background: linear-gradient(135deg, rgba(21, 21, 24, 0.95) 0%, rgba(21, 21, 24, 0.8) 100%);
+        border-bottom: 1px solid #2b2b2b;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .search-box {
+        background: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .search-box:focus-within {
+            border-color: #ff3b30;
+            box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+        }
+
+    .search-input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        width: 100%;
+        outline: none;
+        font-size: 1.1rem;
+    }
+
+        .search-input::placeholder {
+            color: #6c757d;
+        }
+
+    .filter-btn {
+        background: transparent;
+        border: 1px solid #3f3f46;
+        color: #a1a1aa;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ff3b30;
+            border-color: #ff3b30;
+            color: #fff;
+        }
+
+    .accordion-item {
+        background-color: #1a1a1e;
+        border: 1px solid #2b2b2b;
+        border-radius: 12px !important;
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+
+    .accordion-button {
+        background-color: #1a1a1e;
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        box-shadow: none !important;
+        padding: 1.25rem;
+    }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #202025;
+            color: #ff3b30;
+            border-bottom: 1px solid #2b2b2b;
+        }
+
+        .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            filter: invert(50%) sepia(80%) saturate(3000%) hue-rotate(340deg);
+        }
+
+    .accordion-body {
+        background-color: #1a1a1e;
+        color: #d4d4d8;
+        line-height: 1.7;
+        font-size: 0.95rem;
+        padding: 1.5rem;
+    }
+
+    .faq-link {
+        color: #ff3b30;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .faq-link:hover {
+            text-decoration: underline;
+        }
 </style>
 
-<div class="container py-4">
-  <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-3">
-    <div>
-      <h1 class="mb-0">FAQ</h1>
-      <p class="text-muted mb-0">Najczęściej zadawane pytania o <strong>Konfigurator systemów monitoringu</strong>.</p>
-    </div>
-    <div class="ms-auto" style="min-width:260px;">
-      <div class="input-group">
-        <span class="input-group-text" id="search-addon">🔎</span>
-        <input id="faqSearch" type="search" class="form-control" placeholder="Szukaj w pytaniach…" aria-describedby="search-addon">
-      </div>
-    </div>
-  </div>
-
-  <!-- Kategoria: Konfigurator -->
-  <h5 class="text-uppercase mt-4 mb-2 text-muted">Konfigurator</h5>
-  <div class="accordion mb-4" id="faq-konfigurator">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-k1">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a-k1">
-          Jak rozpocząć konfigurację i jakie dane są potrzebne?
-        </button>
-      </h2>
-      <div id="a-k1" class="accordion-collapse collapse show" data-bs-parent="#faq-konfigurator">
-        <div class="accordion-body">
-          Wejdź w <a asp-controller="Configurator" asp-action="Index">Konfigurator</a> i podaj: liczbę kamer, rozdzielczości, kodek, FPS, oczekiwany czas archiwizacji oraz informację o zasilaniu PoE.
-          Na tej podstawie algorytm wyliczy przepustowość, dobierze NVR oraz switch(e) PoE.
+<div class="container-fluid p-0">
+    <div class="faq-hero">
+        <div class="container text-center">
+            @* Nagłówek jednolity biały *@
+            <h1 class="display-4 fw-bold text-white mb-2">Centrum Pomocy</h1>
+            <p class="lead text-secondary mx-auto" style="max-width: 600px;">
+                Najczęściej zadawane pytania dotyczące konfiguratora, zamówień i wsparcia technicznego.
+            </p>
         </div>
-      </div>
     </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-k2">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k2">
-          Czy mogę dodać własne produkty do zestawu?
-        </button>
-      </h2>
-      <div id="a-k2" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
-        <div class="accordion-body">
-          Tak. Po wstępnej konfiguracji przejdź do <a asp-controller="Products" asp-action="Index">katalogu produktów</a> i dodaj brakujące elementy
-          (np. dyski, patchcordy, zasilacze). System sprawdzi kompatybilność i budżet PoE po każdej zmianie.
-        </div>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-k3">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k3">
-          Jak liczony jest budżet PoE i przepustowość?
-        </button>
-      </h2>
-      <div id="a-k3" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
-        <div class="accordion-body">
-          Budżet PoE to suma mocy kamer z uwzględnieniem zapasu. Przepustowość obliczamy na podstawie rozdzielczości, kodeka (H.264/H.265), FPS i sceny.
-          Rekomendacje NVR i switchy dobieramy tak, by nie przekroczyć możliwości urządzeń i zapewnić zapas na rozbudowę.
-        </div>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-k4">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k4">
-          Czy mogę zapisać konfigurację i wrócić później?
-        </button>
-      </h2>
-      <div id="a-k4" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
-        <div class="accordion-body">
-          Tak. Po zalogowaniu <a asp-controller="Account" asp-action="Login">na konto</a> możesz zapisywać wiele konfiguracji, nadawać im nazwy i wczytywać je w dowolnym momencie.
-        </div>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-k5">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-k5">
-          Czy konfigurator uwzględnia nagrywanie z detekcji ruchu?
-        </button>
-      </h2>
-      <div id="a-k5" class="accordion-collapse collapse" data-bs-parent="#faq-konfigurator">
-        <div class="accordion-body">
-          Tak. Możesz wskazać tryb nagrywania (ciągły / zdarzeniowy). Szacowany czas archiwizacji uwzględnia wybrany tryb oraz zapas na nagłe zwiększenia ruchu.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Kategoria: Produkty i zgodność -->
-  <h5 class="text-uppercase mt-4 mb-2 text-muted">Produkty i zgodność</h5>
-  <div class="accordion mb-4" id="faq-produkty">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-p1">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p1">
-          Czy mogę mieszać urządzenia różnych producentów?
-        </button>
-      </h2>
-      <div id="a-p1" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
-        <div class="accordion-body">
-          Tak, o ile używają standardowych protokołów (np. ONVIF). Konfigurator zaznacza elementy w pełni kompatybilne oraz wskazuje ewentualne ograniczenia funkcji inteligentnych.
-        </div>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-p2">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p2">
-          Jak dobrać dysk do rejestratora?
-        </button>
-      </h2>
-      <div id="a-p2" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
-        <div class="accordion-body">
-          Wybór dysku zależy od liczby kamer, FPS, kodeka i czasu archiwizacji. Konfigurator wylicza minimalną pojemność i rekomenduje nośniki do pracy 24/7 (np. linie „surveillance”).
-        </div>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-p3">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-p3">
-          Czy oferujecie kamery z AI (analiza obrazu, rozpoznawanie obiektów)?
-        </button>
-      </h2>
-      <div id="a-p3" class="accordion-collapse collapse" data-bs-parent="#faq-produkty">
-        <div class="accordion-body">
-          Tak. W ofercie znajdują się modele z funkcjami inteligentnymi (np. ochrona perymetryczna, klasyfikacja osób/pojazdów, ANPR). Przy konfiguracji uwzględniamy wymagania wydajnościowe NVR.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Kategoria: Koszty i oferta -->
-  <h5 class="text-uppercase mt-4 mb-2 text-muted">Koszty i oferta</h5>
-  <div class="accordion mb-4" id="faq-koszty">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-c1">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c1">
-          Skąd bierze się orientacyjna cena zestawu?
-        </button>
-      </h2>
-      <div id="a-c1" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
-        <div class="accordion-body">
-          Ceny są sumą wybranych podzespołów z katalogu. Wycena jest orientacyjna i nie obejmuje montażu. Po wysłaniu zapytania do <a asp-controller="Contact" asp-action="Index">sprzedaży</a> przygotujemy ofertę końcową.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-c2">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c2">
-          Czy są zniżki przy większych zamówieniach?
-        </button>
-      </h2>
-      <div id="a-c2" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
-        <div class="accordion-body">
-          Tak, dla firm i integratorów oferujemy rabaty ilościowe oraz wsparcie presales. Skontaktuj się z nami w celu indywidualnej wyceny.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-c3">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-c3">
-          Czy zapewniacie montaż i uruchomienie?
-        </button>
-      </h2>
-      <div id="a-c3" class="accordion-collapse collapse" data-bs-parent="#faq-koszty">
-        <div class="accordion-body">
-          Tak. Współpracujemy z siecią instalatorów. Po akceptacji oferty umawiamy termin i realizujemy projekt „pod klucz” wraz ze szkoleniem użytkowników.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Kategoria: Konto i bezpieczeństwo -->
-  <h5 class="text-uppercase mt-4 mb-2 text-muted">Konto i bezpieczeństwo</h5>
-  <div class="accordion mb-4" id="faq-konto">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-a1">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-a1">
-          Zapomniałem hasła – co robić?
-        </button>
-      </h2>
-      <div id="a-a1" class="accordion-collapse collapse" data-bs-parent="#faq-konto">
-        <div class="accordion-body">
-          Skorzystaj z opcji <a asp-controller="Account" asp-action="ForgotPassword">przypomnienia hasła</a>. Otrzymasz e‑mail z instrukcją resetu.
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="q-a2">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a-a2">
-          Jak przetwarzacie moje dane (RODO)?
-        </button>
-      </h2>
-      <div id="a-a2" class="accordion-collapse collapse" data-bs-parent="#faq-konto">
-        <div class="accordion-body">
-          Dane używane są do obsługi konta i konfiguracji. Szczegóły znajdziesz w zakładce <a asp-controller="Home" asp-action="Rodo">RODO</a>.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Callout -->
-  <div class="alert alert-dark border mt-4" role="alert">
-    Masz inne pytania? Przejdź do zakładki <a asp-controller="Info" asp-action="Support"><strong>Wsparcie</strong></a> i napisz do nas – chętnie pomożemy.
-  </div>
 </div>
 
-@section Scripts{
-<script>
-(function(){
-  const input = document.getElementById('faqSearch');
-  const groups = document.querySelectorAll('.accordion');
-  if(!input) return;
-  input.addEventListener('input', function(){
-    const q = this.value.trim().toLowerCase();
-    groups.forEach(group => {
-      group.querySelectorAll('.accordion-item').forEach(item => {
-        const text = item.innerText.toLowerCase();
-        item.style.display = text.includes(q) ? '' : 'none';
-      });
-    });
-  });
-})();
-</script>
+<div class="container pb-5">
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="search-box d-flex align-items-center mb-4">
+                <i class="bi bi-search text-secondary fs-5 me-3"></i>
+                <input type="text" id="faqSearch" class="search-input" placeholder="Wpisz pytanie (np. faktura, zwrot, PoE)...">
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2" id="faqFilters">
+                <button class="filter-btn active" data-filter="all">Wszystkie</button>
+                <button class="filter-btn" data-filter="zakupy">Zamówienia</button>
+                <button class="filter-btn" data-filter="techniczne">Techniczne</button>
+                <button class="filter-btn" data-filter="konfigurator">Konfigurator</button>
+                <button class="filter-btn" data-filter="gwarancja">Gwarancja</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="accordion" id="faqAccordion">
+
+                <div class="accordion-item faq-item" data-category="zakupy">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            Czy otrzymam fakturę VAT?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Tak, do każdego zamówienia wystawiamy pełną fakturę VAT 23%. Dokument zostanie wysłany drogą elektroniczną na adres e-mail podany podczas rejestracji lub składania zamówienia, natychmiast po zaksięgowaniu wpłaty.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="zakupy">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            Jaki jest czas realizacji zamówienia?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Większość zamówień na standardowe zestawy realizujemy w ciągu <strong>24-48 godzin</strong>. W przypadku skomplikowanych konfiguracji serwerowych czas ten może wydłużyć się do 3-5 dni roboczych. O statusie wysyłki poinformujemy Cię mailowo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="zakupy">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            Czy mogę odebrać sprzęt osobiście?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Obecnie prowadzimy sprzedaż wyłącznie wysyłkową, aby zapewnić najniższe ceny i szybkość logistyki z magazynu centralnego. Współpracujemy z firmami kurierskimi DHL oraz InPost.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="konfigurator">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                            Jak działa automatyczny dobór dysków?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Nasz algorytm oblicza wymaganą przestrzeń dyskową biorąc pod uwagę: liczbę kamer, ich rozdzielczość, wybrany kodek (H.264/H.265) oraz oczekiwany czas archiwizacji (np. 14 dni). System automatycznie sugeruje dysk o najbliższej, bezpiecznej pojemności.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="konfigurator">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                            Czy wygenerowana oferta jest wiążąca?
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Wygenerowany plik PDF jest ofertą handlową ważną przez 7 dni. Jeśli w tym czasie ceny podzespołów ulegną zmianie, skontaktujemy się z Tobą przed potwierdzeniem zamówienia.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="techniczne">
+                    <h2 class="accordion-header" id="headingSix">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                            Co to jest zasilanie PoE?
+                        </button>
+                    </h2>
+                    <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            PoE (Power over Ethernet) to technologia przesyłania energii elektrycznej za pomocą skrętki komputerowej do urządzeń peryferyjnych. Dzięki temu kamery nie wymagają osobnych zasilaczy – wystarczy jeden przewód podłączony do switcha PoE lub rejestratora.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="techniczne">
+                    <h2 class="accordion-header" id="headingSeven">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven">
+                            Czy kamery mają podgląd w telefonie?
+                        </button>
+                    </h2>
+                    <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Tak, wszystkie oferowane przez nas rejestratory i kamery IP współpracują z darmowymi aplikacjami mobilnymi (Android/iOS). Konfiguracja odbywa się zazwyczaj poprzez zeskanowanie kodu QR (P2P), bez konieczności posiadania stałego adresu IP.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="techniczne">
+                    <h2 class="accordion-header" id="headingEight">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight">
+                            Zapomniałem hasła do rejestratora, co robić?
+                        </button>
+                    </h2>
+                    <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Większość nowoczesnych rejestratorów posiada opcję odzyskiwania hasła poprzez e-mail lub pytania pomocnicze zdefiniowane przy pierwszym uruchomieniu. Jeśli te metody zawiodą, skontaktuj się z naszym <a asp-controller="Info" asp-action="Support" class="faq-link">Wsparciem Technicznym</a> w celu procedury resetu fabrycznego.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="gwarancja">
+                    <h2 class="accordion-header" id="headingNine">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine">
+                            Ile trwa gwarancja na sprzęt?
+                        </button>
+                    </h2>
+                    <div id="collapseNine" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Standardowa gwarancja wynosi <strong>24 miesiące</strong> dla klientów indywidualnych oraz firm. Niektóre serie produktów profesjonalnych (np. dyski HDD dedykowane do pracy 24/7) mogą być objęte gwarancją 36 lub 60 miesięcy, co jest zaznaczone w opisie produktu.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item faq-item" data-category="gwarancja">
+                    <h2 class="accordion-header" id="headingTen">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen">
+                            Jak zgłosić reklamację?
+                        </button>
+                    </h2>
+                    <div id="collapseTen" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Reklamację najszybciej zgłosisz przez zakładkę <a asp-controller="Info" asp-action="Support" class="faq-link">Wsparcie</a>, wybierając temat "Reklamacja / Serwis". Otrzymasz numer RMA oraz instrukcję wysyłki sprzętu do naszego serwisu centralnego.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="noResults" class="text-center py-5 d-none">
+                <i class="bi bi-question-circle display-1 text-secondary opacity-25 mb-3 d-block"></i>
+                <h4 class="text-white">Nie znaleziono odpowiedzi</h4>
+                <p class="text-muted">Spróbuj zmienić słowa kluczowe lub kategorię.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 rounded-4 text-center" style="background: #1a1a1e; border: 1px solid #2b2b2b;">
+        <h5 class="text-white fw-bold mb-2">Nadal potrzebujesz pomocy?</h5>
+        <p class="text-muted mb-3">Nasi konsultanci są dostępni od poniedziałku do piątku w godzinach 8:00 - 16:00.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Info" asp-action="Contact" class="btn btn-outline-light rounded-pill px-4">Formularz kontaktowy</a>
+            <a asp-controller="Info" asp-action="Support" class="btn btn-danger rounded-pill px-4 fw-bold">Otwórz zgłoszenie</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('faqSearch');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const faqItems = document.querySelectorAll('.faq-item');
+            const noResults = document.getElementById('noResults');
+
+            function filterFaq() {
+                const searchText = searchInput.value.toLowerCase().trim();
+                const activeCategory = document.querySelector('.filter-btn.active').dataset.filter;
+                let visibleCount = 0;
+
+                faqItems.forEach(item => {
+                    const itemCategory = item.dataset.category;
+                    const question = item.querySelector('.accordion-button').innerText.toLowerCase();
+                    const answer = item.querySelector('.accordion-body').innerText.toLowerCase();
+
+                    const matchesSearch = question.includes(searchText) || answer.includes(searchText);
+                    const matchesCategory = activeCategory === 'all' || itemCategory === activeCategory;
+
+                    if (matchesSearch && matchesCategory) {
+                        item.classList.remove('d-none');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    noResults.classList.remove('d-none');
+                } else {
+                    noResults.classList.add('d-none');
+                }
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filterFaq();
+                });
+            });
+
+            searchInput.addEventListener('input', filterFaq);
+        });
+    </script>
 }
