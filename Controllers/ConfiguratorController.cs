@@ -367,13 +367,31 @@ namespace MonitoringConfigurator.Controllers
                         });
                     });
 
-                    page.Footer().AlignCenter().Text(x =>
-                    {
-                        x.Span("Wygenerowano automatycznie. ");
-                        x.CurrentPageNumber();
-                        x.Span(" / ");
-                        x.TotalPages();
-                    });
+                    // STOPKA Z KLAUZULĄ PRAWNĄ
+                    page.Footer()
+                        .PaddingTop(10)
+                        .Column(column =>
+                        {
+                            column.Item().Text(text =>
+                            {
+                                text.Span("UWAGA: Przedstawiona kalkulacja ma charakter wyłącznie poglądowy i nie stanowi oferty handlowej w rozumieniu Art. 66 par. 1 Kodeksu Cywilnego. ")
+                                    .FontSize(9).FontColor(Colors.Grey.Medium);
+
+                                text.Span("Ceny mogą ulec zmianie. W celu uzyskania wiążącej wyceny oraz szczegółowych informacji prosimy o kontakt z działem handlowym pod numerem: ")
+                                    .FontSize(9).FontColor(Colors.Grey.Medium);
+
+                                text.Span("+48 123 456 789")
+                                    .FontSize(9).FontColor(Colors.Red.Medium).Bold();
+                            });
+
+                            column.Item().PaddingTop(5).AlignCenter().Text(x =>
+                            {
+                                x.Span("Wygenerowano automatycznie. ");
+                                x.CurrentPageNumber();
+                                x.Span(" / ");
+                                x.TotalPages();
+                            });
+                        });
                 });
             });
 
