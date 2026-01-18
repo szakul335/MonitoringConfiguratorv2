@@ -1,12 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using MonitoringConfigurator.Models
 @model MonitoringConfigurator.Models.Order
+
 @{
     ViewData["Title"] = $"Zapytanie #{Model.Id}";
     bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
+    bool isAdmin = User.IsInRole("Admin");
+
     var owner = ViewBag.OwnerUser as IdentityUser;
     var claims = ViewBag.OwnerClaims as Dictionary<string, string>;
-
     string GetClaim(string key) => (claims != null && claims.ContainsKey(key)) ? claims[key] : "-";
 
     string GetStatusBadge(OrderStatus status)
@@ -25,6 +27,12 @@
 
 <div class="container py-5">
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Zapytanie Ofertowe #@Model.Id</h2>
+        <a asp-action="Index" class="btn btn-outline-light">Powrót do listy</a>
+    </div>
+
+    @* --- WIADOMOŚCI STATUSOWE --- *@
     @if (TempData["Message"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -33,53 +41,74 @@
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-white">Zapytanie Ofertowe #@Model.Id</h2>
-        <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
-    </div>
-
-    @* --- PANEL ZMIANY STATUSU (TYLKO STAFF) --- *@
+    @* --- PANEL ADMINISTRACYJNY (ZARZĄDZANIE) --- *@
     @if (isStaff)
     {
-        <div class="card bg-dark border-warning mb-4">
+        <div class="card mb-4 border-warning bg-dark shadow">
             <div class="card-header border-warning text-warning fw-bold">
-                <i class="bi bi-gear-fill me-2"></i> Zarządzanie statusem
+                <i class="bi bi-gear-fill me-2"></i> Zarządzanie (Admin / Operator)
             </div>
-            <div class="card-body">
-                <form asp-action="ChangeStatus" method="post" class="row align-items-end g-3">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <div class="col-auto">
-                        <label class="text-white form-label">Zmień status na:</label>
-                        <select name="newStatus" class="form-select bg-dark text-white border-secondary" asp-items="Html.GetEnumSelectList<OrderStatus>()" asp-for="Status">
-                        </select>
+            <div class="card-body text-white">
+                <div class="row align-items-end g-3">
+
+                    @* 1. Zmiana Statusu *@
+                    <div class="col-md-6">
+                        <form asp-action="ChangeStatus" method="post" class="row g-2 align-items-end">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <div class="col-auto flex-grow-1">
+                                <label class="form-label fw-bold small text-muted">Zmień status zamówienia:</label>
+                                <select name="newStatus" class="form-select bg-dark text-white border-secondary" asp-items="Html.GetEnumSelectList<OrderStatus>()" asp-for="Status"></select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-warning text-dark fw-bold">Zapisz status</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-warning">Zaktualizuj status</button>
-                    </div>
-                </form>
+
+                    @* 2. Przycisk Edycji (Tylko ADMIN) *@
+                    @if (isAdmin)
+                    {
+                        <div class="col-md-6 text-md-end border-start border-secondary ps-4">
+                            <label class="form-label small text-muted d-block">Pełna edycja (produkty, ilości):</label>
+                            <a asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-warning fw-bold px-4">
+                                <i class="bi bi-pencil-square"></i> EDYTUJ LISTĘ PRODUKTÓW
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     }
 
-    @* --- DANE KONTAKTOWE (TYLKO STAFF) --- *@
+    @* --- DANE KLIENTA (PEŁNE - CIEMNE TŁO) --- *@
     @if (isStaff && owner != null)
     {
-        <div class="card bg-dark border-info mb-4">
+        <div class="card mb-4 border-info bg-dark shadow">
             <div class="card-header border-info text-info fw-bold">
-                <i class="bi bi-person-lines-fill me-2"></i> Dane klienta (do kontaktu)
+                <i class="bi bi-person-vcard-fill me-2"></i> Dane Klienta
             </div>
             <div class="card-body text-white">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4 mb-3 mb-md-0 border-end border-secondary">
+                        <h6 class="text-uppercase text-muted small fw-bold">Dane podstawowe</h6>
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><strong>Osoba:</strong> @GetClaim("profile:fullName")</li>
-                            <li class="mb-2"><strong>Firma:</strong> @GetClaim("profile:company")</li>
+                            <li><strong>Imię i Nazwisko:</strong> @GetClaim("profile:fullName")</li>
+                            <li><strong>Firma:</strong> @GetClaim("profile:company")</li>
+                            <li><strong>NIP:</strong> @GetClaim("profile:nip")</li>
                         </ul>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4 mb-3 mb-md-0 border-end border-secondary">
+                        <h6 class="text-uppercase text-muted small fw-bold">Adres</h6>
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><strong>Email:</strong> <a href="mailto:@owner.Email" class="text-info text-decoration-none">@owner.Email</a></li>
-                            <li class="mb-2"><strong>Telefon:</strong> <a href="tel:@owner.PhoneNumber" class="text-info text-decoration-none">@owner.PhoneNumber</a></li>
+                            <li>@GetClaim("profile:address")</li>
+                            <li>@GetClaim("profile:zipCode") @GetClaim("profile:city")</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-uppercase text-muted small fw-bold">Kontakt</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Email:</strong> <a href="mailto:@owner.Email" class="text-info text-decoration-none">@owner.Email</a></li>
+                            <li><strong>Telefon:</strong> <a href="tel:@owner.PhoneNumber" class="text-info text-decoration-none">@owner.PhoneNumber</a></li>
                         </ul>
                     </div>
                 </div>
@@ -87,47 +116,50 @@
         </div>
     }
 
-    <div class="card bg-dark border-secondary">
-        <div class="card-header border-secondary">
-            <div class="d-flex justify-content-between text-white align-items-center">
-                <span>Data złożenia: <strong>@Model.OrderDate.ToLocalTime().ToString("g")</strong></span>
-                <span class="fs-5">Status: <span class="badge @GetStatusBadge(Model.Status)">@Model.Status</span></span>
+    @* --- ZAWARTOSĆ ZAMÓWIENIA (TABELA CIEMNA) --- *@
+    <div class="card bg-dark border-secondary shadow">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center text-white">
+            <span>Data: <strong>@Model.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</strong></span>
+            <span class="fs-5">Status: <span class="badge @GetStatusBadge(Model.Status)">@Model.Status</span></span>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                @* Używamy table-dark dla białej czcionki *@
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Produkt</th>
+                            <th class="text-center">Ilość</th>
+                            <th class="text-end">Cena jedn.</th>
+                            <th class="text-end pe-4">Wartość</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-white">@item.Product?.Name</div>
+                                    <small class="text-muted">@item.Product?.Brand @item.Product?.Model</small>
+                                </td>
+                                <td class="text-center fw-bold">@item.Quantity</td>
+                                <td class="text-end">@item.UnitPrice.ToString("N2") zł</td>
+                                <td class="text-end pe-4 fw-bold text-info">@((item.UnitPrice * item.Quantity).ToString("N2")) zł</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fs-5 border-top border-secondary">
+                            <td colspan="3" class="text-end fw-bold pt-3">Łączna kwota (brutto):</td>
+                            <td class="text-end fw-bold text-info pe-4 pt-3">@Model.TotalAmount.ToString("N2") zł</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
-        <div class="card-body p-0">
-            <table class="table table-dark table-striped mb-0">
-                <thead>
-                    <tr>
-                        <th class="ps-4">Produkt</th>
-                        <th class="text-center">Ilość</th>
-                        <th class="text-end">Cena katalogowa</th>
-                        <th class="text-end pe-4">Wartość</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr>
-                            <td class="ps-4">
-                                <div>@item.Product.Name</div>
-                                <small class="text-muted">@item.Product.Brand @item.Product.Model</small>
-                            </td>
-                            <td class="text-center">@item.Quantity</td>
-                            <td class="text-end">@item.UnitPrice.ToString("N2") zł</td>
-                            <td class="text-end pe-4">@((item.UnitPrice * item.Quantity).ToString("N2")) zł</td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr class="fs-5">
-                        <td colspan="3" class="text-end fw-bold pt-3">Szacunkowa suma:</td>
-                        <td class="text-end fw-bold text-info pe-4 pt-3">@Model.TotalAmount.ToString("N2") zł</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
         <div class="card-footer border-secondary text-center text-muted small py-3">
-            Podane ceny są cenami brutto. Ostateczna oferta może uwzględniać rabaty ilościowe oraz koszty instalacji ustalone indywidualnie.
+            Oferta wygenerowana automatycznie. Podane ceny mogą ulec zmianie.
         </div>
     </div>
 </div>

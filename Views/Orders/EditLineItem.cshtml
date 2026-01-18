@@ -1,0 +1,41 @@
+﻿@model MonitoringConfigurator.Models.OrderDetail
+
+@{
+    ViewData["Title"] = "Edytuj pozycję";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edytuj pozycję zamówienia</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditLineItem">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" name="OrderId" value="@Model.OrderId" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Wybierz produkt (Zmiana modelu)</label>
+                            <select name="productId" class="form-select" asp-items="ViewBag.ProductId"></select>
+                            <div class="form-text text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Uwaga: Zmiana produktu zaktualizuje cenę pozycji do obecnej ceny katalogowej nowego produktu.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ilość</label>
+                            <input name="quantity" type="number" class="form-control" value="@Model.Quantity" min="1" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Zapisz zmiany</button>
+                            <a asp-action="Manage" asp-route-id="@Model.OrderId" class="btn btn-secondary">Anuluj</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering; // Ważne: do obsługi SelectList
 using Microsoft.EntityFrameworkCore;
 using MonitoringConfigurator.Data;
 using MonitoringConfigurator.Models;
@@ -24,14 +25,14 @@ namespace MonitoringConfigurator.Controllers
             _userManager = userManager;
         }
 
-        // Lista zamówień / zapytań
+        // Lista zamówień
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
             bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
 
             var query = _ctx.Orders
-                .Include(o => o.Items)
+                .Include(o => o.Items) // Poprawione: Items
                 .AsQueryable();
 
             if (!isStaff)
@@ -55,14 +56,14 @@ namespace MonitoringConfigurator.Controllers
             return View(orders);
         }
 
-        // Szczegóły zapytania
+        // Szczegóły
         public async Task<IActionResult> Details(int id)
         {
             var userId = _userManager.GetUserId(User);
             bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
 
             var query = _ctx.Orders
-                .Include(o => o.Items)
+                .Include(o => o.Items) // Poprawione: Items
                 .ThenInclude(i => i.Product)
                 .AsQueryable();
 
@@ -89,7 +90,7 @@ namespace MonitoringConfigurator.Controllers
             return View(order);
         }
 
-        // Zmiana statusu (Tylko dla Admina/Operatora)
+        // Zmiana statusu
         [HttpPost]
         [Authorize(Roles = "Admin,Operator")]
         [ValidateAntiForgeryToken]
@@ -105,7 +106,7 @@ namespace MonitoringConfigurator.Controllers
             return RedirectToAction(nameof(Details), new { id = id });
         }
 
-        // Tworzenie zapytania z konfiguratora
+        // Tworzenie z konfiguratora
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFromConfig(string jsonResult)
@@ -126,7 +127,7 @@ namespace MonitoringConfigurator.Controllers
                 UserId = userId,
                 OrderDate = DateTime.UtcNow,
                 TotalAmount = config.TotalPrice,
-                Status = OrderStatus.Nowe // Domyślny status: Nowe zapytanie
+                Status = OrderStatus.Nowe
             };
 
             void AddItem(Product? p, int qty)
@@ -155,14 +156,149 @@ namespace MonitoringConfigurator.Controllers
             _ctx.Orders.Add(order);
             await _ctx.SaveChangesAsync();
 
-            // Tutaj opcjonalnie: wysłanie maila do handlowca
-
             return RedirectToAction(nameof(Success), new { id = order.Id });
         }
 
         public IActionResult Success(int id)
         {
             return View(id);
+        }
+
+        // -----------------------------------------------------------------------
+        // SEKCJA ADMINISTRACYJNA (Poprawiona)
+        // -----------------------------------------------------------------------
+
+        // GET: Orders/Manage/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Manage(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var order = await _ctx.Orders
+                .Include(o => o.Items) // Poprawione: Items
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (order == null) return NotFound();
+
+            var owner = await _userManager.FindByIdAsync(order.UserId);
+            ViewBag.OwnerEmail = owner?.Email ?? "Nieznany";
+
+            return View(order);
+        }
+
+        // GET: Orders/EditLineItem/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditLineItem(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // Używamy Set<OrderDetail> bo Items to kolekcja w Order
+            var orderDetail = await _ctx.Set<OrderDetail>()
+                .Include(od => od.Product)
+                .FirstOrDefaultAsync(od => od.Id == id);
+
+            if (orderDetail == null) return NotFound();
+
+            ViewBag.ProductId = new SelectList(_ctx.Products, "Id", "Name", orderDetail.ProductId);
+            return View(orderDetail);
+        }
+
+        // POST: Orders/EditLineItem
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLineItem(int id, int productId, int quantity)
+        {
+            var orderDetail = await _ctx.Set<OrderDetail>().FindAsync(id);
+            if (orderDetail == null) return NotFound();
+
+            // Aktualizacja
+            orderDetail.ProductId = productId;
+            orderDetail.Quantity = quantity;
+
+            // Pobranie ceny z katalogu
+            var product = await _ctx.Products.FindAsync(productId);
+            if (product != null)
+            {
+                orderDetail.UnitPrice = product.Price; // Poprawione: UnitPrice
+            }
+
+            _ctx.Update(orderDetail);
+            await _ctx.SaveChangesAsync();
+
+            await RecalculateOrderTotal(orderDetail.OrderId);
+
+            return RedirectToAction(nameof(Manage), new { id = orderDetail.OrderId });
+        }
+
+        // GET: Orders/AddLineItem/5
+        [Authorize(Roles = "Admin")]
+        public IActionResult AddLineItem(int id)
+        {
+            ViewBag.OrderId = id;
+            ViewBag.ProductId = new SelectList(_ctx.Products, "Id", "Name");
+            return View();
+        }
+
+        // POST: Orders/AddLineItem
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLineItem(int orderId, int productId, int quantity)
+        {
+            var product = await _ctx.Products.FindAsync(productId);
+            if (product == null) return NotFound();
+
+            var orderDetail = new OrderDetail
+            {
+                OrderId = orderId,
+                ProductId = productId,
+                Quantity = quantity,
+                UnitPrice = product.Price // Poprawione: UnitPrice
+            };
+
+            _ctx.Set<OrderDetail>().Add(orderDetail);
+            await _ctx.SaveChangesAsync();
+
+            await RecalculateOrderTotal(orderId);
+
+            return RedirectToAction(nameof(Manage), new { id = orderId });
+        }
+
+        // POST: Orders/DeleteLineItem/5
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLineItem(int id)
+        {
+            var orderDetail = await _ctx.Set<OrderDetail>().FindAsync(id);
+            if (orderDetail != null)
+            {
+                int orderId = orderDetail.OrderId;
+                _ctx.Set<OrderDetail>().Remove(orderDetail);
+                await _ctx.SaveChangesAsync();
+
+                await RecalculateOrderTotal(orderId);
+
+                return RedirectToAction(nameof(Manage), new { id = orderId });
+            }
+            return NotFound();
+        }
+
+        private async Task RecalculateOrderTotal(int orderId)
+        {
+            var order = await _ctx.Orders
+                .Include(o => o.Items) // Poprawione: Items
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order != null)
+            {
+                // Poprawione: UnitPrice
+                order.TotalAmount = order.Items.Sum(i => i.Quantity * i.UnitPrice);
+                _ctx.Update(order);
+                await _ctx.SaveChangesAsync();
+            }
         }
     }
 }

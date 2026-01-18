@@ -1,106 +1,107 @@
 ﻿@model IEnumerable<MonitoringConfigurator.Models.Order>
-@{
-    ViewData["Title"] = "Historia zapytań";
-    bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
-    var userEmails = ViewBag.UserEmails as Dictionary<string, string>;
+@using MonitoringConfigurator.Models
 
-    string GetStatusBadge(MonitoringConfigurator.Models.OrderStatus status)
-    {
-        return status switch
-        {
-            MonitoringConfigurator.Models.OrderStatus.Nowe => "bg-primary",
-            MonitoringConfigurator.Models.OrderStatus.WTrakcie => "bg-warning text-dark",
-            MonitoringConfigurator.Models.OrderStatus.Zatwierdzone => "bg-info text-dark",
-            MonitoringConfigurator.Models.OrderStatus.Zrealizowane => "bg-success",
-            MonitoringConfigurator.Models.OrderStatus.Anulowane => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
+@{
+    ViewData["Title"] = "Lista Zamówień";
+
+    // Bezpieczne rzutowanie słownika emaili przekazanego z kontrolera
+    var userEmails = ViewBag.UserEmails as Dictionary<string, string>;
 }
 
 <div class="container py-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h2 class="text-white mb-1">
-                @(isStaff ? "Wszystkie zapytania (Panel Admina)" : "Moje zapytania ofertowe")
-            </h2>
-            @if (isStaff)
-            {
-                <p class="text-muted mb-0">Zarządzaj zapytaniami od klientów.</p>
-            }
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Lista Zamówień i Zapytań</h2>
     </div>
 
-    @if (!Model.Any())
+    @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-dark border-secondary text-secondary">
-            Brak zapytań w systemie.
-            @if (!isStaff)
-            {
-                <a asp-controller="Configurator" asp-action="Index" class="alert-link">Przejdź do konfiguratora</a>
-            }
-            .
+        <div class="alert alert-info bg-dark text-info border-info">
+            <i class="bi bi-info-circle me-2"></i> Nie znaleziono żadnych zamówień.
         </div>
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>Numer</th>
-                        @if (isStaff)
-                        {
-                            <th>Klient</th>
-                        }
-                        <th>Data</th>
-                        <th>Status</th>
-                        <th>Ilość poz.</th>
-                        <th>Szacunkowa kwota</th>
-                        <th class="text-end">Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var order in Model)
-                    {
-                        <tr>
-                            <td>
-                                <span class="badge bg-secondary font-monospace">#@order.Id</span>
-                            </td>
-
-                            @if (isStaff)
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    @* Tabela ciemna (table-dark) *@
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead>
+                            <tr class="text-secondary">
+                                <th class="ps-4">Data złożenia</th>
+                                <th>Klient / Użytkownik</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-end">Kwota</th>
+                                <th class="text-center pe-4">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
                             {
-                                <td>
-                                    @if (userEmails != null && userEmails.ContainsKey(order.UserId))
-                                    {
-                                        var email = userEmails[order.UserId];
-                                        <div class="fw-bold text-white">@email</div>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">@order.UserId</span>
-                                    }
-                                </td>
+                                <tr>
+                                    <td class="ps-4 text-white">
+                                        @item.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @if (userEmails != null && item.UserId != null && userEmails.ContainsKey(item.UserId))
+                                        {
+                                            <span class="fw-bold text-info">@userEmails[item.UserId]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">@(item.UserId ?? "Nieznany")</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center">
+                                        @switch (item.Status)
+                                        {
+                                            case OrderStatus.Nowe:
+                                                <span class="badge bg-primary">Nowe</span>
+                                                break;
+
+                                            case OrderStatus.WTrakcie:
+                                                <span class="badge bg-warning text-dark">Weryfikacja</span>
+                                                break;
+
+                                            case OrderStatus.Zatwierdzone:
+                                                <span class="badge bg-info text-dark">Zatwierdzone</span>
+                                                break;
+
+                                            case OrderStatus.Zrealizowane:
+                                                <span class="badge bg-success">Zrealizowane</span>
+                                                break;
+
+                                            case OrderStatus.Anulowane:
+                                                <span class="badge bg-danger">Anulowane</span>
+                                                break;
+
+                                            default:
+                                                <span class="badge bg-secondary">@item.Status</span>
+                                                break;
+                                        }
+                                    </td>
+
+                                    <td class="text-end fw-bold text-white">
+                                        @item.TotalAmount.ToString("c")
+                                    </td>
+
+                                    <td class="text-center pe-4">
+                                        <div class="btn-group shadow-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm" title="Zobacz szczegóły">
+                                                <i class="bi bi-eye"></i> Szczegóły
+                                            </a>
+
+                                           
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-
-                            <td>@order.OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-
-                            @* --- KOLUMNA STATUSU --- *@
-                            <td>
-                                <span class="badge @GetStatusBadge(order.Status)">@order.Status</span>
-                            </td>
-
-                            <td>@order.Items.Count</td>
-                            <td class="fw-bold text-info">@order.TotalAmount.ToString("N2") zł</td>
-                            <td class="text-end">
-                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">
-                                    Szczegóły
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     }
 </div>

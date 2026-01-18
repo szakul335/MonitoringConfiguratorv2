@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Dodaj pozycję";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Dodaj produkt do zamówienia #@ViewBag.OrderId</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddLineItem">
+                        <input type="hidden" name="orderId" value="@ViewBag.OrderId" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Produkt</label>
+                            <select name="productId" class="form-select" asp-items="ViewBag.ProductId"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ilość</label>
+                            <input name="quantity" type="number" class="form-control" value="1" min="1" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Dodaj do zamówienia</button>
+                            <a asp-action="Manage" asp-route-id="@ViewBag.OrderId" class="btn btn-secondary">Anuluj</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
