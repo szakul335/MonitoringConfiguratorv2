@@ -88,17 +88,17 @@ namespace MonitoringConfigurator.Controllers
             var query = from c in _ctx.Contacts
                         where c.Subject.StartsWith("Ocena:") || c.Subject == "Opinia o aplikacji"
 
-     
+            
                         join u in _ctx.Users on c.UserId equals u.Id into users
                         from user in users.DefaultIfEmpty()
 
-                         
+                            // Dołączamy Claim z imieniem (LEFT JOIN)
                         join cl in _ctx.Set<IdentityUserClaim<string>>()
                             on new { UserId = user.Id, ClaimType = "profile:fullName" }
                             equals new { UserId = cl.UserId, ClaimType = cl.ClaimType } into claims
                         from claim in claims.DefaultIfEmpty()
 
-                          
+                            // [NOWOŚĆ] Dołączamy Claim z awatarem (LEFT JOIN)
                         join av in _ctx.Set<IdentityUserClaim<string>>()
                             on new { UserId = user.Id, ClaimType = "profile:avatar" }
                             equals new { UserId = av.UserId, ClaimType = av.ClaimType } into avatars
@@ -114,7 +114,7 @@ namespace MonitoringConfigurator.Controllers
                             c.CreatedAt,
                             Email = user != null ? user.Email : null,
                             FullName = claim != null ? claim.ClaimValue : null,
-                            AvatarUrl = avatar != null ? avatar.ClaimValue : null 
+                            AvatarUrl = avatar != null ? avatar.ClaimValue : null // Pobieramy URL
                         };
 
             var rawData = await query.AsNoTracking().ToListAsync();

@@ -123,6 +123,7 @@ namespace MonitoringConfigurator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Manage(ProductManagementViewModel viewModel)
         {
+            // --- LOGIKA OBSŁUGI ZDJĘĆ ---
             var file = viewModel.EditableProduct.ImageUpload;
             if (file != null && file.Length > 0)
             {
@@ -133,18 +134,21 @@ namespace MonitoringConfigurator.Controllers
                 }
                 else
                 {
+                    // Upewnij się, że folder istnieje
                     var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "products");
                     if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-                   
+                    // Unikalna nazwa pliku
                     var uniqueFileName = System.Guid.NewGuid().ToString() + ext;
                     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
+                    // Zapis na dysk
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
                     }
 
+                    // Przypisanie ścieżki do modelu (zastępuje stary URL)
                     viewModel.EditableProduct.ImageUrl = "/uploads/products/" + uniqueFileName;
                 }
             }

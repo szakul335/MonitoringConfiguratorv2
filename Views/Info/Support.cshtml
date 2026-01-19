@@ -16,15 +16,18 @@
             <strong>Utwórz nowe zgłoszenie</strong>
         </div>
         <div class="card-body">
+
             <form asp-action="Support" method="post">
                 @Html.AntiForgeryToken()
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label">Dział</label>
+
                         <select asp-for="Recipient" class="form-select">
                             <option value="Admin">Administrator</option>
                             <option value="Operator">Operator</option>
                         </select>
+
                     </div>
                     <div class="col-md-8">
                         <label class="form-label">Temat</label>
@@ -33,10 +36,12 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Treść wiadomości</label>
+
                         <textarea asp-for="Message" class="form-control" rows="4"></textarea>
                         <span asp-validation-for="Message" class="text-danger"></span>
                     </div>
                     <div class="col-12 text-end">
+
                         <button type="submit" class="btn btn-primary">Wyślij zgłoszenie</button>
                     </div>
                 </div>
@@ -48,6 +53,7 @@
         <h3 class="mb-0">Twoje zgłoszenia</h3>
     </div>
 
+
     <div class="list-group">
         @if (Model.Sent != null && Model.Sent.Any())
         {
@@ -57,15 +63,15 @@
                 // Pobieramy datę ostatniej aktywności (data odpowiedzi lub utworzenia wątku)
                 var lastActivity = thread.Replies?.OrderByDescending(r => r.CreatedAt).FirstOrDefault()?.CreatedAt ?? thread.CreatedAt;
 
-                <a asp-action="TicketDetails" asp-route-id="@thread.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" aria-current="true">
+                <a asp-action="TicketDetails" asp-route-id="@thread.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-dark text-white border-secondary" aria-current="true">
                     <div>
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">@thread.Subject.Replace("[Admin] ", "").Replace("[Operator] ", "")</h5>
                         </div>
-                        <p class="mb-1 text-muted small">
+                        <p class="mb-1 text-white-50 small">
                             Ostatnia aktywność: @lastActivity.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         </p>
-                        <small class="text-secondary">
+                        <small class="text-white-50">
                             @(thread.Message.Length > 60 ? thread.Message.Substring(0, 60) + "..." : thread.Message)
                         </small>
                     </div>
@@ -86,7 +92,7 @@
                                 break;
                         }
                         <div class="mt-1">
-                            <span class="badge bg-light text-dark border">Wiadomości: @(replyCount + 1)</span>
+                            <span class="badge bg-secondary text-white border-0">Wiadomości: @(replyCount + 1)</span>
                         </div>
                     </div>
                 </a>
@@ -94,7 +100,7 @@
         }
         else
         {
-            <div class="alert alert-light text-center border">Brak historii zgłoszeń.</div>
+            <div class="alert bg-dark text-white text-center border-secondary">Brak historii zgłoszeń.</div>
         }
     </div>
 </div>

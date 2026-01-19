@@ -11,6 +11,7 @@ namespace MonitoringConfigurator.Models
 
     public class ConfiguratorInputModel
     {
+        // ... (Pola podstawowe bez zmian) ...
         [Display(Name = "Rodzaj obiektu")] public BuildingType Building { get; set; }
         [Display(Name = "Metraż (m²)")][Range(10, 100000)] public int AreaM2 { get; set; } = 150;
         [Display(Name = "Instalacja")] public InstallationType InstallType { get; set; }
