@@ -75,8 +75,6 @@ namespace MonitoringConfigurator.Controllers
 
             var result = new ConfigurationResult { Input = input };
 
-            // A. DOBÓR KAMER
-            // Ustalamy klucz wyszukiwania na podstawie wybranej technologii
             string techKey = input.Tech switch
             {
                 CameraTechnology.IpPoe => "IP",
@@ -85,20 +83,17 @@ namespace MonitoringConfigurator.Controllers
                 _ => "IP"
             };
 
-            // Bazowe zapytanie do bazy produktów
             var baseCamQuery = _ctx.Products
                 .Where(p => p.Category == ProductCategory.Camera
                        && p.ResolutionMp >= input.ResolutionMp
-                       && (p.ShortDescription == techKey) // Kluczowe filtrowanie po technologii
+                       && (p.ShortDescription == techKey) 
                        && (p.IrRangeM == null || p.IrRangeM >= input.NightVisionM));
 
-            // Opcjonalny filtr AI
             if (input.Detection == DetectionType.Ai)
             {
                 baseCamQuery = baseCamQuery.Where(p => p.Description.Contains("AI") || p.Name.Contains("AI"));
             }
 
-            // Kamery Zewnętrzne
             if (input.OutdoorCamCount > 0)
             {
                 result.SelectedOutdoorCam = await baseCamQuery
@@ -107,7 +102,6 @@ namespace MonitoringConfigurator.Controllers
                     .FirstOrDefaultAsync();
             }
 
-            // Kamery Wewnętrzne
             if (input.IndoorCamCount > 0)
             {
                 result.SelectedIndoorCam = await baseCamQuery
@@ -115,11 +109,11 @@ namespace MonitoringConfigurator.Controllers
                     .FirstOrDefaultAsync();
             }
 
-            // B. OBLICZENIA TECHNICZNE
-            double bitrate = input.ResolutionMp * 1.5; // Szacunkowy bitrate (Mbps) na kamerę
+            
+            double bitrate = input.ResolutionMp * 1.5; 
             result.EstimatedBandwidthMbps = Math.Round(bitrate * input.TotalCameras, 2);
 
-            // Moc (tylko dla IP PoE)
+         
             int powerW = 0;
             if (input.Tech == CameraTechnology.IpPoe)
             {
@@ -128,20 +122,18 @@ namespace MonitoringConfigurator.Controllers
             }
             result.EstimatedPowerW = powerW;
 
-            // Pojemność dysku
+        
             double dailyGB = (bitrate / 8) * 3600 * 24 / 1024;
-            double motionFactor = input.Building == BuildingType.Warehouse ? 0.2 : 0.45; // Ruch zależy od typu obiektu
-            if (input.Detection == DetectionType.Ai) motionFactor *= 0.8; // AI redukuje fałszywe nagrania
+            double motionFactor = input.Building == BuildingType.Warehouse ? 0.2 : 0.45; 
+            if (input.Detection == DetectionType.Ai) motionFactor *= 0.8; 
 
             result.EstimatedStorageTB = Math.Round((dailyGB * (0.3 + motionFactor) * input.RecordingDays * input.TotalCameras) / 1024, 2);
 
-            // C. DOBÓR REJESTRATORA
             var recQuery = _ctx.Products
                 .Where(p => p.Category == ProductCategory.Recorder
                        && p.Channels >= input.TotalCameras
                        && (p.ShortDescription == techKey || p.ShortDescription == "UNIWERSALNY"));
 
-            // Dla IP sprawdzamy też przepustowość (Bandwidth)
             if (input.Tech != CameraTechnology.Analog)
             {
                 recQuery = recQuery.Where(p => p.MaxBandwidthMbps >= result.EstimatedBandwidthMbps);
@@ -149,7 +141,7 @@ namespace MonitoringConfigurator.Controllers
 
             result.SelectedRecorder = await recQuery.OrderBy(p => p.Price).FirstOrDefaultAsync();
 
-            // D. DOBÓR DYSKU TWARDEGO
+          
             var allDisks = await _ctx.Products
                 .Where(p => p.Category == ProductCategory.Disk && (p.ShortDescription == "UNIWERSALNY"))
                 .OrderBy(p => p.Price)
@@ -157,7 +149,7 @@ namespace MonitoringConfigurator.Controllers
 
             if (allDisks.Any())
             {
-                // Szukamy idealnego dysku (pojemność >= wymagana)
+              
                 var perfectFit = allDisks.FirstOrDefault(d => (d.StorageTB ?? 0) >= result.EstimatedStorageTB);
 
                 if (perfectFit != null)
@@ -167,17 +159,17 @@ namespace MonitoringConfigurator.Controllers
                 }
                 else
                 {
-                    // Jeśli jeden dysk to za mało, bierzemy największy i mnożymy
+                  
                     var maxDisk = allDisks.OrderByDescending(d => d.StorageTB).First();
                     int needed = (int)Math.Ceiling(result.EstimatedStorageTB / (maxDisk.StorageTB ?? 1));
-                    int slots = result.SelectedRecorder?.DiskBays ?? 1; // Sprawdzamy ile slotów ma rejestrator
+                    int slots = result.SelectedRecorder?.DiskBays ?? 1; 
 
                     result.SelectedDisk = maxDisk;
                     result.DiskQuantity = Math.Min(needed, slots);
                 }
             }
 
-            // E. SWITCH (Tylko dla IP PoE)
+       
             if (input.Tech == CameraTechnology.IpPoe)
             {
                 result.SelectedSwitch = await _ctx.Products
@@ -203,15 +195,14 @@ namespace MonitoringConfigurator.Controllers
                 {
                     int totalMeters;
 
-                    // --- LOGIKA WIZUALIZATORA ---
-                    // Jeśli użytkownik narysował plan, używamy dokładnej wartości
+                  
                     if (input.CustomCableMeters.HasValue && input.CustomCableMeters > 0)
                     {
                         totalMeters = input.CustomCableMeters.Value;
                     }
                     else
                     {
-                        // W przeciwnym razie estymacja matematyczna z metrażu
+                     
                         double side = Math.Sqrt(input.AreaM2);
                         totalMeters = (int)(side * 2.0 * input.TotalCameras);
                     }
@@ -221,13 +212,11 @@ namespace MonitoringConfigurator.Controllers
                 }
             }
 
-            // Uchwyty montażowe
             result.SelectedMount = await _ctx.Products
                 .Where(p => p.Category == ProductCategory.Accessory && (p.Name.Contains("Puszka") || p.Name.Contains("Uchwyt")))
                 .OrderBy(p => p.Price).FirstOrDefaultAsync();
             if (result.SelectedMount != null) result.MountQuantity = input.TotalCameras;
 
-            // Monitor
             if (input.DisplayMethod != DisplayType.AppOnly)
             {
                 string monitorKey = input.DisplayMethod == DisplayType.Tv ? "Telewizor" : "Monitor";
@@ -237,17 +226,16 @@ namespace MonitoringConfigurator.Controllers
                 if (result.SelectedMonitor != null) result.MonitorQuantity = 1;
             }
 
-            // UPS (Zasilanie awaryjne)
             if (input.NeedUps)
             {
-                int loadW = result.EstimatedPowerW + 40; // +40W na rejestrator
+                int loadW = result.EstimatedPowerW + 40; 
                 result.SelectedUps = await _ctx.Products
                     .Where(p => p.Category == ProductCategory.Ups && p.UpsVA > loadW)
                     .OrderBy(p => p.Price).FirstOrDefaultAsync();
                 if (result.SelectedUps != null) result.UpsQuantity = 1;
             }
 
-            // Usługa montażu
+           
             if (input.NeedAssembly)
             {
                 result.AssemblyCost = (input.TotalCameras * 200.00m) + 500.00m;
@@ -256,7 +244,6 @@ namespace MonitoringConfigurator.Controllers
             return View("Summary", result);
         }
 
-        // --- 4. GENEROWANIE PDF I ZAPIS DO HISTORII ---
         [HttpPost]
         public async Task<IActionResult> GeneratePdf(string jsonResult)
         {
@@ -274,10 +261,10 @@ namespace MonitoringConfigurator.Controllers
 
             if (config == null) return RedirectToAction("Index");
 
-            // Ustawienie licencji QuestPDF
+           
             QuestPDF.Settings.License = LicenseType.Community;
 
-            // Generowanie dokumentu
+           
             var document = Document.Create(container =>
             {
                 container.Page(page =>
@@ -287,7 +274,7 @@ namespace MonitoringConfigurator.Controllers
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Arial"));
 
-                    // Nagłówek
+             
                     page.Header().Row(row =>
                     {
                         row.RelativeItem().Column(col =>
@@ -298,7 +285,7 @@ namespace MonitoringConfigurator.Controllers
                         row.ConstantItem(100).AlignRight().Text(DateTime.Now.ToString("dd.MM.yyyy"));
                     });
 
-                    // Treść
+             
                     page.Content().PaddingVertical(20).Column(col =>
                     {
                         col.Item().Container().Background(Colors.Grey.Lighten4).Padding(10).Row(row =>
@@ -310,15 +297,15 @@ namespace MonitoringConfigurator.Controllers
 
                         col.Item().PaddingVertical(15).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
 
-                        // Tabela
+                 
                         col.Item().Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.RelativeColumn(4); // Nazwa
-                                columns.RelativeColumn(1); // Ilość
-                                columns.RelativeColumn(2); // Cena jedn.
-                                columns.RelativeColumn(2); // Wartość
+                                columns.RelativeColumn(4); 
+                                columns.RelativeColumn(1); 
+                                columns.RelativeColumn(2); 
+                                columns.RelativeColumn(2); 
                             });
 
                             table.Header(header =>
@@ -411,7 +398,7 @@ namespace MonitoringConfigurator.Controllers
                 {
                     try
                     {
-                        // 1. Zapis fizyczny na dysku
+                  
                         var basePath = Path.Combine(_env.WebRootPath, "documents");
                         var safeUserName = Regex.Replace(userName, @"[^a-zA-Z0-9_.@-]", "_");
                         var userFolder = Path.Combine(basePath, safeUserName);
@@ -423,7 +410,6 @@ namespace MonitoringConfigurator.Controllers
 
                         await System.IO.File.WriteAllBytesAsync(filePath, contentBytes);
 
-                        // 2. Zapis w bazie danych (UserDocuments)
                         var userDoc = new UserDocument
                         {
                             UserId = userId,
@@ -432,7 +418,7 @@ namespace MonitoringConfigurator.Controllers
                             Content = contentBytes,
                             CreatedUtc = DateTime.UtcNow,
 
-                            // Zapisujemy cały obiekt wejściowy (JSON), aby móc go później załadować (funkcja "Edytuj")
+                      
                             InputJson = JsonSerializer.Serialize(config.Input),
                             ResultJson = jsonResult
                         };

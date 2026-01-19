@@ -32,7 +32,7 @@ namespace MonitoringConfigurator.Controllers
             bool isStaff = User.IsInRole("Admin") || User.IsInRole("Operator");
 
             var query = _ctx.Orders
-                .Include(o => o.Items) // Poprawione: Items
+                .Include(o => o.Items) 
                 .AsQueryable();
 
             if (!isStaff)
@@ -213,15 +213,14 @@ namespace MonitoringConfigurator.Controllers
             var orderDetail = await _ctx.Set<OrderDetail>().FindAsync(id);
             if (orderDetail == null) return NotFound();
 
-            // Aktualizacja
             orderDetail.ProductId = productId;
             orderDetail.Quantity = quantity;
 
-            // Pobranie ceny z katalogu
+        
             var product = await _ctx.Products.FindAsync(productId);
             if (product != null)
             {
-                orderDetail.UnitPrice = product.Price; // Poprawione: UnitPrice
+                orderDetail.UnitPrice = product.Price; 
             }
 
             _ctx.Update(orderDetail);
@@ -289,12 +288,12 @@ namespace MonitoringConfigurator.Controllers
         private async Task RecalculateOrderTotal(int orderId)
         {
             var order = await _ctx.Orders
-                .Include(o => o.Items) // Poprawione: Items
+                .Include(o => o.Items) 
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order != null)
             {
-                // Poprawione: UnitPrice
+              
                 order.TotalAmount = order.Items.Sum(i => i.Quantity * i.UnitPrice);
                 _ctx.Update(order);
                 await _ctx.SaveChangesAsync();
